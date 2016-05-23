@@ -54,7 +54,7 @@ This is some sample text.
             ? ko.mapping.fromJSON(localStorage[NoteRepository.backingStoreKey]) 
             : null;
         
-        NoteRepository.store = backedStore ? backedStore : NoteRepository.store;
+        NoteRepository.store = backedStore ? backedStore() : NoteRepository.store;
     }
     
     private dumpToBackingStore() {
