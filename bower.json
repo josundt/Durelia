@@ -1,0 +1,31 @@
+{
+  "name": "durandalTest",
+  "authors": [
+    "Jørn Andre Sundt <jorn.andre.sundt@jasmin.no>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "Durandal": "durandal#^2.1.0",
+    "bluebird": "^3.4.0",
+    "jquery": "^2.2.3",
+    "knockout": "^3.4.0",
+    "q": "1.4.1",
+    "requirejs": "^2.2.0",
+    "text": "requirejs-text#^2.0.15"
+  },
+  "dependencies": {
+    "font-awesome": "^4.6.3",
+    "knockout-mapping": "^2.4.1"
+  }
+}

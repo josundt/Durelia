@@ -1,0 +1,200 @@
+body, table, input, button, select, text-area {
+    font-family: 'Segoe UI', Calibri, 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif 
+}
+
+table, input, button, select, text-area {
+    font-size: inherit;
+}
+
+h1, h2 {
+    text-transform: uppercase;
+    color: #707070;
+    text-shadow: 2px 2px 0px #eee, 3px 3px 0px #707070;
+}
+
+input[type='button'], button {
+    cursor: pointer;
+    padding: 5px 10px;
+    border: 1px solid #999;
+    border-radius: 5px;
+    background-image: radial-gradient(#FFF 25%, #EEE 60%, #DDD 90%);
+    box-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+}
+
+input[type='text'] {
+    outline: none;
+    border: solid 1px #666;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+input[type='text']:focus {
+    border-color: #88E;
+}
+
+input[readonly][type='text'] {
+    background-color: #EEE;
+}
+
+.navigation-menu {
+    position: fixed; 
+    left: 0; 
+    top: 0; 
+    bottom: 0; 
+    width: 200px;
+}
+.navigation-menu ul {
+    margin: 30px 20px 0 10px;
+    padding-left: 0;
+    box-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+
+}
+.navigation-menu ul li {
+    list-style-type: none;
+}
+.navigation-menu ul li a {
+    color: #333;
+    display: block;
+    text-decoration: none;
+    cursor: hand;
+    padding: 5px 10px;
+    border: 1px solid #999;
+    background-image: radial-gradient(#FFF 25%, #EEE 60%, #DDD 90%);
+}
+.navigation-menu ul li a:hover {
+    background-image: radial-gradient(#FFF 25%, #EEF 60%, #DDF 90%);
+}
+
+.main-content {
+    margin-left: 200px;
+}
+
+.form-group {
+    border: none;
+    display: inline-block;
+    padding: 2em;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.button-group {
+    padding: 2em;
+}
+.button-group:after { 
+    content: " ";
+    display: block; 
+    height: 0; 
+    clear: both;
+}
+.button-group > button {
+    float: left;
+    border-radius: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+.button-group > button:first-child {
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+}
+.button-group > button:last-child {
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+table.grid {
+    border: 1px solid #999;
+    border-collapse: collapse;
+}
+table.grid td, table.grid th {
+    padding: 5px 20px;
+}
+table.grid th {
+    color: #FFF;
+    background-color:#666;
+}
+table.grid > tbody > tr:nth-child(odd) {
+    background-color: #EEE;
+}
+
+.modalHost > * {
+    padding: 30px 50px 50px;
+    background-color: #FFF;
+    box-shadow: 20px 20px 40px rgba(0,0,0,0.5);
+}
+
+.note {
+    display: inline-block;
+    width: 300px;
+    height: 300px;
+    background-color: #FFFF99;
+    padding: 20px;
+    font-family: 'Comic Sans MS';
+    margin: 6px;
+    box-shadow: 15px 15px 40px rgba(0,0,0,.2);
+}
+.note-timestamp {
+    float: left;
+    font-size: smaller;
+    visibility: visible;
+    color: #999;
+}
+.note-button-group {
+    width: 100%;
+    height: 50px;
+}
+.note-button-group:after { 
+    content: " ";
+    display: block; 
+    height: 0; 
+    clear: both;
+}
+.note-button {
+    display: inline-block;
+    width: 1.5em;
+    text-align: center;
+    color: inherit;
+    font-size: larger;
+    margin: 0 .2em;
+    outline: none;
+}
+.note-button:hover, .note-button:focus {
+    color: #0000FF;
+    text-shadow: 1px 1px 7px rgba(0,0,0,.7);
+}
+.note-button-edit {
+    float: right;
+}
+.note-button-delete {
+    float: right;
+}
+.note-button-cancel {
+    float: left;
+}
+.note-button-save {
+    float: right;
+}
+
+.note-content {
+    display: inline-block;
+    color: #0000FF;
+    margin-top: 20px;
+    background-color: transparent;
+    border: none;
+    width: 300px;
+    height: 220px;
+    resize: none;
+    outline: none;
+    font-size: 12pt;
+    font-family: inherit;
+}
+
+.note:hover .note-timstamp {
+    visibility: visible;
+}

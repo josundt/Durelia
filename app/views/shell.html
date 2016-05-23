@@ -1,0 +1,8 @@
+<div class="navigation-menu">
+    <ul data-bind="foreach: router.navigationModel">
+        <li><a data-bind="attr: { href: hash }, text: title"></a></li>
+    </ul>
+</div>
+<div class="main-content">
+    <div data-bind="router: { transition: null }"></div>
+</div>

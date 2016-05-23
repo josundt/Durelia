@@ -1,0 +1,25 @@
+<div>
+    <h1 data-bind="text: heading"></h1>
+    <!-- ko if: noteModel -->
+    <div data-bind="compose: {
+        view: 'views/_shared/note.html',
+        model: noteModel,
+        activate: false
+    }"></div>
+
+    <!--<fieldset class="form-group">
+        <label for="txtId">Id</label>
+        <input type="text" id="txtId" readonly="readonly" data-bind="value: note().id"/>
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="txtTitle">Content</label>
+        <input type="text" id="txtTitle" data-bind="value: note().content"/>
+    </fieldset>
+    <div class="button-group">
+        <button data-bind="click: back">Back</button>
+        <button data-bind="click: save">Save</button>
+        <button data-bind="click: remove">Delete</button>
+        <button data-bind="click: add">New</button>
+    </div>-->
+    <!-- /ko -->
+</div>
