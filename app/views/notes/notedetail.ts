@@ -25,7 +25,7 @@ export default class NoteDetail extends BaseViewModel<string> {
             : this.noteRepository.add(noteViewModel.note);
 
         return promise.then(() => {
-            this.hasUnsavedChanges = false;
+            this.hasUnsavedChanges(false);
             return skipGoBack ? Promise.resolve() : this.back();
         });
     }
@@ -36,7 +36,7 @@ export default class NoteDetail extends BaseViewModel<string> {
                 if (confirmed) {
                     return this.noteRepository.deleteById(noteViewModel.note.id())
                         .then((result) => {
-                            this.hasUnsavedChanges = false;
+                            this.hasUnsavedChanges(false);
                             this.back();
                             return result;
                         });
@@ -79,7 +79,7 @@ export default class NoteDetail extends BaseViewModel<string> {
         let notePromise: Promise<Note>;
         if (id < 0) {
             this.heading("New note")
-            this.hasUnsavedChanges = true;
+            this.hasUnsavedChanges(true);
             notePromise = Promise.resolve(this.noteRepository.createNew());
         } else {
             this.heading("Edit note")
@@ -92,7 +92,7 @@ export default class NoteDetail extends BaseViewModel<string> {
     }
     
     canDeactivate(): Promise<boolean> {
-        if (this.hasUnsavedChanges) {
+        if (this.hasUnsavedChanges()) {
             return this.dialogHelper.confirm("Do you want to save the note before leaving?", "Save changes")
                 .then(confirmed => {
                     return confirmed 
@@ -105,8 +105,8 @@ export default class NoteDetail extends BaseViewModel<string> {
     }
     
     private onNoteContentChange() {
-        this.hasUnsavedChanges = true;
+        this.hasUnsavedChanges(true);
     }
     
-    private hasUnsavedChanges: boolean = false;
+    private hasUnsavedChanges: KnockoutObservable<boolean> = this.observable(false);
 }

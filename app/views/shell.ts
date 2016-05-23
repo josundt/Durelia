@@ -2,7 +2,7 @@ import * as durandalRouter from "plugins/router";
 import {BaseViewModel} from "base/viewmodel";
 import {singleton, inject, useView} from "dependency-injection";
 
-@useView("views/Shell.html")
+@useView("views/shell.html")
 @singleton
 @inject(durandalRouter)
 export default class Shell extends BaseViewModel<void> {

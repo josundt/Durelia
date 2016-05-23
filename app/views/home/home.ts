@@ -8,7 +8,7 @@ import {useView, transient, inject} from "dependency-injection";
 export default class Home extends BaseViewModel<void> {
         
     constructor(
-        public homePartial: ITermsPartial
+        public termsPartial: ITermsPartial
     ) {
         super();
     }
@@ -17,10 +17,10 @@ export default class Home extends BaseViewModel<void> {
     
     activate(): Promise<any> {
         this.heading("Home");
-        return this.homePartial.activate();
+        return this.termsPartial.activate();
     }
 
     deactivate(): Promise<any> {
-        return this.homePartial.deactivate().then(() => super.deactivate());
+        return this.termsPartial.deactivate().then(() => super.deactivate());
     }
 }

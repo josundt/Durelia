@@ -1,4 +1,4 @@
-import {IViewModel, BaseViewModel } from "base/viewmodel";
+import {IViewModel, BaseViewModel} from "base/viewmodel";
 import {Note} from "services/noterepository";
 import {transient} from "dependency-injection";
 
