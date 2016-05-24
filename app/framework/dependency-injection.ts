@@ -1,4 +1,4 @@
-import {ILogger, ConsoleLogger} from "logger";
+import {ILogger, Logger} from "app-logger";
 
 export interface IResolvable {}
 
@@ -21,7 +21,7 @@ const lifetimePropName = "__lifetime__";
 class DependencyInjectionContainer implements IDependencyInjectionContainer {
     
     constructor(
-        private logger: ILogger = new ConsoleLogger()
+        private logger: ILogger = new Logger()
     ) {}
     
     singletonTypeRegistry: IResolvableConstructor[] = [];
