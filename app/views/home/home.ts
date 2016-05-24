@@ -1,8 +1,8 @@
-import {IViewModel, BaseViewModel, observe} from "base/viewmodel";
+import {IViewModel, BaseViewModel} from "base/viewmodel";
 import {ITermsPartial, TermsPartial} from "views/home/home.terms";
-import {useView, transient, inject} from "dependency-injection";
+import {transient, inject, observe, useView} from "app-framework";
 
-@observe
+@observe(true)
 @useView("views/home/home.html")
 @transient
 @inject(TermsPartial)

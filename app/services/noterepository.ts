@@ -1,4 +1,4 @@
-import {singleton} from "dependency-injection";
+import {singleton} from "app-framework";
 import json from "adra-jsutils-json";
 import array from "adra-jsutils-array";
 import obj from "adra-jsutils-obj";

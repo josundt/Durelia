@@ -1,4 +1,4 @@
-import {singleton} from "dependency-injection";
+import {singleton} from "framework/dependency-injection";
 
 export interface ILogger {
     debug(message: string, ...properties: any[]);
@@ -20,8 +20,10 @@ export class ConsoleLogger implements ILogger {
     severityThreshold: SeverityLevel = SeverityLevel.Debug;
     
     private log(message: string, severityLevel: SeverityLevel = SeverityLevel.Info, ...properties: any[]) {
-        if(severityLevel >= this.severityThreshold) {
+        if (severityLevel >= this.severityThreshold) {
+            /* tslint:disable:no-console */
             console.log(message, ...properties);            
+            /* tslint:enable:no-console */
         }
     }
     

@@ -1,39 +1,39 @@
-import {BaseModalViewModel, IModalViewModel, observe} from "base/viewmodel";
-import {IDialogHelper, DialogHelper} from "dialoghelper";
-import {transient, inject, useView} from "dependency-injection";
+import {BaseModalViewModel, IModalViewModel} from "base/viewmodel";
+import {IDialogController, DialogController} from "app-dialog";
+import {transient, inject, observe, useView} from "app-framework";
 
-export interface ITermsPartialModalOptions { text: string; }
+export interface ITermsPartialModalModel { text: string; }
 
 export interface ITermsPartialModalResult { agreed: boolean; }
 
-export interface ITermsPartialModal extends IModalViewModel<ITermsPartialModalOptions, ITermsPartialModalResult> {}
+export interface ITermsPartialModal extends IModalViewModel<ITermsPartialModalModel, ITermsPartialModalResult> {}
 
-@observe
+@observe(true)
 @useView("views/home/home.terms.concentmodal.html")
-@inject(DialogHelper)
-export class TermsPartialModal extends BaseModalViewModel<ITermsPartialModalOptions, ITermsPartialModalResult> {
+@inject(DialogController)
+export class TermsPartialModal extends BaseModalViewModel<ITermsPartialModalModel, ITermsPartialModalResult> {
     
     constructor(
-        dialogHelper: IDialogHelper
+        dialogController: IDialogController<ITermsPartialModalResult>
     ) {
-        super(dialogHelper);
+        super(dialogController);
     }
     
     heading: string;
     
     text: string;
     
-    activate(options: ITermsPartialModalOptions): Promise<any> {
+    activate(options: ITermsPartialModalModel): Promise<any> {
         this.text = options.text;
         this.heading = "Home Partial Modal";
         return Promise.resolve(true);
     }
         
     agree(): void {
-        this._closeDialog({ agreed: true });
+        this.ok({ agreed: true });
     }
     
     disagree(): void {
-        this._closeDialog({ agreed: false });
+        this.cancel({ agreed: false });
     }
 }

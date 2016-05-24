@@ -1,18 +1,18 @@
-import {BaseViewModel, IViewModel, IModalViewModel, computedFrom, observe} from "base/viewmodel";
-import {ITermsPartialModal, TermsPartialModal, ITermsPartialModalOptions, ITermsPartialModalResult} from "views/home/home.terms.concentmodal";
-import {IDialogHelper, DialogHelper} from "dialoghelper";
-import {transient, inject, useView} from "dependency-injection";
+import {BaseViewModel, IViewModel, IModalViewModel} from "base/viewmodel";
+import {ITermsPartialModal, TermsPartialModal, ITermsPartialModalModel, ITermsPartialModalResult} from "views/home/home.terms.concentmodal";
+import {IDialogService, DialogService} from "app-dialog";
+import {transient, inject, computedFrom, observe, useView} from "app-framework";
 
 export interface ITermsPartial extends IViewModel<void> {}
 
 @useView("views/home/home.terms.html")
-@observe
+@observe(true)
 @transient
-@inject(DialogHelper)
+@inject(DialogService)
 export class TermsPartial extends BaseViewModel<void> {
     
     constructor(
-        private dialogHelper: IDialogHelper
+        private dialogService: IDialogService
     ) {
         super();
     }
@@ -21,19 +21,20 @@ export class TermsPartial extends BaseViewModel<void> {
     
     agreed: boolean = false;
     
-    @computedFrom<TermsPartial>("agreed")
+    @computedFrom("agreed")
     get agreedText(): string {
         let agreed = this.agreed;
         return `The user ${agreed ? "HAS" : "has NOT"} agreed to the terms`;
-    };
+    }
         
     openDialog(): Promise<any> {
-        return this.dialogHelper.showModal<ITermsPartialModalOptions, ITermsPartialModalResult>(
-            TermsPartialModal, 
-            { text: "Do you agree to the terms?"})
-            .then(result => {
-                this.agreed = result.agreed;
-            });
+        let model: ITermsPartialModalModel = { text: "Do you agree to the terms?" };
+        return this.dialogService.open<ITermsPartialModalModel, ITermsPartialModalResult>({
+            viewModel: TermsPartialModal, 
+            model: model
+        }).then(result => {
+            this.agreed = result.output.agreed;
+        });
     }
     
     activate(): Promise<any> {

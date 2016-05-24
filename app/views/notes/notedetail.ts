@@ -1,19 +1,19 @@
-import {BaseViewModel, observe} from "base/viewmodel";
+import {BaseViewModel} from "base/viewmodel";
 import {INoteRepository, NoteRepository, Note} from "services/noterepository";
-import {transient, inject, Lazy, useView} from "dependency-injection";
+import {transient, inject, Lazy, observe, useView} from "app-framework";
 import {INoteViewModel, INoteViewModelActivationOptions, NoteViewModel} from "views/_shared/note";
-import {IDialogHelper, DialogHelper} from "dialoghelper";
+import {IDialogService, DialogService} from "app-dialog";
 
 
 @useView("views/notes/notedetail.html")
-@observe
+@observe(true)
 @transient
-@inject(NoteRepository, NoteViewModel, DialogHelper)
+@inject(NoteRepository, NoteViewModel, DialogService)
 export default class NoteDetail extends BaseViewModel<string> {
     constructor(
         private noteRepository: INoteRepository,
         public noteModel: INoteViewModel,
-        private dialogHelper: IDialogHelper
+        private dialogService: IDialogService
     ) {
         super();
     }
@@ -33,7 +33,7 @@ export default class NoteDetail extends BaseViewModel<string> {
     }
 
     remove(noteViewModel: INoteViewModel): Promise<boolean> {
-        return this.dialogHelper.confirm("Are you sure you want to delete this note?", "Delete?")
+        return this.dialogService.confirm("Are you sure you want to delete this note?", "Delete?")
             .then(confirmed => {
                 if (confirmed) {
                     return this.noteRepository.deleteById(noteViewModel.note.id)
@@ -95,7 +95,7 @@ export default class NoteDetail extends BaseViewModel<string> {
     
     canDeactivate(): Promise<boolean> {
         if (this.hasUnsavedChanges) {
-            return this.dialogHelper.confirm("Do you want to save the note before leaving?", "Save changes")
+            return this.dialogService.confirm("Do you want to save the note before leaving?", "Save changes")
                 .then(confirmed => {
                     return confirmed 
                         ? this.save(this.noteModel, true).then(() => true)

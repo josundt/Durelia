@@ -1,22 +1,7 @@
 import * as ko from "knockout";
 import * as durandalObservable from "plugins/observable";
-import {IDialogHelper} from "dialoghelper";
-
-const computedRegistryKeyName: string = "__computeds__";
-
-export function computedFrom<TViewModel extends IViewModel<any>>(...dependentProps: string[]) {
-    return function(viewmodel: any, key: string, descriptor: PropertyDescriptor) {
-        viewmodel[computedRegistryKeyName] = viewmodel[computedRegistryKeyName] || {};
-        let tempMap: { [key: string]: KnockoutComputedDefine<any> } = viewmodel[computedRegistryKeyName];
-        tempMap[key] = { read: descriptor.get, write: descriptor.set, owner: undefined};
-    };
-}
-
-export function observe<TViewModel extends IViewModel<any>>(viewmodel: Function) {
-    viewmodel["prototype"].binding = function() {
-        return { applyBindings: true, skipConversion: false };
-    };
-}
+import {IDialogController} from "app-dialog";
+import {computedRegistryKeyName} from "framework/viewmodeldecorators";
 
 export interface IViewModel<TActivationOptions> {
     canActivate?(): Promise<boolean>;
@@ -71,12 +56,17 @@ export abstract class BaseModalViewModel<TActivationOptions, TDialogResult>
     implements IModalViewModel<TActivationOptions, TDialogResult> {
 
     constructor(
-        private dialogHelper: IDialogHelper
+        private dialogController: IDialogController<TDialogResult>
     ) {
         super();
     }
     
-    protected _closeDialog(result: TDialogResult): void {
-        this.dialogHelper.closeModal(this, result);
+    protected ok(result: TDialogResult): void {
+        this.dialogController.ok(result, this);
     }
+
+    protected cancel(result: TDialogResult): void {
+        this.dialogController.ok(result, this);
+    }
+
 }

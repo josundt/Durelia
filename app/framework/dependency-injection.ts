@@ -179,19 +179,13 @@ export function transient(classType: Function) {
     (classType as IResolvableConstructor).__lifetime__ = "transient";
 }
 
-export function useView(viewPath: string) {
-    return function (classType: Function) {
-        classType["prototype"]["getView"] = () => viewPath;
-    }
-}
-
 export interface IDependencyInjectionContainer {
     resolve<T>(classOrObject: Function | Object): T;
 }
 
 export class Lazy<T> {
-    constructor(classOrObject: IResolvableConstructor | {}, container: IDependencyInjectionContainer) {
-        this.resolver = () => container.resolve<T>(classOrObject);
+    constructor(classOrObject: IResolvableConstructor | {}, cont: IDependencyInjectionContainer) {
+        this.resolver = () => cont.resolve<T>(classOrObject);
     }
     static of(classOrObject: IResolvableConstructor | {}) {
         return new Lazy(classOrObject, container);

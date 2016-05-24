@@ -1,6 +1,6 @@
 import {IViewModel, BaseViewModel} from "base/viewmodel";
 import {Note} from "services/noterepository";
-import {transient} from "dependency-injection";
+import {transient} from "app-framework";
 
 export interface INoteViewModel extends IViewModel<INoteViewModelActivationOptions> {
     note: Note;

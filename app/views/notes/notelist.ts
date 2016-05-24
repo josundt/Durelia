@@ -1,23 +1,23 @@
-import {BaseViewModel, observe} from "base/viewmodel";
-import {transient, inject, Lazy, useView} from "dependency-injection";
+import {BaseViewModel} from "base/viewmodel";
+import {transient, inject, Lazy, observe, useView} from "app-framework";
 import {INoteRepository, NoteRepository, Note, ISortOrder} from "services/noterepository";
 import {INoteViewModel, INoteViewModelActivationOptions, NoteViewModel} from "views/_shared/note";
-import {IDialogHelper, DialogHelper} from "dialoghelper";
+import {IDialogService, DialogService} from "app-dialog";
 
 interface LabeledItem<T> {
     text: string;
     value: T;
 }
 
-@observe
+@observe(true)
 @useView("views/notes/notelist.html")
 @transient
-@inject(NoteRepository, Lazy.of(NoteViewModel), DialogHelper)
+@inject(NoteRepository, Lazy.of(NoteViewModel), DialogService)
 export default class NoteList extends BaseViewModel<void> {
     constructor(
         private noteRepository: INoteRepository,
         private createNoteViewModel: () => INoteViewModel,
-        private dialogHelper: IDialogHelper
+        private dialogService: IDialogService
     ) {
         super();
     }
@@ -49,7 +49,7 @@ export default class NoteList extends BaseViewModel<void> {
     }
     
     remove(noteViewModel: INoteViewModel): Promise<boolean> {
-        return this.dialogHelper.confirm("Are you sure you want to delete this note?", "Delete?")
+        return this.dialogService.confirm("Are you sure you want to delete this note?", "Delete?")
             .then(confirmed => {
                 if (confirmed) {
                     return this.noteRepository.deleteById(noteViewModel.note.id)

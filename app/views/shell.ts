@@ -1,8 +1,8 @@
 import * as durandalRouter from "plugins/router";
-import {BaseViewModel, observe} from "base/viewmodel";
-import {singleton, inject, useView} from "dependency-injection";
+import {BaseViewModel} from "base/viewmodel";
+import {singleton, inject, observe, useView} from "app-framework";
 
-@observe
+@observe(true)
 @useView("views/shell.html")
 @singleton
 @inject(durandalRouter)
