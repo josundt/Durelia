@@ -7,7 +7,7 @@ import * as durandalApp from "durandal/app";
 import * as durandalViewLocator from "durandal/viewLocator";
 import * as durandalBinder from "durandal/binder";
 import * as durandalSystem from "durandal/system";
-import {container} from "dependency-injection";
+import {container, IDependencyInjectionContainer} from "dependency-injection";
 
 // Setting bluebird Promise as global window.Promise polyfill
 
@@ -24,7 +24,7 @@ class durandalConfig {
         this.configurePlugins(app);
     }
 
-    private static container = container;
+    private static container: IDependencyInjectionContainer = container;
 
     private static configurePromise(implementation: PromiseImplementation, system: DurandalSystemModule) {
 
@@ -83,7 +83,8 @@ class durandalConfig {
         //specify which plugins to install and their configuration
         durandalApp.configurePlugins({
             router: true,
-            dialog: true,
+            //dialog: true,
+            observable: true,
             widget: {
                 kinds: ["expander"]
             }
@@ -92,7 +93,7 @@ class durandalConfig {
     
     private static enableViewModelDefaultExports(system: DurandalSystemModule) {
         system["resolveObject"] = (module) => {
-            if(module && module.default && system.isFunction(module.default)) {
+            if (module && module.default && system.isFunction(module.default)) {
                 let vm = this.container.resolve(module.default);
                 return vm;
             } else if (system.isFunction(module)) {

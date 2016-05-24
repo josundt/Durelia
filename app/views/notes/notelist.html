@@ -1,5 +1,11 @@
 <div>
     <h1 data-bind="text: heading"></h1>
+    <div>
+        <label for="sortProp">Sort by</label>
+        <select id="sortProp" data-bind="options: sortPropOptions, optionsText: 'text', value: sortProp, event: { change: sortChanged }"></select>
+        <label for="sortDesc">descending</label>
+        <input type="checkbox" data-bind="checked: sortDesc, event: { change: sortChanged }"/>
+    </div>
     <!-- ko foreach: noteModels -->
         <!-- ko compose: { 
             view: 'views/_shared/note.html', 
@@ -8,25 +14,6 @@
         } -->
         <!-- /ko -->
     <!-- /ko -->
-
-
-
-    <!--<table class="grid">
-        <thead>
-            <tr>
-                <th data-bind="click: function() { sortBy('id'); }" class="clickable">Id</th>
-                <th data-bind="click: function() { sortBy('content'); }" class="clickable">Content</th>
-                <th data-bind="click: function() { sortBy('modified'); }" class="clickable">Modified</th>
-            </tr>
-        </thead>
-        <tbody data-bind="foreach: notes">
-            <tr data-bind="click: $parent.itemSelected" class="clickable">
-                <td data-bind="text: id"></td>
-                <td data-bind="text: content"></td>
-                <td data-bind="text: function() { return modified.toISOString().substring(10); }"></td>
-            </tr>
-        </tbody>
-    </table>-->
     <div class="button-group">
         <button data-bind="click: add">New</button>
     </div>

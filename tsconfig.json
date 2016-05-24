@@ -14,9 +14,12 @@
         "sourceMap": true,
         "stripInternal": true,
         "suppressExcessPropertyErrors": false,
-        "suppressImplicitAnyIndexErrors": true
+        "suppressImplicitAnyIndexErrors": true,
+        "listFiles": false
     },
     "exclude": [
-        "./typings/**/*.d.ts"
+        "bower_components/adra-jsutils/dist/typings/index.d.ts",
+        "bower_components/adra-jsutils/sample",
+        "bower_components/adra-jsutils/src"
     ] 
 }

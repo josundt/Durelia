@@ -1,7 +1,7 @@
 <div class="note">
     <a class="note-button note-button-delete" data-bind="visible: handlers.remove, click: remove" href="javascript://" title="Remove"><i class="fa fa-remove"></i></a>
-    <span class="note-timestamp" data-bind="text: note.modified().toLocaleString()"></span>
-    <textarea class="note-content" data-bind="value: note.content, attr: { readonly: readonly() ? '' : null }"></textarea>
+    <span class="note-timestamp" data-bind="text: note.modified.toLocaleString()"></span>
+    <textarea class="note-content" data-bind="value: note.content, attr: { readonly: readonly ? '' : null }"></textarea>
     <div class="note-button-group">
         <a class="note-button note-button-edit" data-bind="visible: handlers.edit, click: edit" href="javascript://" title="Edit"><i class="fa fa-edit"></i></a>
         <a class="note-button note-button-cancel" data-bind="visible: handlers.cancel, click: cancel" href="javascript://" title="Cancel"><i class="fa fa-arrow-left"></i></a>

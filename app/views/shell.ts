@@ -1,7 +1,8 @@
 import * as durandalRouter from "plugins/router";
-import {BaseViewModel} from "base/viewmodel";
+import {BaseViewModel, observe} from "base/viewmodel";
 import {singleton, inject, useView} from "dependency-injection";
 
+@observe
 @useView("views/shell.html")
 @singleton
 @inject(durandalRouter)
@@ -13,7 +14,7 @@ export default class Shell extends BaseViewModel<void> {
         super();
     }
     
-    heading: KnockoutObservable<string> = this.observable<string>();
+    heading: string;
 
     configureRouter(): Promise<any> {
         
@@ -27,7 +28,7 @@ export default class Shell extends BaseViewModel<void> {
     }
 
     activate(): Promise<any> {
-        this.heading("Shell");
+        this.heading = "Shell";
         return this.configureRouter();
     }
 }

@@ -18,41 +18,6 @@ interface IDependencyTreeNode {
 
 const lifetimePropName = "__lifetime__";
 
-export function inject(...args: Array<Object | Function>) {
-    return function (target: {}) {
-        target["inject"] = () => args;
-    }
-}
-
-export function singleton(classType: Function) {
-    (classType as IResolvableConstructor).__lifetime__ = "singleton";
-}
-
-export function transient(classType: Function) {
-    (classType as IResolvableConstructor).__lifetime__ = "transient";
-}
-
-export function useView(viewPath: string) {
-    return function (target: {}) {
-        target["prototype"]["getView"] = () => viewPath;
-    }
-}
-
-export interface IDependencyInjectionContainer {
-    resolve<T>(classOrObject: Object | Function): T;
-}
-
-export class Lazy<T> {
-    constructor(classOrObject: IResolvableConstructor | {}, container: IDependencyInjectionContainer) {
-        this.resolver = () => container.resolve<T>(classOrObject);
-    }
-    static of(classOrObject: IResolvableConstructor | {}) {
-        return new Lazy(classOrObject, container);
-    }
-    private resolver: () => T;
-    
-}
-
 class DependencyInjectionContainer implements IDependencyInjectionContainer {
     
     constructor(
@@ -199,3 +164,39 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
 }
 
 export let container: IDependencyInjectionContainer = new DependencyInjectionContainer();
+
+export function inject(...args: Array<Object | Function>) {
+    return function (classType: Function) {
+        classType["inject"] = () => args;
+    };
+}
+
+export function singleton(classType: Function) {
+    (classType as IResolvableConstructor).__lifetime__ = "singleton";
+}
+
+export function transient(classType: Function) {
+    (classType as IResolvableConstructor).__lifetime__ = "transient";
+}
+
+export function useView(viewPath: string) {
+    return function (classType: Function) {
+        classType["prototype"]["getView"] = () => viewPath;
+    }
+}
+
+export interface IDependencyInjectionContainer {
+    resolve<T>(classOrObject: Function | Object): T;
+}
+
+export class Lazy<T> {
+    constructor(classOrObject: IResolvableConstructor | {}, container: IDependencyInjectionContainer) {
+        this.resolver = () => container.resolve<T>(classOrObject);
+    }
+    static of(classOrObject: IResolvableConstructor | {}) {
+        return new Lazy(classOrObject, container);
+    }
+    private resolver: () => T;
+    
+}
+

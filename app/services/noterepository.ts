@@ -1,13 +1,12 @@
-import * as ko from "knockout";
-import * as koMapping from "knockout.mapping";
 import {singleton} from "dependency-injection";
-
-ko.mapping = koMapping;
+import json from "adra-jsutils-json";
+import array from "adra-jsutils-array";
+import obj from "adra-jsutils-obj";
 
 export interface Note {
-    id: KnockoutObservable<number>;
-    content: KnockoutObservable<string>;
-    modified: KnockoutObservable<Date>;
+    id: number;
+    content: string;
+    modified: Date;
 }
 
 export interface ISortOrder {
@@ -18,7 +17,7 @@ export interface ISortOrder {
 export interface IQuery {
     skip?: number;
     top?: number;
-    orderBy?: ISortOrder
+    orderBy?: ISortOrder;
 }
 
 export interface INoteRepository {
@@ -36,44 +35,41 @@ export class NoteRepository implements INoteRepository {
         this.tryLoadFromBackingStore();
     }
     
-    private static backingStoreKey = "NoteRepositoryStore"
+    private static backingStoreKey: string = "NoteRepositoryStore";
     
     private static store: Note[] = [
         { 
-            id: ko.observable(1),
-            modified: ko.observable(new Date(2016, 4, 17, 12, 2, 57)),
-            content: ko.observable(
-`This is a sample note.
+            id: 1,
+            modified: new Date(2016, 4, 17, 12, 2, 57),
+            content: `
+This is a sample note.
 This is some sample text.
-`)
+`.trim()
         }
     ];
     
     private tryLoadFromBackingStore() {
         let backedStore = localStorage[NoteRepository.backingStoreKey] 
-            ? ko.mapping.fromJSON(localStorage[NoteRepository.backingStoreKey]) 
+            ? json.parse<Note[]>(localStorage[NoteRepository.backingStoreKey]) 
             : null;
         
-        NoteRepository.store = backedStore ? backedStore() : NoteRepository.store;
+        NoteRepository.store = backedStore ? backedStore : NoteRepository.store;
     }
     
     private dumpToBackingStore() {
-        localStorage[NoteRepository.backingStoreKey] = ko.mapping.toJSON(NoteRepository.store);
+        localStorage[NoteRepository.backingStoreKey] = json.stringify(NoteRepository.store);
     }
     
     private clone(item: Note): Note {
-        return { 
-            id: ko.observable(item.id()), 
-            content: ko.observable(item.content()),
-            modified: ko.observable(item.modified())
-        } 
+        let result = obj.extend({}, item);
+        return result; 
     }
     
     createNew(): Note {
         return {
-            id: ko.observable(-1),
-            content: ko.observable<string>(),
-            modified: ko.observable<Date>(new Date())
+            id: -1,
+            content: null,
+            modified: new Date()
         };
     }
     
@@ -81,10 +77,10 @@ This is some sample text.
         query.skip = query.skip || 0;
         function filter (item: Note, index: number, array: Note[]): boolean {
             let result = true;
-            if(index < query.skip) {
+            if (index < query.skip) {
                 result = false;
             }
-            if(query.top && query.top + query.skip < index) {
+            if (query.top && query.top + query.skip < index) {
                 result = false;
             }
             return result;
@@ -93,7 +89,7 @@ This is some sample text.
         function sort (itemA: Note, itemB: Note): number {
             let result = 0;
             if (query.orderBy) {
-                result = ko.unwrap(itemA[query.orderBy.prop]) < ko.unwrap(itemB[query.orderBy.prop]) 
+                result = itemA[query.orderBy.prop] < itemB[query.orderBy.prop] 
                     ? (query.orderBy.desc ? 1 : -1) 
                     : (query.orderBy.desc ? -1 : 1);
             }
@@ -107,61 +103,44 @@ This is some sample text.
     
     getById(id: number): Promise<Note> {
         return new Promise((resolve, reject) => {
-            let matches = NoteRepository.store.filter(i => i.id() === id).map(this.clone);
+            let matches = NoteRepository.store.filter(n => n.id === id).map(this.clone);
             resolve(!matches.length ? undefined : matches[0]);
         });
     }
     
     deleteById(id: number): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            let findResult = this.findById(id);
-            if(findResult.index > -1) {
-                NoteRepository.store.splice(findResult.index, 1);
+            let found = array.removeFirst(NoteRepository.store, n => n.id === id);
+            if (found) {
                 this.dumpToBackingStore();
             }
-            resolve(findResult.index > -1);
+            resolve(found);
         });
     }
     
-    update(item: Note): Promise<void> {
+    update(note: Note): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            let findResult = this.findById(item.id());
-            item.modified(new Date());
-            NoteRepository.store[findResult.index] = this.clone(item); 
+            let index = array.indexOf(NoteRepository.store, n => n.id === note.id);
+            note.modified = new Date();
+            NoteRepository.store[index] = this.clone(note); 
             this.dumpToBackingStore();
             resolve();
         });
     }
     
-    add(item: Note): Promise<void> {
+    add(note: Note): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            item.id(this.newId());
-            item.modified(new Date());
-            NoteRepository.store.push(this.clone(item));
+            note.id = this.newId();
+            note.modified = new Date();
+            NoteRepository.store.push(this.clone(note));
             this.dumpToBackingStore();
             resolve();
         });
     }
     
     private newId(): number {
-        let result: number = NoteRepository.store.reduce((prev: number, curr: Note) => curr.id() > prev ? curr.id() : prev, 0);
+        let result: number = NoteRepository.store.reduce((prev: number, curr: Note) => curr.id > prev ? curr.id : prev, 0);
         return result + 1;
     }
 
-
-    private findById(id: number): { item: Note; index: number } {
-            let result = {
-                index: -1,
-                item: undefined
-            };
-            for(let i = 0; i < NoteRepository.store.length && result.index === -1; i++) {
-                let item = NoteRepository.store[i];
-                if (item.id() == id) {
-                    result.index = i;
-                    result.item = item;
-                }                
-            }
-            return result;
-    }
-    
 }

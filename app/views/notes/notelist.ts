@@ -1,38 +1,50 @@
-import {BaseViewModel} from "base/viewmodel";
+import {BaseViewModel, observe} from "base/viewmodel";
 import {transient, inject, Lazy, useView} from "dependency-injection";
 import {INoteRepository, NoteRepository, Note, ISortOrder} from "services/noterepository";
 import {INoteViewModel, INoteViewModelActivationOptions, NoteViewModel} from "views/_shared/note";
 import {IDialogHelper, DialogHelper} from "dialoghelper";
 
+interface LabeledItem<T> {
+    text: string;
+    value: T;
+}
+
+@observe
 @useView("views/notes/notelist.html")
 @transient
 @inject(NoteRepository, Lazy.of(NoteViewModel), DialogHelper)
 export default class NoteList extends BaseViewModel<void> {
     constructor(
         private noteRepository: INoteRepository,
-        private createNotePartial: () => INoteViewModel,
+        private createNoteViewModel: () => INoteViewModel,
         private dialogHelper: IDialogHelper
     ) {
         super();
     }
-    heading: KnockoutObservable<string> = this.observable<string>();
     
-    noteModels: KnockoutObservableArray<INoteViewModel> = this.observableArray<INoteViewModel>([]);
+    private allowEditing: boolean = false;
+
+    hasUnsavedChanges: boolean = false;
+
+    heading: string;
+
+    noteModels: INoteViewModel[] = [];
+
+    sortPropOptions: LabeledItem<string>[] = [
+        { text: "date", value: "modified" }, 
+        { text: "content", value: "content" }
+    ];
+
+    sortProp: LabeledItem<string> = this.sortPropOptions[0];
+
+    sortDesc: boolean = false;
     
-    sortProp: KnockoutObservable<string> = this.observable<string>();
-    sortDesc: KnockoutObservable<boolean> = this.observable(false);
-    
-    sortBy(propName: string): Promise<void> {
-        let isSameProp = propName === this.sortProp();
-        this.sortProp(propName);
-        if (isSameProp) {
-            this.sortDesc(!this.sortDesc());
-        }
-        return this.loadData();
+    sortChanged() {
+        this.sort();
     }
     
     edit(noteViewModel: INoteViewModel): Promise<any> {
-        location.assign(`#notes/${noteViewModel.note.id()}`);
+        location.assign(`#notes/${noteViewModel.note.id}`);
         return Promise.resolve();
     }
     
@@ -40,9 +52,9 @@ export default class NoteList extends BaseViewModel<void> {
         return this.dialogHelper.confirm("Are you sure you want to delete this note?", "Delete?")
             .then(confirmed => {
                 if (confirmed) {
-                    return this.noteRepository.deleteById(noteViewModel.note.id())
+                    return this.noteRepository.deleteById(noteViewModel.note.id)
                         .then((result) => {
-                            this.noteModels.remove(noteViewModel);
+                            this.noteModels.splice(this.noteModels.indexOf(noteViewModel), 1);
                             return result;
                         });
                     
@@ -52,24 +64,45 @@ export default class NoteList extends BaseViewModel<void> {
             });
     }
     
-    add(): void {
-        location.assign("#notes/-1");
+    add(): Promise<any> {
+        if (this.allowEditing) {
+            let note = this.noteRepository.createNew();
+            let noteModel = this.createNoteViewModel();
+            return noteModel.activate(this.getNotePartialActivationOptions(note)).then(() => {
+                this.noteModels.push(noteModel);
+                this.sort();
+            });
+        } else {
+            location.assign("#notes/-1");
+            return Promise.resolve();
+        }
+    }
+    
+    save(noteViewModel: INoteViewModel): Promise<any> {
+        let promise = noteViewModel.note.id >= 0
+            ? this.noteRepository.update(noteViewModel.note)
+            : this.noteRepository.add(noteViewModel.note);
+
+        return promise.then(() => {
+            this.hasUnsavedChanges = false;
+            this.sort();
+        });
     }
     
     loadData(): Promise<any> {
         return this.getNoteModels()
             .then((noteModels) => {
-                this.noteModels(noteModels);
+                this.noteModels = noteModels;
             });
     }
     
     getNoteModels(): Promise<INoteViewModel[]> {
-        return this.noteRepository.get({ orderBy: { prop: this.sortProp(), desc: this.sortDesc() }})
+        return this.noteRepository.get({ orderBy: { prop: this.sortProp.value, desc: this.sortDesc }})
             .then(notes => {
                 let noteModels: INoteViewModel[] = [];
                 return Promise.all(
                     notes.map(note => {
-                        let notePartial = this.createNotePartial();
+                        let notePartial = this.createNoteViewModel();
                         noteModels.push(notePartial); 
                         return notePartial.activate(this.getNotePartialActivationOptions(note));
                     })
@@ -77,25 +110,47 @@ export default class NoteList extends BaseViewModel<void> {
             });
     }
     
+    private sort() {
+        let prop = this.sortProp.value;
+        let desc = this.sortDesc;
+        
+        let sortFn = (noteModelA: INoteViewModel, noteModelB: INoteViewModel) => {
+            let noteA: Note = noteModelA.note;
+            let noteB: Note = noteModelB.note;
+            let valA: any = noteA[prop];
+            let valB: any = noteB[prop];
+            if (valA instanceof Date && valB instanceof Date) {
+                valA = valA.getTime();
+                valB = valB.getTime();
+            }
+            return valA < valB 
+                ? (desc ? 1 : -1) 
+                : (desc ? -1 : 1);
+        };
+        this.noteModels.sort(sortFn);
+    }
+    
+    
     private getNotePartialActivationOptions(note: Note) {
         return {
             note: note,
-            readonly: true,
+            readonly: !this.allowEditing,
             owner: this,
             handlers: {
-                edit: this.edit,
-                remove: this.remove
+                edit: this.allowEditing ? undefined : this.edit,
+                remove: this.remove,
+                save: this.allowEditing ? this.save : undefined
             }
         };
     }
    
     activate(): Promise<any> {
-        this.heading("Notes");
+        this.heading = "Notes";
         return this.loadData();
     }
     
     deactivate(): Promise<any> {
-        return Promise.all(this.noteModels().map(n => n.deactivate()))
+        return Promise.all(this.noteModels.map(n => n.deactivate()))
             .then(super.deactivate);
     }
 }

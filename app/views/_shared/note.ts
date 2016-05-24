@@ -7,7 +7,7 @@ export interface INoteViewModel extends IViewModel<INoteViewModelActivationOptio
 }
 
 export interface INoteViewModelActivationOptions {
-    note: Note,
+    note: Note;
     owner: IViewModel<any>;
     readonly?: boolean;
     handlers?: INoteViewModelEventHandlers;
@@ -23,7 +23,8 @@ interface INoteViewModelEventHandlers {
 @transient
 export class NoteViewModel extends BaseViewModel<INoteViewModelActivationOptions> {
     note: Note;
-    readonly: KnockoutObservable<boolean> = this.observable(true);
+    readonly: boolean = true;
+    
     edit(): Promise<any> {
         return this.invokeEvent(this.handlers.edit);
     }
@@ -47,7 +48,7 @@ export class NoteViewModel extends BaseViewModel<INoteViewModelActivationOptions
 
     activate(options: INoteViewModelActivationOptions): Promise<any> {
         this.note = options.note;
-        this.readonly(!!options.readonly);
+        this.readonly = !!options.readonly;
         this.owner = options.owner;
         this.handlers = options.handlers || {};
         return Promise.resolve(true);

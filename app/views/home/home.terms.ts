@@ -1,4 +1,4 @@
-import {BaseViewModel, IViewModel, IModalViewModel} from "base/viewmodel";
+import {BaseViewModel, IViewModel, IModalViewModel, computedFrom, observe} from "base/viewmodel";
 import {ITermsPartialModal, TermsPartialModal, ITermsPartialModalOptions, ITermsPartialModalResult} from "views/home/home.terms.concentmodal";
 import {IDialogHelper, DialogHelper} from "dialoghelper";
 import {transient, inject, useView} from "dependency-injection";
@@ -6,6 +6,7 @@ import {transient, inject, useView} from "dependency-injection";
 export interface ITermsPartial extends IViewModel<void> {}
 
 @useView("views/home/home.terms.html")
+@observe
 @transient
 @inject(DialogHelper)
 export class TermsPartial extends BaseViewModel<void> {
@@ -16,28 +17,29 @@ export class TermsPartial extends BaseViewModel<void> {
         super();
     }
     
-    heading: KnockoutObservable<string> = this.observable<string>();
+    heading: string;
     
-    agreed: KnockoutObservable<boolean> = this.observable(false);
+    agreed: boolean = false;
     
-    agreedText: KnockoutComputed<string> = this.computed(this.getAgreedText);
+    @computedFrom<TermsPartial>("agreed")
+    get agreedText(): string {
+        let agreed = this.agreed;
+        return `The user ${agreed ? "HAS" : "has NOT"} agreed to the terms`;
+    };
         
     openDialog(): Promise<any> {
         return this.dialogHelper.showModal<ITermsPartialModalOptions, ITermsPartialModalResult>(
             TermsPartialModal, 
             { text: "Do you agree to the terms?"})
             .then(result => {
-                this.agreed(result.agreed);
+                this.agreed = result.agreed;
             });
     }
     
     activate(): Promise<any> {
-        this.heading("Terms Partial");
+        this.heading = "Terms Partial";
         return Promise.resolve(true);
     }
     
-    private getAgreedText(): string {
-        let agreed = this.agreed();
-        return `The user ${agreed ? "HAS " : "has NOT "}agreed to the terms`;
-    }
+    
 }

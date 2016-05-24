@@ -1,4 +1,4 @@
-import {BaseModalViewModel, IModalViewModel} from "base/viewmodel";
+import {BaseModalViewModel, IModalViewModel, observe} from "base/viewmodel";
 import {IDialogHelper, DialogHelper} from "dialoghelper";
 import {transient, inject, useView} from "dependency-injection";
 
@@ -8,6 +8,7 @@ export interface ITermsPartialModalResult { agreed: boolean; }
 
 export interface ITermsPartialModal extends IModalViewModel<ITermsPartialModalOptions, ITermsPartialModalResult> {}
 
+@observe
 @useView("views/home/home.terms.concentmodal.html")
 @inject(DialogHelper)
 export class TermsPartialModal extends BaseModalViewModel<ITermsPartialModalOptions, ITermsPartialModalResult> {
@@ -18,13 +19,13 @@ export class TermsPartialModal extends BaseModalViewModel<ITermsPartialModalOpti
         super(dialogHelper);
     }
     
-    heading: KnockoutObservable<string> = this.observable<string>();
+    heading: string;
     
-    text: KnockoutObservable<string> = this.observable<string>();
+    text: string;
     
     activate(options: ITermsPartialModalOptions): Promise<any> {
-        this.text(options.text);
-        this.heading("Home Partial Modal")
+        this.text = options.text;
+        this.heading = "Home Partial Modal";
         return Promise.resolve(true);
     }
         

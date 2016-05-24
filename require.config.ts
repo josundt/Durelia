@@ -27,6 +27,13 @@ interface IRequireJsConfig {
 let require: IRequireJsConfig = {
     waitSeconds: 60,
     paths: {
+        "adra-jsutils-array":  "../bower_components/adra-jsutils/dist/amd/adra-jsutils-array",
+        "adra-jsutils-cookie": "../bower_components/adra-jsutils/dist/amd/adra-jsutils-cookie",
+        "adra-jsutils-date":   "../bower_components/adra-jsutils/dist/amd/adra-jsutils-date",
+        "adra-jsutils-json":   "../bower_components/adra-jsutils/dist/amd/adra-jsutils-json",
+        "adra-jsutils-obj":    "../bower_components/adra-jsutils/dist/amd/adra-jsutils-obj",
+        "adra-jsutils-str":    "../bower_components/adra-jsutils/dist/amd/adra-jsutils-str",
+        "adra-jsutils-calc":   "../bower_components/adra-jsutils/dist/amd/adra-jsutils-calc",
         "bluebird": "../bower_components/bluebird/js/browser/bluebird",
         "text": "../bower_components/requirejs-text/text",
         "durandal": "../bower_components/durandal/js",
@@ -34,14 +41,12 @@ let require: IRequireJsConfig = {
         "transitions": "../bower_components/durandal/js/transitions",
         "jquery": "../bower_components/jquery/dist/jquery",
         "knockout": "../bower_components/knockout/dist/knockout.debug",
-        "knockout.mapping": "../bower_components/knockout-mapping/build/output/knockout.mapping-latest",
         "q": "../bower_components/q/q"
     },
     shim: {
         "bluebird": { exports: "Promise" },
         "jquery": { exports: "jQuery" },
         "knockout": { exports: "ko" },
-        "knockout.mapping": ["knockout"],
         "q": { exports: "Q" }
     }
 };

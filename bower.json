@@ -16,16 +16,16 @@
     "tests"
   ],
   "devDependencies": {
-    "Durandal": "durandal#^2.1.0",
+  },
+  "dependencies": {
+    "adra-jsutils": "https://bitbucket.org/adramatch-ondemand/adra-jsutils.git#1.1.9",
     "bluebird": "^3.4.0",
+    "Durandal": "durandal#^2.1.0",
+    "font-awesome": "^4.6.3",
     "jquery": "^2.2.3",
     "knockout": "^3.4.0",
     "q": "1.4.1",
     "requirejs": "^2.2.0",
     "text": "requirejs-text#^2.0.15"
-  },
-  "dependencies": {
-    "font-awesome": "^4.6.3",
-    "knockout-mapping": "^2.4.1"
   }
 }
