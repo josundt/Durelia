@@ -1,4 +1,4 @@
-import {IViewModel, BaseViewModel} from "base/viewmodel";
+import {IViewModel, BaseViewModel} from "app-base-viewmodel";
 import {ITermsPartial, TermsPartial} from "views/home/home.terms";
 import {transient, inject, observe, useView} from "app-framework";
 

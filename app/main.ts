@@ -7,7 +7,7 @@ import * as durandalApp from "durandal/app";
 import * as durandalViewLocator from "durandal/viewLocator";
 import * as durandalBinder from "durandal/binder";
 import * as durandalSystem from "durandal/system";
-import {container, IDependencyInjectionContainer} from "framework/dependency-injection";
+import {container, IDependencyInjectionContainer} from "app-dependency-injection";
 
 // Setting bluebird Promise as global window.Promise polyfill
 

@@ -25,7 +25,7 @@ interface IRequireJsConfig {
 // The file is currently explicitly excluded by the Grunt Task that collects TypeScript sources
 
 let require: IRequireJsConfig = {
-    waitSeconds: 60,
+    waitSeconds: 5,
     paths: {
         "adra-jsutils-array":  "../bower_components/adra-jsutils/dist/amd/adra-jsutils-array",
         "adra-jsutils-cookie": "../bower_components/adra-jsutils/dist/amd/adra-jsutils-cookie",
@@ -34,6 +34,13 @@ let require: IRequireJsConfig = {
         "adra-jsutils-obj":    "../bower_components/adra-jsutils/dist/amd/adra-jsutils-obj",
         "adra-jsutils-str":    "../bower_components/adra-jsutils/dist/amd/adra-jsutils-str",
         "adra-jsutils-calc":   "../bower_components/adra-jsutils/dist/amd/adra-jsutils-calc",
+        "app-base-viewmodel": "../framework/app-base-viewmodel",
+        "app-binding": "../framework/app-binding",
+        "app-dependency-injection": "../framework/app-dependency-injection",
+        "app-dialog": "../framework/app-dialog",
+        "app-framework": "../framework/app-framework",
+        "app-logger": "../framework/app-logger",
+        "app-templating": "../framework/app-templating",
         "bluebird": "../bower_components/bluebird/js/browser/bluebird",
         "text": "../bower_components/requirejs-text/text",
         "durandal": "../bower_components/durandal/js",

@@ -1,6 +1,6 @@
 import * as durandalDialog from "plugins/dialog";
-import {IModalViewModel} from "base/viewmodel";
-import {IDependencyInjectionContainer, inject, container, singleton} from "framework/dependency-injection";
+import {IModalViewModel} from "app-base-viewmodel";
+import {IDependencyInjectionContainer, inject, container, singleton} from "app-dependency-injection";
 
 export interface IDialogOptions<TActivationModel> {
     viewModel: Function | Object;
@@ -9,10 +9,8 @@ export interface IDialogOptions<TActivationModel> {
 
 export interface IDialogService {
     open<TActivationModel, TResultOutput>(options: IDialogOptions<TActivationModel>): Promise<IDialogResult<TResultOutput>>;
-    
     messageBox(message: string, title: string, buttonTexts: string[]): Promise<IDialogResult<string>>;
-    
-    confirm(message: string, title: string): Promise<IDialogResult<boolean>>;
+    confirm(message: string, title: string): Promise<boolean>;
 }
 
 export interface IDialogResult<TResultOutput> {
@@ -29,9 +27,12 @@ export interface IDialogController<TResultOutput> {
 @inject(container)
 export class DialogService implements IDialogService {
     
-    constructor(
-        private container: IDependencyInjectionContainer
-    ) {}
+    constructor(container: IDependencyInjectionContainer) {
+        this.container = container;
+    }
+
+    /** @internal */    
+    private container: IDependencyInjectionContainer;
     
     open<TActivationModel, TResult>(options: IDialogOptions<TActivationModel>): Promise<IDialogResult<TResult>> {
         let vm = this.container.resolve<IModalViewModel<TActivationModel, TResult>>(options.viewModel);
@@ -42,14 +43,9 @@ export class DialogService implements IDialogService {
         return durandalDialog.showMessage(message, title, buttonTexts) as any;
     }
     
-    confirm(message: string, title: string): Promise<IDialogResult<boolean>> {
+    confirm(message: string, title: string): Promise<boolean> {
         return durandalDialog.showMessage(message, title, ["OK", "Cancel"])
-            .then((buttonText) => {
-                return {
-                    wasCancelled: buttonText === "Cancel",
-                    output: buttonText === "OK"
-                }; 
-            }) as any;
+            .then(buttonText => buttonText === "OK") as any;
     }
 }
 

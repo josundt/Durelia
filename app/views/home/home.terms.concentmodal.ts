@@ -1,4 +1,4 @@
-import {BaseModalViewModel, IModalViewModel} from "base/viewmodel";
+import {BaseModalViewModel, IModalViewModel} from "app-base-viewmodel";
 import {IDialogController, DialogController} from "app-dialog";
 import {transient, inject, observe, useView} from "app-framework";
 

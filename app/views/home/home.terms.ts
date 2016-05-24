@@ -1,4 +1,4 @@
-import {BaseViewModel, IViewModel, IModalViewModel} from "base/viewmodel";
+import {BaseViewModel, IViewModel, IModalViewModel} from "app-base-viewmodel";
 import {ITermsPartialModal, TermsPartialModal, ITermsPartialModalModel, ITermsPartialModalOutput} from "views/home/home.terms.concentmodal";
 import {IDialogService, DialogService} from "app-dialog";
 import {transient, inject, computedFrom, observe, useView} from "app-framework";

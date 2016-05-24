@@ -1,7 +1,7 @@
 import * as ko from "knockout";
 import * as durandalObservable from "plugins/observable";
 import {IDialogController} from "app-dialog";
-import {computedRegistryKeyName} from "framework/viewmodeldecorators";
+import {computedRegistryKeyName} from "app-binding";
 
 export interface IViewModel<TActivationOptions> {
     canActivate?(): Promise<boolean>;
@@ -14,7 +14,7 @@ export interface IModalViewModel<TActivationOptions, TDialogResult> extends IVie
 }
 
 export abstract class BaseViewModel<TActivationOptions> implements IViewModel<TActivationOptions> {
-    
+    /** @internal */
     constructor() {
         /* tslint:disable:forin */
         if (this[computedRegistryKeyName]) {
@@ -39,16 +39,13 @@ export abstract class BaseViewModel<TActivationOptions> implements IViewModel<TA
     }
 
     deactivate(): Promise<any> {
-        this._disposables.forEach(d => d.dispose());
         return Promise.resolve();
     }
     
+    /** @internal */
     private binding() {
         return { applyBindings: true, skipConversion: true };
-    }
-    
-    private _disposables: IDisposable[] = [];
-    
+    }    
 }
 
 export abstract class BaseModalViewModel<TActivationModel, TResultOutput> 
@@ -56,10 +53,14 @@ export abstract class BaseModalViewModel<TActivationModel, TResultOutput>
     implements IModalViewModel<TActivationModel, TResultOutput> {
 
     constructor(
-        private dialogController: IDialogController<TResultOutput>
+        dialogController: IDialogController<TResultOutput>
     ) {
         super();
+        this.dialogController = dialogController;
     }
+    
+    /** @internal */
+    private dialogController: IDialogController<TResultOutput>
     
     protected okResult(result: TResultOutput): void {
         this.dialogController.ok(result, this);

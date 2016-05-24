@@ -1,19 +1,26 @@
 import {ILogger, Logger} from "app-logger";
 
-export interface IResolvable {}
+export type IInjectable = Function | {};
 
-export interface IResolvableConstructor {
-    new (...injectables: IResolvable[]): IResolvable;
-    prototype: IResolvable;
-    inject?(): Array<IResolvableConstructor>;
+interface IResolvableInstance {}
+
+interface IResolvableConstructor {
+    new (...injectables: IInjectable[]): IResolvableInstance;
+    prototype: IResolvableInstance;
+    inject?(): Array<IInjectable>;
+    /** @internal */
     __lifetime__?: "singleton" | "transient";
 }
 
 interface IDependencyTreeNode {
     classType: IResolvableConstructor;
-    instance: IResolvable;
+    instance: IResolvableInstance;
     parent: IDependencyTreeNode;
     children: IDependencyTreeNode[];
+}
+
+export interface IDependencyInjectionContainer {
+    resolve<T>(injectable: IInjectable): T;
 }
 
 const lifetimePropName = "__lifetime__";
@@ -25,12 +32,12 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
     ) {}
     
     singletonTypeRegistry: IResolvableConstructor[] = [];
-    singletonInstances: IResolvable[] = [];
+    singletonInstances: IResolvableInstance[] = [];
     
     debug: boolean = true;
 
-    resolve<T>(classType: Function | {}): T {
-        return this.resolveRecursive(classType).instance as T;
+    resolve<T>(injectable: IInjectable): T {
+        return this.resolveRecursive(injectable).instance as T;
     }
     
     private isConstructorFunction(o: any): o is IResolvableConstructor {
@@ -53,10 +60,13 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
         return !!(classType.inject && typeof classType.inject === "function");
     }
     
-    private getInjecteeTypes(classType: IResolvableConstructor): IResolvableConstructor[] {
-        return this.hasInjectionInstructions(classType)
-            ? classType.inject()
-            : [];
+    private getInjectees(classType: IInjectable): IInjectable[] {
+        if (this.isConstructorFunction(classType)) {
+            if (this.hasInjectionInstructions(classType)) {
+                return classType.inject();
+            }
+        }
+        return [];
     }
 
     private isSingleton(classType: IResolvableConstructor): boolean {
@@ -72,27 +82,27 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
         return parts.join("/");
     }
 
-    private resolveRecursive(classOrObject: IResolvableConstructor | {}, parent: IDependencyTreeNode = null): IDependencyTreeNode {
-        if (this.isLazyInjection(classOrObject)) {
-            let lazy = classOrObject;
+    private resolveRecursive(injectable: IInjectable, parent: IDependencyTreeNode = null): IDependencyTreeNode {
+        if (this.isLazyInjection(injectable)) {
+            let lazy = injectable;
             let depNode: IDependencyTreeNode = {
                 parent: parent,
                 classType: lazy.constructor as IResolvableConstructor,
-                instance: lazy["resolver"],
+                instance: lazy.resolver,
                 children: <IDependencyTreeNode[]>[]
             };
             return depNode;
         } 
-        else if (this.isConstructorFunction(classOrObject)) {
-            let classType = classOrObject;
+        else if (this.isConstructorFunction(injectable)) {
+            let classType = injectable;
             
-            let injectees: IResolvableConstructor[] = this.getInjecteeTypes(classType);
+            let injectees: IInjectable[] = this.getInjectees(classType);
             let ctorArgsCount: number = classType.length;
             let className: string = this.getClassName(classType);
             let depNode: IDependencyTreeNode = {
                 parent: parent,
                 classType: classType,
-                instance: <IResolvable>null,
+                instance: <IResolvableInstance>null,
                 children: <IDependencyTreeNode[]>[]
             };
             let dependencyPath = this.getDependencyPath(depNode);
@@ -130,8 +140,8 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
             return depNode;
             
         } 
-        else if (this.isObjectInstance(classOrObject)) {
-            let object = classOrObject;
+        else if (this.isObjectInstance(injectable)) {
+            let object = injectable;
             
             let depNode: IDependencyTreeNode = {
                 classType: object.constructor ? object.constructor as IResolvableConstructor : Object,
@@ -146,7 +156,7 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
             return depNode;
         } 
         else {
-            let neitnerClassNorObject = classOrObject;
+            let neitnerClassNorObject = injectable;
             
             let depNode: IDependencyTreeNode = {
                 classType: neitnerClassNorObject.constructor ? neitnerClassNorObject.constructor as IResolvableConstructor : Object,
@@ -165,7 +175,7 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
 
 export let container: IDependencyInjectionContainer = new DependencyInjectionContainer();
 
-export function inject(...args: Array<Object | Function>) {
+export function inject(...args: Array<IInjectable>) {
     return function (classType: Function) {
         classType["inject"] = () => args;
     };
@@ -179,18 +189,18 @@ export function transient(classType: Function) {
     (classType as IResolvableConstructor).__lifetime__ = "transient";
 }
 
-export interface IDependencyInjectionContainer {
-    resolve<T>(classOrObject: Function | Object): T;
-}
-
-export class Lazy<T> {
+export class Lazy<T extends IInjectable> {
+    
+    /** @internal */
     constructor(classOrObject: IResolvableConstructor | {}, cont: IDependencyInjectionContainer) {
         this.resolver = () => cont.resolve<T>(classOrObject);
     }
-    static of(classOrObject: IResolvableConstructor | {}) {
-        return new Lazy(classOrObject, container);
+    static of<T>(injectable: IInjectable): Lazy<T> {
+        return new Lazy<T>(injectable, container);
     }
-    private resolver: () => T;
+    
+    /** @internal */
+    resolver: () => T;
     
 }
 

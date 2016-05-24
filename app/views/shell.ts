@@ -1,5 +1,5 @@
 import * as durandalRouter from "plugins/router";
-import {BaseViewModel} from "base/viewmodel";
+import {BaseViewModel} from "app-base-viewmodel";
 import {singleton, inject, observe, useView} from "app-framework";
 
 @observe(true)

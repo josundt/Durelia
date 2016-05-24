@@ -1,11 +1,5 @@
 export const computedRegistryKeyName: string = "__computeds__";
 
-export function useView(viewPath: string) {
-    return function (classType: Function) {
-        classType.prototype.getView = () => viewPath;
-    };
-}
-
 export function computedFrom(...dependentProps: string[]) {
     return function(viewmodel: any, key: string, descriptor: PropertyDescriptor) {
         viewmodel[computedRegistryKeyName] = viewmodel[computedRegistryKeyName] || {};

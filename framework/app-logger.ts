@@ -1,4 +1,5 @@
-import {singleton} from "framework/dependency-injection";
+import * as durandalSystem from "durandal/system";
+import {singleton} from "app-dependency-injection";
 
 export interface ILogger {
     debug(message: string, ...properties: any[]);
@@ -7,7 +8,7 @@ export interface ILogger {
     error(message: string, ...properties: any[]);
 } 
 
-export enum SeverityLevel {
+enum SeverityLevel {
     none, 
     error,
     warn,
@@ -18,8 +19,17 @@ export enum SeverityLevel {
 @singleton
 export class Logger implements ILogger {
 
-    severityThreshold: SeverityLevel = SeverityLevel.debug;
+    /** @internal */
+    constructor() {
+        this.severityThreshold = durandalSystem.debug()
+            ? SeverityLevel.debug
+            : SeverityLevel.warn;
+    }
+
+    /** @internal */
+    private severityThreshold: SeverityLevel = SeverityLevel.debug;
     
+    /** @internal */
     private log(message: string, severityLevel: SeverityLevel = SeverityLevel.debug, ...properties: any[]) {
         if (severityLevel >= this.severityThreshold) {
             /* tslint:disable:no-console */

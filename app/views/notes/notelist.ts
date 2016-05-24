@@ -1,4 +1,4 @@
-import {BaseViewModel} from "base/viewmodel";
+import {BaseViewModel} from "app-base-viewmodel";
 import {transient, inject, Lazy, observe, useView} from "app-framework";
 import {INoteRepository, NoteRepository, Note, ISortOrder} from "services/noterepository";
 import {INoteViewModel, INoteViewModelActivationOptions, NoteViewModel} from "views/_shared/note";
