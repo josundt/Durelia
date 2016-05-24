@@ -2,27 +2,27 @@ import * as durandalDialog from "plugins/dialog";
 import {IModalViewModel} from "base/viewmodel";
 import {IDependencyInjectionContainer, inject, container, singleton} from "framework/dependency-injection";
 
-export interface IDialogOptions<TModel> {
+export interface IDialogOptions<TActivationModel> {
     viewModel: Function | Object;
-    model: TModel;
+    model: TActivationModel;
 }
 
 export interface IDialogService {
-    open<TModel, TResult>(options: IDialogOptions<TModel>): Promise<IDialogResult<TResult>>;
+    open<TActivationModel, TResultOutput>(options: IDialogOptions<TActivationModel>): Promise<IDialogResult<TResultOutput>>;
     
     messageBox(message: string, title: string, buttonTexts: string[]): Promise<IDialogResult<string>>;
     
     confirm(message: string, title: string): Promise<IDialogResult<boolean>>;
 }
 
-export interface IDialogResult<TResult> {
+export interface IDialogResult<TResultOutput> {
     wasCancelled: boolean;
-    output: TResult;
+    output: TResultOutput;
 }
 
-export interface IDialogController<TResult> {
-    ok(result: TResult, viewModel: IModalViewModel<any, TResult>);
-    cancel(result: TResult, viewModel: IModalViewModel<any, TResult>);
+export interface IDialogController<TResultOutput> {
+    ok(result: TResultOutput, viewModel: IModalViewModel<any, TResultOutput>);
+    cancel(result: TResultOutput, viewModel: IModalViewModel<any, TResultOutput>);
 }
 
 @singleton
@@ -33,8 +33,8 @@ export class DialogService implements IDialogService {
         private container: IDependencyInjectionContainer
     ) {}
     
-    open<TModel, TResult>(options: IDialogOptions<TModel>): Promise<IDialogResult<TResult>> {
-        let vm = this.container.resolve<IModalViewModel<TModel, TResult>>(options.viewModel);
+    open<TActivationModel, TResult>(options: IDialogOptions<TActivationModel>): Promise<IDialogResult<TResult>> {
+        let vm = this.container.resolve<IModalViewModel<TActivationModel, TResult>>(options.viewModel);
         return durandalDialog.show(vm, options.model) as any;
     }
     
@@ -47,18 +47,26 @@ export class DialogService implements IDialogService {
             .then((buttonText) => {
                 return {
                     wasCancelled: buttonText === "Cancel",
-                    output: buttonText === "Cancel"
-                } 
-            })as any;
+                    output: buttonText === "OK"
+                }; 
+            }) as any;
     }
 }
 
-export class DialogController<TResult> implements IDialogController<TResult> {
-    ok(result: TResult, viewModel: IModalViewModel<any, TResult>) {
-        return durandalDialog.close(viewModel, { wasCancelled: false, result});
+export class DialogController<TResultOutput> implements IDialogController<TResultOutput> {
+    ok(result: TResultOutput, viewModel: IModalViewModel<any, TResultOutput>) {
+        let dialogResult: IDialogResult<TResultOutput> = { 
+            wasCancelled: false,
+            output: result 
+        };
+        return durandalDialog.close(viewModel, dialogResult);
     }
 
-    cancel(result: TResult, viewModel: IModalViewModel<any, TResult>) {
-        return durandalDialog.close(viewModel, { wasCancelled: true, result});
+    cancel(result: TResultOutput, viewModel: IModalViewModel<any, TResultOutput>) {
+        let dialogResult: IDialogResult<TResultOutput> = { 
+            wasCancelled: false,
+            output: result 
+        };
+        return durandalDialog.close(viewModel, { wasCancelled: true, output: result });
     }
 }

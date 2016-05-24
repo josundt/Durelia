@@ -51,22 +51,22 @@ export abstract class BaseViewModel<TActivationOptions> implements IViewModel<TA
     
 }
 
-export abstract class BaseModalViewModel<TActivationOptions, TDialogResult> 
-    extends BaseViewModel<TActivationOptions> 
-    implements IModalViewModel<TActivationOptions, TDialogResult> {
+export abstract class BaseModalViewModel<TActivationModel, TResultOutput> 
+    extends BaseViewModel<TActivationModel> 
+    implements IModalViewModel<TActivationModel, TResultOutput> {
 
     constructor(
-        private dialogController: IDialogController<TDialogResult>
+        private dialogController: IDialogController<TResultOutput>
     ) {
         super();
     }
     
-    protected ok(result: TDialogResult): void {
+    protected okResult(result: TResultOutput): void {
         this.dialogController.ok(result, this);
     }
 
-    protected cancel(result: TDialogResult): void {
-        this.dialogController.ok(result, this);
+    protected cancelResult(result: TResultOutput): void {
+        this.dialogController.cancel(result, this);
     }
 
 }

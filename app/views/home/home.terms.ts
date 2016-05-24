@@ -1,5 +1,5 @@
 import {BaseViewModel, IViewModel, IModalViewModel} from "base/viewmodel";
-import {ITermsPartialModal, TermsPartialModal, ITermsPartialModalModel, ITermsPartialModalResult} from "views/home/home.terms.concentmodal";
+import {ITermsPartialModal, TermsPartialModal, ITermsPartialModalModel, ITermsPartialModalOutput} from "views/home/home.terms.concentmodal";
 import {IDialogService, DialogService} from "app-dialog";
 import {transient, inject, computedFrom, observe, useView} from "app-framework";
 
@@ -29,11 +29,13 @@ export class TermsPartial extends BaseViewModel<void> {
         
     openDialog(): Promise<any> {
         let model: ITermsPartialModalModel = { text: "Do you agree to the terms?" };
-        return this.dialogService.open<ITermsPartialModalModel, ITermsPartialModalResult>({
+        return this.dialogService.open<ITermsPartialModalModel, ITermsPartialModalOutput>({
             viewModel: TermsPartialModal, 
             model: model
         }).then(result => {
-            this.agreed = result.output.agreed;
+            if (!result.wasCancelled) {
+                this.agreed = result.output.agreed;
+            }
         });
     }
     

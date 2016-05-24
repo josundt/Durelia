@@ -4,17 +4,17 @@ import {transient, inject, observe, useView} from "app-framework";
 
 export interface ITermsPartialModalModel { text: string; }
 
-export interface ITermsPartialModalResult { agreed: boolean; }
+export interface ITermsPartialModalOutput { agreed: boolean; }
 
-export interface ITermsPartialModal extends IModalViewModel<ITermsPartialModalModel, ITermsPartialModalResult> {}
+export interface ITermsPartialModal extends IModalViewModel<ITermsPartialModalModel, ITermsPartialModalOutput> {}
 
 @observe(true)
 @useView("views/home/home.terms.concentmodal.html")
 @inject(DialogController)
-export class TermsPartialModal extends BaseModalViewModel<ITermsPartialModalModel, ITermsPartialModalResult> {
+export class TermsPartialModal extends BaseModalViewModel<ITermsPartialModalModel, ITermsPartialModalOutput> {
     
     constructor(
-        dialogController: IDialogController<ITermsPartialModalResult>
+        dialogController: IDialogController<ITermsPartialModalOutput>
     ) {
         super(dialogController);
     }
@@ -30,10 +30,15 @@ export class TermsPartialModal extends BaseModalViewModel<ITermsPartialModalMode
     }
         
     agree(): void {
-        this.ok({ agreed: true });
+        this.okResult({ agreed: true });
     }
     
     disagree(): void {
-        this.cancel({ agreed: false });
+        this.okResult({ agreed: false });
     }
+    
+    cancel(): void {
+        this.cancelResult(null);
+    }
+    
 }
