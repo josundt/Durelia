@@ -1,11 +1,26 @@
 import * as durandalObservable from "plugins/observable";
 
-export const observeDecoratorKeyName = "__observeDecorated__";
+export const observeDecoratorKeyName: string = "__observeDecorated__";
+const appliedComputedsKeyName = "__observeApplied__";
 
 export function computedFrom(...dependentProps: string[]) {
     return function(viewmodel: any, key: string, descriptor: PropertyDescriptor) {
-        let computedDef: KnockoutComputedDefine<any> = { read: descriptor.get, write: descriptor.set, owner: viewmodel.constructor.prototype };
-        viewmodel.constructor.prototype["key"] = durandalObservable.defineProperty<any>(viewmodel.constructor.prototype, key, computedDef);
+        
+        let origCtor = viewmodel.constructor;
+        
+        viewmodel.constructor = function(...args: any[]) {
+            let target = this;
+            let computedDef: KnockoutComputedDefine<any> = { 
+                read: descriptor.get, 
+                write: descriptor.set || function(v: any) {}, 
+                owner: target 
+            };
+        
+            delete target[key];
+            target[key] = durandalObservable.defineProperty<any>(target, key, computedDef);
+            
+            origCtor(...args);                
+        };
     };
 }
 
