@@ -23,14 +23,9 @@ enum SeverityLevel {
 export class Logger implements ILogger {
 
     /** @internal */
-    constructor() {
-        this.severityThreshold = durandalSystem.debug()
-            ? SeverityLevel.debug
-            : SeverityLevel.warn;
+    private get severityThreshold(): SeverityLevel {
+        return durandalSystem.debug() ? SeverityLevel.debug : SeverityLevel.warn;
     }
-
-    /** @internal */
-    private severityThreshold: SeverityLevel = SeverityLevel.debug;
     
     /** @internal */
     private log(severityLevel: SeverityLevel = SeverityLevel.debug, appender: ILogger, appenderFn: LogAppender, message: string,  ...properties: any[]) {

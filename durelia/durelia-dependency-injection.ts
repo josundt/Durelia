@@ -151,7 +151,7 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
             };
 
             let dependencyPath = this.getDependencyPath(depNode);
-            this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} resolved. Object instance injected, not a class. Returning instance.`, object);
+            this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} resolved. Object instance injected (not a class). Returning instance.`, object);
             
             return depNode;
         } 

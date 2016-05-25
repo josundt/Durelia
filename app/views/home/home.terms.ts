@@ -42,5 +42,9 @@ export class TermsPartial implements IViewModel<void> {
         return Promise.resolve(true);
     }
     
+    deactivate(): Promise<any> {
+        return Promise.resolve();
+    }
+    
     
 }

@@ -51,6 +51,10 @@ export class NoteViewModel implements INoteViewModel {
         this.readonly = !!options.readonly;
         this.owner = options.owner;
         this.handlers = options.handlers || {};
-        return Promise.resolve(true);
+        return Promise.resolve();
+    }
+    
+    deactivate(): Promise<any> {
+        return Promise.resolve();
     }
 }

@@ -64,7 +64,7 @@ class DureliaBootstrapper {
         
         let logMsg = "Durelia Boostrapper: Enabling ES2015 Promise for Durandal";
         if (promisePolyfill) {
-            logMsg += ` using specified polyfill`;
+            logMsg += ` using specified polyfill.`;
         } else {
             logMsg += ", expecting existing browser support or polyfill.";
         }
@@ -120,6 +120,8 @@ class DureliaBootstrapper {
         if (!this.isObservablePluginInstalled) {
             this.logger.error("Durelia Bootstrapper: Durandal observable plugin is not installed. Cannot enable observe decorator.");
         } else {
+            this.logger.debug("Durelia Bootstrapper: Enabling observe decorator to use the Durandal observable plugin on a per-viewmodel basis.");
+            
             durandalBinder.binding = function(obj, view, instruction) {
                 
                 let hasObserveDecorator = !!(obj && obj.constructor && obj.constructor[observeDecoratorKeyName]);
@@ -144,6 +146,8 @@ class DureliaBootstrapper {
     }
     
     useRouterModelActivation(): this {
+        this.logger.debug("Durelia Bootstrapper: Enabling router model activation (invoking viewmodel activate methods with a single object literal arg instead of multiple string args).");
+        
         let test = durandalRouter;
         durandalRouter.on("router:route:activating").then((viewmodel: any, instruction: DurandalRouteInstruction, router: DurandalRouter) => {
             let routeParamProperties = instruction.config.routePattern.exec(<string>instruction.config.route).splice(1);
