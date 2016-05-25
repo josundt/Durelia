@@ -1,4 +1,4 @@
-import {singleton} from "app-framework";
+import {singleton} from "durelia-framework";
 import json from "adra-jsutils-json";
 import array from "adra-jsutils-array";
 import obj from "adra-jsutils-obj";

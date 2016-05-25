@@ -1,4 +1,4 @@
-import {ILogger, Logger} from "app-logger";
+import {ILogger, Logger} from "durelia-logger";
 
 export type IInjectable = Function | {};
 
@@ -108,7 +108,7 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
             let dependencyPath = this.getDependencyPath(depNode);
 
             if (injectees.length !== ctorArgsCount) {
-                let msg = `DependecyResolver: ${dependencyPath} FAILED. Injection argument vs constructor parameters count mismatch.`;
+                let msg = `Durelia DependencyResolver: ${dependencyPath} FAILED. Injection argument vs constructor parameters count mismatch.`;
                 this.logger.error(msg);
                 throw new Error(msg);            
             }
@@ -123,18 +123,18 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
                 let idx = this.singletonTypeRegistry.indexOf(classType);
                 if (idx >= 0) {
                     depNode.instance = this.singletonInstances[idx];
-                    this.logger.debug(`DependecyResolver: ${dependencyPath} (singleton) resolved: Returned existing instance.`);
+                    this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} (singleton) resolved: Returned existing instance.`);
                 } 
                 else {
                     depNode.instance = new classType(...ctorInjectionArgs);
                     this.singletonTypeRegistry.push(classType);
                     this.singletonInstances.push(depNode.instance);
-                    this.logger.debug(`DependecyResolver: ${dependencyPath} (singleton) resolved: Created new instance.`);
+                    this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} (singleton) resolved: Created new instance.`);
                 }
             } 
             else {
                 depNode.instance = new classType(...ctorInjectionArgs);            
-                this.logger.debug(`DependecyResolver: ${dependencyPath} (transient) resolved: Created new instance.`);
+                this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} (transient) resolved: Created new instance.`);
             }
             
             return depNode;
@@ -151,7 +151,7 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
             };
 
             let dependencyPath = this.getDependencyPath(depNode);
-            this.logger.debug(`DependecyResolver: ${dependencyPath} resolved. Object instance injected, not a class. Returning instance.`, object);
+            this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} resolved. Object instance injected, not a class. Returning instance.`, object);
             
             return depNode;
         } 
@@ -165,7 +165,7 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
                 children: []
             };
             let dependencyPath = this.getDependencyPath(depNode);
-            let msg = `DependecyResolver: ${dependencyPath} FAILED. Not an object or constructor function.`;
+            let msg = `Durelia DependencyResolver: ${dependencyPath} FAILED. Not an object or constructor function.`;
             this.logger.error(msg, neitnerClassNorObject);
             throw new Error(msg);
         }

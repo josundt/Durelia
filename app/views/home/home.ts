@@ -1,18 +1,16 @@
-import {IViewModel, BaseViewModel} from "app-base-viewmodel";
+import {IViewModel} from "durelia-viewmodel";
 import {ITermsPartial, TermsPartial} from "views/home/home.terms";
-import {transient, inject, observe, useView} from "app-framework";
+import {transient, inject, observe, useView} from "durelia-framework";
 
 @observe(true)
 @useView("views/home/home.html")
 @transient
 @inject(TermsPartial)
-export default class Home extends BaseViewModel<void> {
+export default class Home implements IViewModel<void> {
         
     constructor(
         public termsPartial: ITermsPartial
-    ) {
-        super();
-    }
+    ) {}
     
     heading: string;
     
@@ -22,6 +20,6 @@ export default class Home extends BaseViewModel<void> {
     }
 
     deactivate(): Promise<any> {
-        return this.termsPartial.deactivate().then(() => super.deactivate());
+        return this.termsPartial.deactivate();
     }
 }

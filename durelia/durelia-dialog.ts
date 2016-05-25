@@ -1,6 +1,6 @@
 import * as durandalDialog from "plugins/dialog";
-import {IModalViewModel} from "app-base-viewmodel";
-import {IDependencyInjectionContainer, inject, container, singleton} from "app-dependency-injection";
+import {IDialogViewModel} from "durelia-viewmodel";
+import {IDependencyInjectionContainer, inject, container, singleton} from "durelia-dependency-injection";
 
 export interface IDialogOptions<TActivationModel> {
     viewModel: Function | Object;
@@ -19,8 +19,8 @@ export interface IDialogResult<TResultOutput> {
 }
 
 export interface IDialogController<TResultOutput> {
-    ok(result: TResultOutput, viewModel: IModalViewModel<any, TResultOutput>);
-    cancel(result: TResultOutput, viewModel: IModalViewModel<any, TResultOutput>);
+    ok(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>);
+    cancel(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>);
 }
 
 @singleton
@@ -35,7 +35,7 @@ export class DialogService implements IDialogService {
     private container: IDependencyInjectionContainer;
     
     open<TActivationModel, TResult>(options: IDialogOptions<TActivationModel>): Promise<IDialogResult<TResult>> {
-        let vm = this.container.resolve<IModalViewModel<TActivationModel, TResult>>(options.viewModel);
+        let vm = this.container.resolve<IDialogViewModel<TActivationModel, TResult>>(options.viewModel);
         return durandalDialog.show(vm, options.model) as any;
     }
     
@@ -50,7 +50,7 @@ export class DialogService implements IDialogService {
 }
 
 export class DialogController<TResultOutput> implements IDialogController<TResultOutput> {
-    ok(result: TResultOutput, viewModel: IModalViewModel<any, TResultOutput>) {
+    ok(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>) {
         let dialogResult: IDialogResult<TResultOutput> = { 
             wasCancelled: false,
             output: result 
@@ -58,7 +58,7 @@ export class DialogController<TResultOutput> implements IDialogController<TResul
         return durandalDialog.close(viewModel, dialogResult);
     }
 
-    cancel(result: TResultOutput, viewModel: IModalViewModel<any, TResultOutput>) {
+    cancel(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>) {
         let dialogResult: IDialogResult<TResultOutput> = { 
             wasCancelled: false,
             output: result 

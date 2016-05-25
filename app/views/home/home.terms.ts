@@ -1,7 +1,7 @@
-import {BaseViewModel, IViewModel, IModalViewModel} from "app-base-viewmodel";
+import {IViewModel, IDialogViewModel} from "durelia-viewmodel";
 import {ITermsPartialModal, TermsPartialModal, ITermsPartialModalModel, ITermsPartialModalOutput} from "views/home/home.terms.concentmodal";
-import {IDialogService, DialogService} from "app-dialog";
-import {transient, inject, computedFrom, observe, useView} from "app-framework";
+import {IDialogService, DialogService} from "durelia-dialog";
+import {transient, inject, computedFrom, observe, useView} from "durelia-framework";
 
 export interface ITermsPartial extends IViewModel<void> {}
 
@@ -9,13 +9,11 @@ export interface ITermsPartial extends IViewModel<void> {}
 @observe(true)
 @transient
 @inject(DialogService)
-export class TermsPartial extends BaseViewModel<void> {
+export class TermsPartial implements IViewModel<void> {
     
     constructor(
         private dialogService: IDialogService
-    ) {
-        super();
-    }
+    ) {}
     
     heading: string;
     

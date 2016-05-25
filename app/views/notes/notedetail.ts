@@ -1,22 +1,20 @@
-import {BaseViewModel} from "app-base-viewmodel";
+import {IViewModel} from "durelia-viewmodel";
 import {INoteRepository, NoteRepository, Note} from "services/noterepository";
-import {transient, inject, Lazy, observe, useView} from "app-framework";
+import {transient, inject, Lazy, observe, useView} from "durelia-framework";
 import {INoteViewModel, INoteViewModelActivationOptions, NoteViewModel} from "views/_shared/note";
-import {IDialogService, DialogService} from "app-dialog";
+import {IDialogService, DialogService} from "durelia-dialog";
 
 
 @useView("views/notes/notedetail.html")
 @observe(true)
 @transient
 @inject(NoteRepository, NoteViewModel, DialogService)
-export default class NoteDetail extends BaseViewModel<string> {
+export default class NoteDetail implements IViewModel<string> {
     constructor(
         private noteRepository: INoteRepository,
         public noteModel: INoteViewModel,
         private dialogService: IDialogService
-    ) {
-        super();
-    }
+    ) {}
 
     heading: string;
     hasUnsavedChanges: boolean = false;

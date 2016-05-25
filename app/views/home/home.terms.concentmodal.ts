@@ -1,23 +1,21 @@
-import {BaseModalViewModel, IModalViewModel} from "app-base-viewmodel";
-import {IDialogController, DialogController} from "app-dialog";
-import {transient, inject, observe, useView} from "app-framework";
+import {IDialogViewModel} from "durelia-viewmodel";
+import {IDialogController, DialogController} from "durelia-dialog";
+import {transient, inject, observe, useView} from "durelia-framework";
 
 export interface ITermsPartialModalModel { text: string; }
 
 export interface ITermsPartialModalOutput { agreed: boolean; }
 
-export interface ITermsPartialModal extends IModalViewModel<ITermsPartialModalModel, ITermsPartialModalOutput> {}
+export interface ITermsPartialModal extends IDialogViewModel<ITermsPartialModalModel, ITermsPartialModalOutput> {}
 
 @observe(true)
 @useView("views/home/home.terms.concentmodal.html")
 @inject(DialogController)
-export class TermsPartialModal extends BaseModalViewModel<ITermsPartialModalModel, ITermsPartialModalOutput> {
+export class TermsPartialModal implements IDialogViewModel<ITermsPartialModalModel, ITermsPartialModalOutput> {
     
     constructor(
-        dialogController: IDialogController<ITermsPartialModalOutput>
-    ) {
-        super(dialogController);
-    }
+        private controller: IDialogController<ITermsPartialModalOutput>
+    ) {}
     
     heading: string;
     
@@ -30,15 +28,15 @@ export class TermsPartialModal extends BaseModalViewModel<ITermsPartialModalMode
     }
         
     agree(): void {
-        this.okResult({ agreed: true });
+        this.controller.ok({ agreed: true }, this);
     }
     
     disagree(): void {
-        this.okResult({ agreed: false });
+        this.controller.ok({ agreed: false }, this);
     }
     
     cancel(): void {
-        this.cancelResult(null);
+        this.controller.cancel(null, this);
     }
     
 }

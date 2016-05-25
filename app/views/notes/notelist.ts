@@ -1,8 +1,8 @@
-import {BaseViewModel} from "app-base-viewmodel";
-import {transient, inject, Lazy, observe, useView} from "app-framework";
+import {IViewModel} from "durelia-viewmodel";
+import {transient, inject, Lazy, observe, useView} from "durelia-framework";
 import {INoteRepository, NoteRepository, Note, ISortOrder} from "services/noterepository";
 import {INoteViewModel, INoteViewModelActivationOptions, NoteViewModel} from "views/_shared/note";
-import {IDialogService, DialogService} from "app-dialog";
+import {IDialogService, DialogService} from "durelia-dialog";
 
 interface LabeledItem<T> {
     text: string;
@@ -13,14 +13,12 @@ interface LabeledItem<T> {
 @useView("views/notes/notelist.html")
 @transient
 @inject(NoteRepository, Lazy.of(NoteViewModel), DialogService)
-export default class NoteList extends BaseViewModel<void> {
+export default class NoteList implements IViewModel<void> {
     constructor(
         private noteRepository: INoteRepository,
         private createNoteViewModel: () => INoteViewModel,
         private dialogService: IDialogService
-    ) {
-        super();
-    }
+    ) {}
     
     private allowEditing: boolean = false;
 
@@ -150,7 +148,6 @@ export default class NoteList extends BaseViewModel<void> {
     }
     
     deactivate(): Promise<any> {
-        return Promise.all(this.noteModels.map(n => n.deactivate()))
-            .then(super.deactivate);
+        return Promise.all(this.noteModels.map(n => n.deactivate()));
     }
 }

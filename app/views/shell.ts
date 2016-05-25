@@ -1,18 +1,16 @@
 import * as durandalRouter from "plugins/router";
-import {BaseViewModel} from "app-base-viewmodel";
-import {singleton, inject, observe, useView} from "app-framework";
+import {IViewModel} from "durelia-viewmodel";
+import {singleton, inject, observe, useView} from "durelia-framework";
 
 @observe(true)
 @useView("views/shell.html")
 @singleton
 @inject(durandalRouter)
-export default class Shell extends BaseViewModel<void> {
+export default class Shell implements IViewModel<void> {
     
     constructor(
         public router: DurandalRootRouter
-    ) {
-        super();
-    }
+    ) {}
     
     heading: string;
 

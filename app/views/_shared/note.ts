@@ -1,6 +1,6 @@
-import {IViewModel, BaseViewModel} from "app-base-viewmodel";
 import {Note} from "services/noterepository";
-import {transient} from "app-framework";
+import {transient} from "durelia-framework";
+import {IViewModel} from "durelia-viewmodel";
 
 export interface INoteViewModel extends IViewModel<INoteViewModelActivationOptions> {
     note: Note;
@@ -21,7 +21,7 @@ interface INoteViewModelEventHandlers {
 }
 
 @transient
-export class NoteViewModel extends BaseViewModel<INoteViewModelActivationOptions> {
+export class NoteViewModel implements INoteViewModel {
     note: Note;
     readonly: boolean = true;
     
