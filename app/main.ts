@@ -19,11 +19,8 @@ binder.throwOnErrors = true;
 
 app.configurePlugins({
     router: true,
-    //dialog: true,
-    observable: true,
-    widget: {
-        kinds: ["expander"]
-    }
+    dialog: true,
+    observable: true
 });
 
 app.start().then((result) => {
@@ -34,8 +31,8 @@ app.start().then((result) => {
     dureliaBootstrapper
         .useES20015Promise(Q.Promise)
         .useViewModelDefaultExports()
-        .useObserveDecorator();
+        .useObserveDecorator()
+        .useRouterModelActivation();
 
-    
     app.setRoot("views/shell", "entrance");
 });

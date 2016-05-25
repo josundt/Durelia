@@ -2,6 +2,7 @@ import * as durandalSystem from "durandal/system";
 import * as durandalApp from "durandal/app";
 import * as durandalBinder from "durandal/binder";
 import * as durandalObservable from "plugins/observable";
+import * as durandalRouter from "plugins/router";
 import {IDependencyInjectionContainer, container} from "durelia-dependency-injection";
 import {ILogger, Logger} from "durelia-logger";
 import {observeDecoratorKeyName} from "durelia-binding";
@@ -10,7 +11,7 @@ interface IDureliaBootstrapper {
     /** Configures Durandal to use ES2015 Promise instead of JQueryDeferred/JQueryPromise.
      * @param {PromiseConstructorLike} promisePolyfill. Optional; if specified the object will used by the browser as global Promise polyfill.
      * @returns {this} Returns this instance to enable chaining. 
-     */
+    */
     useES20015Promise(promisePolyfill?: PromiseConstructorLike): this;
     /** Configures Durandal to use the observable plugin, but only for viewmodel classes decorated with the @observe decorator.  
      * @returns {this} Returns this instance to enable chaining. 
@@ -20,10 +21,17 @@ interface IDureliaBootstrapper {
      * @returns {this} Returns this instance to enable chaining. 
     */
     useViewModelDefaultExports(): this;
+    /** Configures the router to activate viewmodels using a single activation object instead of an array of strings
+     * The route /items/:categoryId/:itemId using url /items/1/2 would normally call activate like this: activate("1", "2").
+     * With model activation enabled it will call activate like this: activate({ categoryId: 1, itemId: 2 }).
+     * @returns {this} Returns this instance to enable chaining. 
+    */
+    useRouterModelActivation(): this;
     
 }
 
 let originalBinderBindingMethod = durandalBinder.binding;
+let originalRouterActivateRouteMethod = durandalRouter["activateRoute"];
 
 class DureliaBootstrapper {
     constructor(
@@ -132,6 +140,35 @@ class DureliaBootstrapper {
             // shouldIgnorePropertyName = options.shouldIgnorePropertyName || defaultShouldIgnorePropertyName;
                 
         }
+        return this;
+    }
+    
+    useRouterModelActivation(): this {
+        let test = durandalRouter;
+        durandalRouter.on("router:route:activating").then((viewmodel: any, instruction: DurandalRouteInstruction, router: DurandalRouter) => {
+            let routeParamProperties = instruction.config.routePattern.exec(<string>instruction.config.route).splice(1);
+            let routeParamValues = instruction.config.routePattern.exec(instruction.fragment).splice(1);
+            let routeParams: { [routeParam: string]: string | number } = undefined;
+            if (routeParamProperties.length && routeParamValues.length) {
+                if (routeParamProperties.length === routeParamValues.length) {
+                    routeParams = {};
+                    for (let i = 0; i < routeParamProperties.length; i++) {
+                        let prop = routeParamProperties[i].replace(/[\(\)\:]/, "");
+                        let numValue = parseInt(routeParamValues[i], 10);
+                        let value: string | number = isNaN(numValue)
+                            ? routeParamValues[i]
+                            : numValue;
+                        
+                        routeParams[prop] = value;
+                    }
+                } else {
+                    //log warning
+                }
+            }
+            instruction.params.splice(0);
+            instruction.params.push(routeParams);
+            
+        });
         return this;
     }
     

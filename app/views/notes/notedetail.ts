@@ -5,11 +5,15 @@ import {INoteViewModel, INoteViewModelActivationOptions, NoteViewModel} from "vi
 import {IDialogService, DialogService} from "durelia-dialog";
 
 
+interface INoteDetailActivationModel {
+    id: number;
+}
+
 @useView("views/notes/notedetail.html")
 @observe(true)
 @transient
 @inject(NoteRepository, NoteViewModel, DialogService)
-export default class NoteDetail implements IViewModel<string> {
+export default class NoteDetail implements IViewModel<INoteDetailActivationModel> {
     constructor(
         private noteRepository: INoteRepository,
         public noteModel: INoteViewModel,
@@ -73,17 +77,16 @@ export default class NoteDetail implements IViewModel<string> {
         };
     }
 
-    activate(strId: string): Promise<any> {
-        let id = parseInt(strId, 10);
+    activate(model: INoteDetailActivationModel): Promise<any> {
         let note: Note;
         let notePromise: Promise<Note>;
-        if (id < 0) {
+        if (model.id < 0) {
             this.heading = "New note";
             this.hasUnsavedChanges = true;
             notePromise = Promise.resolve(this.noteRepository.createNew());
         } else {
             this.heading = "Edit note";
-            notePromise = this.noteRepository.getById(id);
+            notePromise = this.noteRepository.getById(model.id);
         }
         return notePromise.then((n: Note) => {
             //this.createSubscription(n.content, this.onNoteContentChange);

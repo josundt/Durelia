@@ -1,5 +1,5 @@
 export interface IViewModel<TActivationOptions> {
-    canActivate?(): Promise<boolean>;
+    canActivate?(options?: TActivationOptions): Promise<boolean>;
     activate?(options?: TActivationOptions): Promise<any>;
     canDeactivate?(): Promise<boolean>;
     deactivate?(): Promise<any>;
