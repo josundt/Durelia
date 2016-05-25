@@ -1,5 +1,5 @@
 {
-  "name": "durandalTest",
+  "name": "Durelia",
   "authors": [
     "Jørn Andre Sundt <jorn.andre.sundt@jasmin.no>"
   ],
@@ -27,5 +27,10 @@
     "q": "1.4.1",
     "requirejs": "^2.2.0",
     "text": "requirejs-text#^2.0.15"
+  },
+  "resolutions": {
+    "jquery": "^2.2.3",
+    "requirejs": "^2.2.0",
+    "requirejs-text": "^2.0.15"
   }
 }

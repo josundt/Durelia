@@ -1,7 +1,7 @@
 /* tslint:disable:class-name */
 
 import * as Q from "q";
-//import * as bluebirdPromise from "bluebird";
+import * as bluebirdPromise from "bluebird";
 
 import * as app from "durandal/app";
 import * as viewLocator from "durandal/viewLocator";
@@ -29,7 +29,7 @@ app.start().then((result) => {
 
     // BOOTSTRAPPING THE DURELIA EXTENSION //
     dureliaBootstrapper
-        .useES20015Promise(Q.Promise)
+        .useES20015Promise(Q.Promise)//(<any>bluebirdPromise as PromiseConstructorLike)
         .useViewModelDefaultExports()
         .useObserveDecorator()
         .useRouterModelActivation();

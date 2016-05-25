@@ -1,6 +1,6 @@
 <div class="navigation-menu">
     <ul data-bind="foreach: router.navigationModel">
-        <li><a data-bind="attr: { href: hash }, text: title"></a></li>
+        <li><a class="button" data-bind="attr: { href: hash }, text: title, css: { active: isActive }"></a></li>
     </ul>
 </div>
 <div class="main-content">

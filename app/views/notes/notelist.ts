@@ -37,6 +37,19 @@ export default class NoteList implements IViewModel<void> {
 
     sortDesc: boolean = false;
     
+    toggleSortProp() {
+        let curIdx = this.sortPropOptions.indexOf(this.sortProp);
+        this.sortProp = (curIdx === this.sortPropOptions.length - 1)
+            ? this.sortPropOptions[0]
+            : this.sortPropOptions[curIdx + 1];
+        this.sort();
+    }
+    
+    toggleSortDirection() {
+        this.sortDesc = !this.sortDesc;
+        this.sort();
+    }
+    
     sortChanged() {
         this.sort();
     }

@@ -12,13 +12,33 @@ h1, h2 {
     text-shadow: 2px 2px 0px #eee, 3px 3px 0px #707070;
 }
 
-input[type='button'], button {
+input[type='button'], button, a.button {
+    display: inline-block;
     cursor: pointer;
+    text-decoration: none;
     padding: 5px 10px;
     border: 1px solid #999;
     border-radius: 5px;
     background-image: radial-gradient(#FFF 25%, #EEE 60%, #DDD 90%);
     box-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+    outline: none;
+}
+
+input[type='button']:focus, 
+button:focus,
+a.button:focus {
+    background-image: radial-gradient(#FFF 25%, #eef9ee 60%, #ccddcc 90%);
+}
+
+input[type='button']:hover, 
+button:hover, 
+a.button:hover {
+    background-image: radial-gradient(#FFF 25%, #eeffee 60%, #ccddcc 90%);
+}
+
+
+a.button:active {
+    color: inherit;
 }
 
 input[type='text'] {
@@ -52,17 +72,16 @@ input[readonly][type='text'] {
 .navigation-menu ul li {
     list-style-type: none;
 }
+
 .navigation-menu ul li a {
-    color: #333;
     display: block;
-    text-decoration: none;
-    cursor: hand;
-    padding: 5px 10px;
-    border: 1px solid #999;
-    background-image: radial-gradient(#FFF 25%, #EEE 60%, #DDD 90%);
 }
-.navigation-menu ul li a:hover {
-    background-image: radial-gradient(#FFF 25%, #EEF 60%, #DDF 90%);
+.navigation-menu ul li a.active {
+    background-image: radial-gradient(#FFF 25%, #eef9ee 60%, #ccddcc 90%);
+}
+
+.navigation-menu ul li a:hover, .navigation-menu ul li a:focus {
+    background-image: radial-gradient(#FFF 25%, #eef9ee 60%, #ccddcc 90%);
 }
 
 .main-content {
@@ -127,6 +146,25 @@ table.grid > tbody > tr:nth-child(odd) {
     padding: 30px 50px 50px;
     background-color: #FFF;
     box-shadow: 20px 20px 40px rgba(0,0,0,0.5);
+}
+
+.notelist-sortcontrols {
+    text-align: center;
+    display: inline-block;
+    min-width: 320px;
+    padding: 10px;
+    border: solid 1px #cdc;
+    margin: 0 0 10px 5px;
+    background-image: radial-gradient(#FFF 25%, #eef9ee 60%, #ccddcc 90%);
+}
+.notelist-sortcontrols a {
+    color: inherit;
+}
+.notelist-sortcontrols select {
+    border: none;
+    outline: none;
+    background: none;
+    margin-left: -5px;
 }
 
 .note {

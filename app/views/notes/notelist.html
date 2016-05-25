@@ -1,10 +1,12 @@
 <div>
     <h1 data-bind="text: heading"></h1>
     <div>
-        <label for="sortProp">Sort by</label>
-        <select id="sortProp" data-bind="options: sortPropOptions, optionsText: 'text', value: sortProp, event: { change: sortChanged }"></select>
-        <label for="sortDesc">descending</label>
-        <input type="checkbox" data-bind="checked: sortDesc, event: { change: sortChanged }"/>
+        <div class="notelist-sortcontrols">
+            <span>Sort</span>
+            <a id="sortDirection" href="javascript://" data-bind="click: toggleSortDirection, text: sortDesc ? 'descending' : 'ascending'"></a>
+            <span>by</span>
+            <a id="sortProp" href="javascript://" data-bind="click: toggleSortProp, text: sortProp.text"></a>
+        </div>
     </div>
     <!-- ko foreach: noteModels -->
         <!-- ko compose: { 
