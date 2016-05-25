@@ -7,7 +7,37 @@ import {IDependencyInjectionContainer, container} from "durelia-dependency-injec
 import {ILogger, Logger} from "durelia-logger";
 import {observeDecoratorKeyName} from "durelia-binding";
 
-interface IDureliaBootstrapper {
+interface Deferred<T> {
+    promise: Promise<T>;
+    /**
+     * Creates a new rejected promise for the provided reason.
+     * @param reason The reason the promise was rejected.
+     * @returns A new rejected Promise.
+     */
+    reject(reason: any): Promise<void>;
+
+    /**
+     * Creates a new rejected promise for the provided reason.
+     * @param reason The reason the promise was rejected.
+     * @returns A new rejected Promise.
+     */
+    reject<T>(reason: any): Promise<T>;
+
+    /**
+      * Creates a new resolved promise for the provided value.
+      * @param value A promise.
+      * @returns A promise whose internal state matches the provided promise.
+      */
+    resolve<T>(value: T | PromiseLike<T>): Promise<T>;
+
+    /**
+     * Creates a new resolved promise .
+     * @returns A resolved promise.
+     */
+    resolve(): Promise<void>;
+}
+
+export interface IDureliaBootstrapper {
     /** Configures Durandal to use ES2015 Promise instead of JQueryDeferred/JQueryPromise.
      * @param {PromiseConstructorLike} promisePolyfill. Optional; if specified the object will used by the browser as global Promise polyfill.
      * @returns {this} Returns this instance to enable chaining. 

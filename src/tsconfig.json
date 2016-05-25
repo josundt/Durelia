@@ -1,0 +1,22 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "target": "es5",
+        "module": "amd",
+        "experimentalDecorators": true,
+        "forceConsistentCasingInFileNames": true,
+        "moduleResolution": "classic",
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": false,
+        "noImplicitReturns": true,
+        "noImplicitUseStrict": false,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "stripInternal": true,
+        "suppressExcessPropertyErrors": false,
+        "suppressImplicitAnyIndexErrors": true,
+        "listFiles": false,
+        "outDir": "../dist",
+        "declaration": true
+    }
+}

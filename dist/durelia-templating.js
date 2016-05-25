@@ -1,0 +1,10 @@
+define(["require", "exports"], function (require, exports) {
+    "use strict";
+    function useView(viewPath) {
+        return function (classType) {
+            classType.prototype.getView = function () { return viewPath; };
+        };
+    }
+    exports.useView = useView;
+});
+//# sourceMappingURL=durelia-templating.js.map

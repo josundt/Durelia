@@ -1,3 +1,6 @@
-/bower_components
-/**/*.js
-/**/*.js.map
+/node_modules
+/sample/bower_components
+/sample/**/*.js
+/sample/**/*.js.map
+/src/**/*.js
+/src/**/*.js.map
