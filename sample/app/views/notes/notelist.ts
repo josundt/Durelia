@@ -1,8 +1,10 @@
 import {IViewModel} from "durelia-viewmodel";
 import {transient, inject, Lazy, observe, useView} from "durelia-framework";
+import {INoteDetailActivationModel} from "views/notes/notedetail";
 import {INoteRepository, NoteRepository, Note, ISortOrder} from "services/noterepository";
 import {INoteViewModel, INoteViewModelActivationOptions, NoteViewModel} from "views/_shared/note";
 import {IDialogService, DialogService} from "durelia-dialog";
+import {INavigationController, NavigationController} from "durelia-router";
 
 interface LabeledItem<T> {
     text: string;
@@ -12,12 +14,13 @@ interface LabeledItem<T> {
 @observe(true)
 @useView("views/notes/notelist.html")
 @transient
-@inject(NoteRepository, Lazy.of(NoteViewModel), DialogService)
+@inject(NoteRepository, Lazy.of(NoteViewModel), DialogService, NavigationController)
 export default class NoteList implements IViewModel<void> {
     constructor(
         private noteRepository: INoteRepository,
         private createNoteViewModel: () => INoteViewModel,
-        private dialogService: IDialogService
+        private dialogService: IDialogService,
+        private navigator: INavigationController
     ) {}
     
     private allowEditing: boolean = false;
@@ -55,7 +58,7 @@ export default class NoteList implements IViewModel<void> {
     }
     
     edit(noteViewModel: INoteViewModel): Promise<any> {
-        location.assign(`#notes/${noteViewModel.note.id}`);
+        this.navigator.navigateToRoute<INoteDetailActivationModel>("NoteDetail", { id: noteViewModel.note.id });
         return Promise.resolve();
     }
     
@@ -84,7 +87,7 @@ export default class NoteList implements IViewModel<void> {
                 this.sort();
             });
         } else {
-            location.assign("#notes/-1");
+            this.navigator.navigateToRoute<INoteDetailActivationModel>("NoteDetail", { id: -1 });
             return Promise.resolve();
         }
     }

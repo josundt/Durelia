@@ -1,7 +1,13 @@
 <div>
     <h1 data-bind="text: heading"></h1>
+    
     <div data-bind="compose: {
         model: termsPartial,
         view: 'views/home/home.terms.html'
     }"></div>
+    
+    <div>
+        <br/>
+        <button data-bind="click: goToNotes">Go to notes</button>
+    </div>
 </div>

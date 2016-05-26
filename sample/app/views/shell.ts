@@ -17,9 +17,9 @@ export default class Shell implements IViewModel<void> {
     configureRouter(): Promise<any> {
         
         this.router.map([
-            { route: "", title: "Home", moduleId: "views/home/home", nav: true },
-            { route: "notes", title: "Notes", moduleId: "views/notes/notelist", nav: true },
-            { route: "notes/:id", title: "Note detail", moduleId: "views/notes/notedetail", nav: false }
+            { name: "Home", route: "", title: "Home", moduleId: "views/home/home", nav: true },
+            { name: "Notes", route: "notes", title: "Notes", moduleId: "views/notes/notelist", nav: true },
+            { name: "NoteDetail", route: "notes/:id", title: "Note detail", moduleId: "views/notes/notedetail", nav: false }
         ]).buildNavigationModel();
         
         return this.router.activate() as any;

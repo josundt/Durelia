@@ -40,6 +40,7 @@ let require: IRequireJsConfig = {
         "durelia-dialog":               "../../dist/durelia-dialog",
         "durelia-framework":            "../../dist/durelia-framework",
         "durelia-logger":               "../../dist/durelia-logger",
+        "durelia-router":               "../../dist/durelia-router",
         "durelia-templating":           "../../dist/durelia-templating",
         "bluebird": "../bower_components/bluebird/js/browser/bluebird",
         "text": "../bower_components/requirejs-text/text",
