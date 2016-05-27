@@ -94,7 +94,7 @@ for the ViewModel/Model pair after the module has been loaded.
 import {dureliaBootstrapper} from "durelia-bootstrapper";
 
 dureliaBootstrapper
-    .useES20015Promise(Bluebird);
+    .useViewModelDefaultExports();
 ```  
 
 
