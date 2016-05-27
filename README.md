@@ -91,6 +91,14 @@ Durelia can alter/extend the behavior of the Durandal router, making it look for
 prioritize any existing default export of a module when determining what to use as ViewModel
 for the ViewModel/Model pair after the module has been loaded.
 ```javascript
+import {dureliaBootstrapper} from "durelia-bootstrapper";
+
+dureliaBootstrapper
+    .useES20015Promise(Bluebird);
+```  
+
+
+```javascript
 export default class MyPage { // Notice the "default" keyword; this class will be used as ViewModel
 }
 ```
