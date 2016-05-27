@@ -271,10 +271,15 @@ invokes it with a single object instead (if enabled).
 You may have noticed that the object sent as argument consists of the exact same properties 
 and values as was sent in the ***navigateToRoute*** call earlier (see example above).
 
-###Great intellisense
+###Great intellisense and TypeScript interfaces
 Durelia is implemented in typescript, and TypeScript typings are generated when building.
 These are included along with the JavaScript files. This provides great intellisense
 both for Durandal JavaScript or TypeScript projects if you use an editor that supports it.
+
+Most of the classes in Durelia has an interface "twin". If you use Durelia with a TypeScript 
+application and write unit tests using TypeScript, it will simplify mocking the dependencies
+if you use the interface types for the constructor function parameters and inject the 
+implementations through the inject decorator.
 
 ###Limitations
 When using classes as ViewModels with Durandal, it has some problems on deciding what 
@@ -294,6 +299,14 @@ export default class MyPage {
 it a temporary necessary evil. If you still follow a conventional consistent 
 view/viewmodel naming convention these attributes can be removed once migration to Aurelia
 is done.*
+
+##Sample Application
+The repository contains a sample application that covers the most common Durandal 
+usage and how to do it with Durelia. The sample application is written using
+TypeScript. Please disregard the bad UI design and lack of creativity in
+feature set; the interesting part is the typescript code and the typical usage
+scenarios it demonstrates. 
+ 
 
 ##Getting started
 
