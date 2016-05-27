@@ -1,0 +1,27 @@
+{
+  "name": "durelia",
+  "description": "Durandal extensions enabling a step by step transition from Durandal towards Aurelia.",
+  "main": "dist/aurelia-bootstrapper.js",
+  "authors": [
+    "Jørn Andre Sundt <jorn.andre.sundt@jasmin.no>"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "Durandal",
+    "Aurelia"
+  ],
+  "homepage": "https://github.com/josundt/Durelia",
+  "ignore": [
+    "**/.*",
+    ".vscode",
+    "build",
+    "node_modules",
+    "sample",
+    "src",
+    ".gitignore",
+    "build.js",
+    "index.html",
+    "package.json",
+    "tslint.json"
+  ]
+}
