@@ -1,7 +1,5 @@
-import {singleton} from "durelia-framework";
-import json from "adra-jsutils-json";
-import array from "adra-jsutils-array";
-import obj from "adra-jsutils-obj";
+import {singleton, inject} from "durelia-framework";
+import {ISerializer, JsonSerializer} from "services/serializer";
 
 export interface Note {
     id: number;
@@ -30,8 +28,11 @@ export interface INoteRepository {
 }
 
 @singleton
+@inject(JsonSerializer)
 export class NoteRepository implements INoteRepository {
-    constructor() {
+    constructor(
+        private serializer: ISerializer
+    ) {
         this.tryLoadFromBackingStore();
     }
     
@@ -50,19 +51,20 @@ This is some sample text.
     
     private tryLoadFromBackingStore() {
         let backedStore = localStorage[NoteRepository.backingStoreKey] 
-            ? json.parse<Note[]>(localStorage[NoteRepository.backingStoreKey]) 
+            ? this.serializer.deserialize<Note[]>(localStorage[NoteRepository.backingStoreKey]) 
             : null;
         
         NoteRepository.store = backedStore ? backedStore : NoteRepository.store;
     }
     
     private dumpToBackingStore() {
-        localStorage[NoteRepository.backingStoreKey] = json.stringify(NoteRepository.store);
+        localStorage[NoteRepository.backingStoreKey] = this.serializer.serialize(NoteRepository.store);
     }
     
     private clone(item: Note): Note {
-        let result = obj.extend({}, item);
-        return result; 
+        let ser = this.serializer.serialize(item);
+        let clone = this.serializer.deserialize<Note>(ser);
+        return this.serializer.deserialize<Note>(this.serializer.serialize(item));
     }
     
     createNew(): Note {
@@ -96,31 +98,35 @@ This is some sample text.
             return result;
         }
         return new Promise((resolve, reject) => {
-            resolve(NoteRepository.store.sort(sort).filter(filter).map(this.clone));
+            resolve(NoteRepository.store.sort(sort).filter(filter).map(this.clone.bind(this)));
         });
         
     }
     
     getById(id: number): Promise<Note> {
         return new Promise((resolve, reject) => {
-            let matches = NoteRepository.store.filter(n => n.id === id).map(this.clone);
+            let matches = NoteRepository.store.filter(n => n.id === id).map(this.clone.bind(this));
             resolve(!matches.length ? undefined : matches[0]);
         });
     }
     
     deleteById(id: number): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            let found = array.removeFirst(NoteRepository.store, n => n.id === id);
-            if (found) {
+            let searchResult = this.searchArray(NoteRepository.store, (n => n.id === id));
+            if (searchResult.index >= 0) {
+                NoteRepository.store.splice(searchResult.index);
                 this.dumpToBackingStore();
             }
-            resolve(found);
+            resolve(searchResult.index >= 1);
         });
     }
     
     update(note: Note): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            let index = array.indexOf(NoteRepository.store, n => n.id === note.id);
+            let index = this.searchArray(NoteRepository.store, n => n.id === note.id).index;
+            if (index < 0) {
+                throw new Error("Cannot update an item that does not exist.");
+            }
             note.modified = new Date();
             NoteRepository.store[index] = this.clone(note); 
             this.dumpToBackingStore();
@@ -137,6 +143,23 @@ This is some sample text.
             resolve();
         });
     }
+    
+    private searchArray<T>(array: Array<T>, predicate: (item: T) => boolean, reverse?: boolean, throwOnMultiple?: boolean): { index: number, item: T } {
+        let result = { index: -1, item: <T>undefined };
+        for (let i = (reverse ? array.length - 1 : 0); reverse ? i >= 0 : i < array.length; reverse ? i-- : i++) {
+            if (predicate(array[i])) {
+                if (throwOnMultiple && result.item) {
+                    throw new Error("Predicate yielded more than one result.");
+                }
+                result.index = i;
+                result.item = array[i];
+                if (!throwOnMultiple) {
+                    break;
+                }
+            }
+        }
+        return result;
+    } 
     
     private newId(): number {
         let result: number = NoteRepository.store.reduce((prev: number, curr: Note) => curr.id > prev ? curr.id : prev, 0);

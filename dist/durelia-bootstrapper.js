@@ -6,6 +6,12 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
         function DureliaBootstrapper(container, logger) {
             this.container = container;
             this.logger = logger;
+            this.config = {
+                useuseES20015Promise: false,
+                useObserveDecorator: false,
+                useViewModelDefaultExports: false,
+                useRouterModelActivation: false
+            };
             this.enableDependencyInjection();
         }
         DureliaBootstrapper.defer = function () {
@@ -28,6 +34,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             };
         };
         DureliaBootstrapper.prototype.useES20015Promise = function (promisePolyfill) {
+            this.config.useuseES20015Promise = true;
             var logMsg = "Durelia Boostrapper: Enabling ES2015 Promise for Durandal";
             if (promisePolyfill) {
                 logMsg += " using specified polyfill.";
@@ -57,6 +64,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
         };
         DureliaBootstrapper.prototype.useViewModelDefaultExports = function () {
             var _this = this;
+            this.config.useViewModelDefaultExports = true;
             this.logger.debug("Durelia Bootstrapper: Enabling default export for viewmodel modules.");
             durandalSystem["resolveObject"] = function (module) {
                 if (module && module.default && durandalSystem.isFunction(module.default)) {
@@ -80,6 +88,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             configurable: true
         });
         DureliaBootstrapper.prototype.useObserveDecorator = function () {
+            this.config.useObserveDecorator = true;
             if (!this.isObservablePluginInstalled) {
                 this.logger.error("Durelia Bootstrapper: Durandal observable plugin is not installed. Cannot enable observe decorator.");
             }
@@ -96,6 +105,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             return this;
         };
         DureliaBootstrapper.prototype.useRouterModelActivation = function () {
+            this.config.useRouterModelActivation = true;
             this.logger.debug("Durelia Bootstrapper: Enabling router model activation (invoking viewmodel activate methods with a single object literal arg instead of multiple string args).");
             var test = durandalRouter;
             durandalRouter.on("router:route:activating").then(function (viewmodel, instruction, router) {
@@ -104,9 +114,9 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
                 var routeParams = undefined;
                 if (routeParamProperties.length && routeParamValues.length) {
                     if (routeParamProperties.length === routeParamValues.length) {
-                        routeParams = {};
+                        routeParams = routeParams || {};
                         for (var i = 0; i < routeParamProperties.length; i++) {
-                            var prop = routeParamProperties[i].replace(/[\(\)\:]/, "");
+                            var prop = routeParamProperties[i].replace(/[\(\)\:]/g, "");
                             var numValue = parseInt(routeParamValues[i], 10);
                             var value = isNaN(numValue)
                                 ? routeParamValues[i]
@@ -116,6 +126,10 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
                     }
                     else {
                     }
+                }
+                if (instruction.queryParams) {
+                    routeParams = routeParams || {};
+                    Object.keys(instruction.queryParams).forEach(function (key) { return routeParams[key] = instruction.queryParams[key]; });
                 }
                 instruction.params.splice(0);
                 instruction.params.push(routeParams);
