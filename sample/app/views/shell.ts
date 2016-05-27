@@ -12,8 +12,6 @@ export default class Shell implements IViewModel<void> {
         public router: DurandalRootRouter
     ) {}
     
-    heading: string;
-
     configureRouter(): Promise<any> {
         
         this.router.map([
@@ -26,7 +24,6 @@ export default class Shell implements IViewModel<void> {
     }
 
     activate(): Promise<any> {
-        this.heading = "Shell";
         return this.configureRouter();
     }
 }

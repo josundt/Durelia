@@ -5,7 +5,6 @@ import {INoteViewModel, INoteViewModelActivationOptions, NoteViewModel} from "vi
 import {IDialogService, DialogService} from "durelia-dialog";
 import {INavigationController, NavigationController} from "durelia-router";
 
-
 export interface INoteDetailActivationModel {
     id: number;
 }

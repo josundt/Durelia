@@ -1,5 +1,5 @@
 import {IViewModel, IDialogViewModel} from "durelia-viewmodel";
-import {ITermsPartialModal, TermsPartialModal, ITermsPartialModalModel, ITermsPartialModalOutput} from "views/home/home.terms.concentmodal";
+import {ITermsPartialModal, TermsPartialModal, ITermsPartialModalActivationModel, ITermsPartialModalOutput} from "views/home/home.terms.concentmodal";
 import {IDialogService, DialogService} from "durelia-dialog";
 import {transient, inject, computedFrom, observe, useView} from "durelia-framework";
 
@@ -26,8 +26,8 @@ export class TermsPartial implements IViewModel<void> {
     }
         
     openDialog(): Promise<any> {
-        let model: ITermsPartialModalModel = { text: "Do you agree to the terms?" };
-        return this.dialogService.open<ITermsPartialModalModel, ITermsPartialModalOutput>({
+        let model: ITermsPartialModalActivationModel = { text: "Do you agree to the terms?" };
+        return this.dialogService.open<ITermsPartialModalActivationModel, ITermsPartialModalOutput>({
             viewModel: TermsPartialModal, 
             model: model
         }).then(result => {

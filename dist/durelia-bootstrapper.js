@@ -1,4 +1,4 @@
-define(["require", "exports", "durandal/system", "durandal/binder", "plugins/observable", "plugins/router", "durelia-dependency-injection", "durelia-logger", "durelia-binding"], function (require, exports, durandalSystem, durandalBinder, durandalObservable, durandalRouter, durelia_dependency_injection_1, durelia_logger_1, durelia_binding_1) {
+define(["require", "exports", "durandal/system", "durandal/binder", "plugins/observable", "plugins/router", "durelia-dependency-injection", "durelia-logger", "durelia-binding", "durelia-router"], function (require, exports, durandalSystem, durandalBinder, durandalObservable, durandalRouter, durelia_dependency_injection_1, durelia_logger_1, durelia_binding_1, durelia_router_1) {
     "use strict";
     var originalBinderBindingMethod = durandalBinder.binding;
     var originalRouterActivateRouteMethod = durandalRouter["activateRoute"];
@@ -34,6 +34,9 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             };
         };
         DureliaBootstrapper.prototype.useES20015Promise = function (promisePolyfill) {
+            if (this.config.useuseES20015Promise) {
+                return;
+            }
             this.config.useuseES20015Promise = true;
             var logMsg = "Durelia Boostrapper: Enabling ES2015 Promise for Durandal";
             if (promisePolyfill) {
@@ -64,6 +67,9 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
         };
         DureliaBootstrapper.prototype.useViewModelDefaultExports = function () {
             var _this = this;
+            if (this.config.useViewModelDefaultExports) {
+                return;
+            }
             this.config.useViewModelDefaultExports = true;
             this.logger.debug("Durelia Bootstrapper: Enabling default export for viewmodel modules.");
             durandalSystem["resolveObject"] = function (module) {
@@ -81,6 +87,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             return this;
         };
         Object.defineProperty(DureliaBootstrapper.prototype, "isObservablePluginInstalled", {
+            /** @internal */
             get: function () {
                 return durandalBinder.binding.toString().indexOf("convertObject") >= 0;
             },
@@ -88,6 +95,9 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             configurable: true
         });
         DureliaBootstrapper.prototype.useObserveDecorator = function () {
+            if (this.config.useObserveDecorator) {
+                return;
+            }
             this.config.useObserveDecorator = true;
             if (!this.isObservablePluginInstalled) {
                 this.logger.error("Durelia Bootstrapper: Durandal observable plugin is not installed. Cannot enable observe decorator.");
@@ -105,35 +115,12 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             return this;
         };
         DureliaBootstrapper.prototype.useRouterModelActivation = function () {
+            if (this.config.useRouterModelActivation) {
+                return;
+            }
             this.config.useRouterModelActivation = true;
             this.logger.debug("Durelia Bootstrapper: Enabling router model activation (invoking viewmodel activate methods with a single object literal arg instead of multiple string args).");
-            var test = durandalRouter;
-            durandalRouter.on("router:route:activating").then(function (viewmodel, instruction, router) {
-                var routeParamProperties = instruction.config.routePattern.exec(instruction.config.route).splice(1);
-                var routeParamValues = instruction.config.routePattern.exec(instruction.fragment).splice(1);
-                var routeParams = undefined;
-                if (routeParamProperties.length && routeParamValues.length) {
-                    if (routeParamProperties.length === routeParamValues.length) {
-                        routeParams = routeParams || {};
-                        for (var i = 0; i < routeParamProperties.length; i++) {
-                            var prop = routeParamProperties[i].replace(/[\(\)\:]/g, "");
-                            var numValue = parseInt(routeParamValues[i], 10);
-                            var value = isNaN(numValue)
-                                ? routeParamValues[i]
-                                : numValue;
-                            routeParams[prop] = value;
-                        }
-                    }
-                    else {
-                    }
-                }
-                if (instruction.queryParams) {
-                    routeParams = routeParams || {};
-                    Object.keys(instruction.queryParams).forEach(function (key) { return routeParams[key] = instruction.queryParams[key]; });
-                }
-                instruction.params.splice(0);
-                instruction.params.push(routeParams);
-            });
+            durelia_router_1.NavigationController.enableRouterModelActivation();
             return this;
         };
         return DureliaBootstrapper;

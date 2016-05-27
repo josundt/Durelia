@@ -11,11 +11,15 @@ interface LabeledItem<T> {
     value: T;
 }
 
+export interface INoteListActivationModel {
+    editMode?: "samepage" | "separatepage";
+}
+
 @observe(true)
 @useView("views/notes/notelist.html")
 @transient
 @inject(NoteRepository, Lazy.of(NoteViewModel), DialogService, NavigationController)
-export default class NoteList implements IViewModel<void> {
+export default class NoteList implements IViewModel<INoteListActivationModel> {
     constructor(
         private noteRepository: INoteRepository,
         private createNoteViewModel: () => INoteViewModel,
@@ -48,15 +52,20 @@ export default class NoteList implements IViewModel<void> {
         this.sort();
     }
     
+    get toggleEditModeButtonText() {
+        return `Switch to ${this.allowEditing ? "separate-page" : "same-page"} edit-mode`;
+    }
+    
     toggleSortDirection() {
         this.sortDesc = !this.sortDesc;
         this.sort();
     }
     
-    sortChanged() {
-        this.sort();
+    toggleEditMode() {
+        this.navigator.navigateToRoute<INoteListActivationModel>("Notes", { editMode: this.allowEditing ? "separatepage" : "samepage" });
     }
-    
+
+
     edit(noteViewModel: INoteViewModel): Promise<any> {
         this.navigator.navigateToRoute<INoteDetailActivationModel>("NoteDetail", { id: noteViewModel.note.id });
         return Promise.resolve();
@@ -103,14 +112,14 @@ export default class NoteList implements IViewModel<void> {
         });
     }
     
-    loadData(): Promise<any> {
+    private loadData(): Promise<any> {
         return this.getNoteModels()
             .then((noteModels) => {
                 this.noteModels = noteModels;
             });
     }
     
-    getNoteModels(): Promise<INoteViewModel[]> {
+    private getNoteModels(): Promise<INoteViewModel[]> {
         return this.noteRepository.get({ orderBy: { prop: this.sortProp.value, desc: this.sortDesc }})
             .then(notes => {
                 let noteModels: INoteViewModel[] = [];
@@ -158,7 +167,8 @@ export default class NoteList implements IViewModel<void> {
         };
     }
    
-    activate(): Promise<any> {
+    activate(model: INoteListActivationModel): Promise<any> {
+        this.allowEditing = model && model.editMode === "samepage";
         this.heading = "Notes";
         return this.loadData();
     }

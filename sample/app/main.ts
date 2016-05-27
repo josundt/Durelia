@@ -10,7 +10,7 @@ import * as system from "durandal/system";
 import {dureliaBootstrapper} from "durelia-bootstrapper";
 
 
-app.title = "Durandal Extensibility PoC";
+app.title = "Durelia sample";
 
 //>>excludeStart("build", true);
 system.debug(true);
@@ -29,7 +29,8 @@ app.start().then((result) => {
 
     // BOOTSTRAPPING THE DURELIA EXTENSION //
     dureliaBootstrapper
-        .useES20015Promise(Q.Promise)//(<any>bluebirdPromise as PromiseConstructorLike)
+        .useES20015Promise(Q.Promise) // Using Q as ES2015 Promise override
+        //.useES20015Promise(bluebirdPromise) // Example on how to use BlueBird as promis polyfill
         .useViewModelDefaultExports()
         .useObserveDecorator()
         .useRouterModelActivation();

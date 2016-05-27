@@ -6,6 +6,7 @@ import * as durandalRouter from "plugins/router";
 import {IDependencyInjectionContainer, container} from "durelia-dependency-injection";
 import {ILogger, Logger} from "durelia-logger";
 import {observeDecoratorKeyName} from "durelia-binding";
+import {NavigationController} from "durelia-router";
 
 interface Deferred<T> {
     promise: Promise<T>;
@@ -112,6 +113,9 @@ class DureliaBootstrapper {
 
     useES20015Promise(promisePolyfill?: PromiseConstructorLike): this {
         
+        if (this.config.useuseES20015Promise) {
+            return;
+        }
         this.config.useuseES20015Promise = true;
         
         let logMsg = "Durelia Boostrapper: Enabling ES2015 Promise for Durandal";
@@ -148,6 +152,9 @@ class DureliaBootstrapper {
     
     useViewModelDefaultExports(): this {
         
+        if (this.config.useViewModelDefaultExports) {
+            return;
+        }
         this.config.useViewModelDefaultExports = true;
         
         this.logger.debug("Durelia Bootstrapper: Enabling default export for viewmodel modules.");
@@ -166,12 +173,15 @@ class DureliaBootstrapper {
         return this;
     }
     
-    get isObservablePluginInstalled() {
+    /** @internal */ 
+    private get isObservablePluginInstalled() {
         return durandalBinder.binding.toString().indexOf("convertObject") >= 0;
     }
         
     useObserveDecorator(): this {
-        
+        if (this.config.useObserveDecorator) {
+            return;
+        }
         this.config.useObserveDecorator = true;
         
         if (!this.isObservablePluginInstalled) {
@@ -203,39 +213,15 @@ class DureliaBootstrapper {
     }
     
     useRouterModelActivation(): this {
+        if (this.config.useRouterModelActivation) {
+            return;
+        }
         this.config.useRouterModelActivation = true;
         
         this.logger.debug("Durelia Bootstrapper: Enabling router model activation (invoking viewmodel activate methods with a single object literal arg instead of multiple string args).");
+
+        NavigationController.enableRouterModelActivation();
         
-        let test = durandalRouter;
-        durandalRouter.on("router:route:activating").then((viewmodel: any, instruction: DurandalRouteInstruction, router: DurandalRouter) => {
-            let routeParamProperties = instruction.config.routePattern.exec(<string>instruction.config.route).splice(1);
-            let routeParamValues = instruction.config.routePattern.exec(instruction.fragment).splice(1);
-            let routeParams: { [routeParam: string]: string | number } = undefined;
-            if (routeParamProperties.length && routeParamValues.length) {
-                if (routeParamProperties.length === routeParamValues.length) {
-                    routeParams = routeParams || {};
-                    for (let i = 0; i < routeParamProperties.length; i++) {
-                        let prop = routeParamProperties[i].replace(/[\(\)\:]/g, "");
-                        let numValue = parseInt(routeParamValues[i], 10);
-                        let value: string | number = isNaN(numValue)
-                            ? routeParamValues[i]
-                            : numValue;
-                        
-                        routeParams[prop] = value;
-                    }
-                } else {
-                    //log warning
-                }
-            }
-            if (instruction.queryParams) {
-                routeParams = routeParams || {};
-                Object.keys(instruction.queryParams).forEach(key => routeParams[key] = instruction.queryParams[key]);
-            }
-            instruction.params.splice(0);
-            instruction.params.push(routeParams);
-            
-        });
         return this;
     }
     

@@ -34,17 +34,33 @@ define(["require", "exports", "plugins/router", "durelia-dependency-injection"],
         };
         /** @internal */
         NavigationController.prototype.getRoute = function (name, args) {
-            var foundRoutes = durandalRouter.routes.filter(function (r) { return r["name"] === name; });
-            if (foundRoutes.length > 1) {
-                throw new Error("NavigationController: More than one route with the name \"" + name + "\"");
+            var foundRouteConfigs = durandalRouter.routes.filter(function (r) { return r["name"] === name; });
+            var routes = [];
+            if (foundRouteConfigs.length < 1) {
+                throw new Error("NavigationController: No route named \"" + name + "\" was found.");
             }
-            else if (foundRoutes.length < 0) {
-                throw new Error("NavigationController: Route with name \"" + name + "\" not found");
+            else if (foundRouteConfigs.length > 1) {
+                for (var _i = 0, foundRouteConfigs_1 = foundRouteConfigs; _i < foundRouteConfigs_1.length; _i++) {
+                    var routeConfig = foundRouteConfigs_1[_i];
+                    var rOrRs = routeConfig.route;
+                    if (typeof rOrRs === "string") {
+                        routes.push(rOrRs);
+                    }
+                    else {
+                        routes.concat(rOrRs);
+                    }
+                }
             }
-            var routeOrRoutes = foundRoutes[0].route;
-            var route = typeof routeOrRoutes === "string"
-                ? routeOrRoutes
-                : this.getBestMatchedRoute.apply(this, [args].concat(routeOrRoutes));
+            else {
+                var rOrRs = foundRouteConfigs[0].route;
+                if (typeof rOrRs === "string") {
+                    routes.push(rOrRs);
+                }
+                else {
+                    routes.concat(rOrRs);
+                }
+            }
+            var route = this.getBestMatchedRoute.apply(this, [args].concat(routes));
             return route;
         };
         /** @internal */
@@ -85,6 +101,39 @@ define(["require", "exports", "plugins/router", "durelia-dependency-injection"],
             var newUrl = location.href.substring(0, location.href.lastIndexOf(currentFragment)) + fragment;
             return newUrl;
         };
+        /** @internal */
+        NavigationController.enableRouterModelActivation = function () {
+            if (NavigationController.routerModelActivationEnabled) {
+                return;
+            }
+            durandalRouter.on("router:route:activating").then(function (viewmodel, instruction, router) {
+                var routeParamProperties = instruction.config.routePattern.exec(instruction.config.route).splice(1);
+                var routeParamValues = instruction.config.routePattern.exec(instruction.fragment).splice(1);
+                var routeParams = undefined;
+                if (routeParamProperties.length && routeParamValues.length) {
+                    if (routeParamProperties.length === routeParamValues.length) {
+                        routeParams = routeParams || {};
+                        for (var i = 0; i < routeParamProperties.length; i++) {
+                            var prop = routeParamProperties[i].replace(/[\(\)\:]/g, "");
+                            var numValue = parseInt(routeParamValues[i], 10);
+                            var value = isNaN(numValue)
+                                ? routeParamValues[i]
+                                : numValue;
+                            routeParams[prop] = value;
+                        }
+                    }
+                    else {
+                    }
+                }
+                if (instruction.queryParams) {
+                    routeParams = routeParams || {};
+                    Object.keys(instruction.queryParams).forEach(function (key) { return routeParams[key] = instruction.queryParams[key]; });
+                }
+                instruction.params.splice(0);
+                instruction.params.push(routeParams);
+            });
+            NavigationController.routerModelActivationEnabled = true;
+        };
         NavigationController.prototype.navigateToRoute = function (routeName, args, options) {
             var routeArgs = args || {};
             var route = this.getRoute(routeName, routeArgs);
@@ -102,6 +151,8 @@ define(["require", "exports", "plugins/router", "durelia-dependency-injection"],
         };
         /** @internal */
         NavigationController.routeExpandRegex = /\:([^\:\/\(\)\?\=\&]+)/g;
+        /** @internal */
+        NavigationController.routerModelActivationEnabled = false;
         NavigationController = __decorate([
             durelia_dependency_injection_1.singleton
         ], NavigationController);

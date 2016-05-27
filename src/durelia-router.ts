@@ -41,19 +41,31 @@ export class NavigationController {
  
     /** @internal */
     private getRoute(name: string, args: IRouteActivationModel): string {
-        let foundRoutes = durandalRouter.routes.filter(r => r["name"] === name);
+        let foundRouteConfigs = durandalRouter.routes.filter(r => r["name"] === name);
 
-        if (foundRoutes.length > 1) {
-            throw new Error(`NavigationController: More than one route with the name "${name}"`);
+        let routes: string[] = [];
+        if (foundRouteConfigs.length < 1) {
+            throw new Error(`NavigationController: No route named "${name}" was found.`);
         }
-        else if (foundRoutes.length < 0) {
-            throw new Error(`NavigationController: Route with name "${name}" not found`);
+        else if (foundRouteConfigs.length > 1) {
+            for (let routeConfig of foundRouteConfigs) {
+                let rOrRs = routeConfig.route;
+                if (typeof rOrRs === "string") {
+                    routes.push(rOrRs);
+                } else {
+                    routes.concat(rOrRs);
+                }
+            }
+        } else {
+            let rOrRs = foundRouteConfigs[0].route;
+            if (typeof rOrRs === "string") {
+                routes.push(rOrRs);
+            } else {
+                routes.concat(rOrRs);
+            }
         }
 
-        let routeOrRoutes = foundRoutes[0].route;
-        let route: string = typeof routeOrRoutes === "string" 
-            ? routeOrRoutes 
-            : this.getBestMatchedRoute(args, ...routeOrRoutes);
+        let route: string = this.getBestMatchedRoute(args, ...routes);
             
         return route;
     }
@@ -100,6 +112,48 @@ export class NavigationController {
         let currentFragment: string = durandalRouter.activeInstruction().fragment;
         let newUrl = location.href.substring(0, location.href.lastIndexOf(currentFragment)) + fragment;
         return newUrl;
+    }
+    
+    /** @internal */
+    private static routerModelActivationEnabled: boolean = false;
+    
+    /** @internal */
+    static enableRouterModelActivation(): void {
+        
+        if (NavigationController.routerModelActivationEnabled) {
+            return;
+        }
+        
+        durandalRouter.on("router:route:activating").then((viewmodel: any, instruction: DurandalRouteInstruction, router: DurandalRouter) => {
+            let routeParamProperties = instruction.config.routePattern.exec(<string>instruction.config.route).splice(1);
+            let routeParamValues = instruction.config.routePattern.exec(instruction.fragment).splice(1);
+            let routeParams: { [routeParam: string]: string | number } = undefined;
+            if (routeParamProperties.length && routeParamValues.length) {
+                if (routeParamProperties.length === routeParamValues.length) {
+                    routeParams = routeParams || {};
+                    for (let i = 0; i < routeParamProperties.length; i++) {
+                        let prop = routeParamProperties[i].replace(/[\(\)\:]/g, "");
+                        let numValue = parseInt(routeParamValues[i], 10);
+                        let value: string | number = isNaN(numValue)
+                            ? routeParamValues[i]
+                            : numValue;
+                        
+                        routeParams[prop] = value;
+                    }
+                } else {
+                    //log warning
+                }
+            }
+            if (instruction.queryParams) {
+                routeParams = routeParams || {};
+                Object.keys(instruction.queryParams).forEach(key => routeParams[key] = instruction.queryParams[key]);
+            }
+            instruction.params.splice(0);
+            instruction.params.push(routeParams);
+            
+        });
+        
+        NavigationController.routerModelActivationEnabled = true;
     }
 
     navigateToRoute<TActivationModel>(routeName: string, args?: TActivationModel, options?: INavigationOptions): void {

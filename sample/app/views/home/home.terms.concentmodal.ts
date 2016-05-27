@@ -2,16 +2,16 @@ import {IDialogViewModel} from "durelia-viewmodel";
 import {IDialogController, DialogController} from "durelia-dialog";
 import {transient, inject, observe, useView} from "durelia-framework";
 
-export interface ITermsPartialModalModel { text: string; }
+export interface ITermsPartialModalActivationModel { text: string; }
 
 export interface ITermsPartialModalOutput { agreed: boolean; }
 
-export interface ITermsPartialModal extends IDialogViewModel<ITermsPartialModalModel, ITermsPartialModalOutput> {}
+export interface ITermsPartialModal extends IDialogViewModel<ITermsPartialModalActivationModel, ITermsPartialModalOutput> {}
 
 @observe(true)
 @useView("views/home/home.terms.concentmodal.html")
 @inject(DialogController)
-export class TermsPartialModal implements IDialogViewModel<ITermsPartialModalModel, ITermsPartialModalOutput> {
+export class TermsPartialModal implements IDialogViewModel<ITermsPartialModalActivationModel, ITermsPartialModalOutput> {
     
     constructor(
         private controller: IDialogController<ITermsPartialModalOutput>
@@ -21,8 +21,8 @@ export class TermsPartialModal implements IDialogViewModel<ITermsPartialModalMod
     
     text: string;
     
-    activate(options: ITermsPartialModalModel): Promise<any> {
-        this.text = options.text;
+    activate(model: ITermsPartialModalActivationModel): Promise<any> {
+        this.text = model.text;
         this.heading = "Home Partial Modal";
         return Promise.resolve(true);
     }

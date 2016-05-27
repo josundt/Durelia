@@ -27,6 +27,7 @@ interface IRequireJsConfig {
 let require: IRequireJsConfig = {
     waitSeconds: 60,
     paths: {
+        
         "durelia-binding":              "../../dist/durelia-binding",
         "durelia-bootstrapper":         "../../dist/durelia-bootstrapper",
         "durelia-dependency-injection": "../../dist/durelia-dependency-injection",
@@ -35,6 +36,7 @@ let require: IRequireJsConfig = {
         "durelia-logger":               "../../dist/durelia-logger",
         "durelia-router":               "../../dist/durelia-router",
         "durelia-templating":           "../../dist/durelia-templating",
+        
         "durandal": "../bower_components/durandal/js",
         "plugins": "../bower_components/durandal/js/plugins",
 

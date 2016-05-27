@@ -2,6 +2,7 @@ import {IViewModel} from "durelia-viewmodel";
 import {ITermsPartial, TermsPartial} from "views/home/home.terms";
 import {transient, inject, observe, useView} from "durelia-framework";
 import {INavigationController, NavigationController} from "durelia-router";
+import {INoteListActivationModel} from "views/notes/notelist";
 
 @observe(true)
 @useView("views/home/home.html")
@@ -16,8 +17,12 @@ export default class Home implements IViewModel<void> {
     
     heading: string;
     
-    goToNotes() {
-        this.navigator.navigateToRoute("Notes");
+    goToNotesSamePageEditMode() {
+        this.navigator.navigateToRoute<INoteListActivationModel>("Notes", { editMode: "samepage" });
+    }
+
+    goToNotesSeparatePageEditMode() {
+        this.navigator.navigateToRoute<INoteListActivationModel>("Notes", { editMode: "separatepage" });
     }
     
     activate(): Promise<any> {
