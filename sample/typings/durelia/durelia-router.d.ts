@@ -10,6 +10,9 @@ declare module "durelia-router" {
         navigateBack(): void;
     }
     export class NavigationController {
+        private static isoDateStringRegex;
+        private static urlSerialize(value);
+        private static urlDeserialize(text);
         navigateToRoute<TActivationModel>(routeName: string, args?: TActivationModel, options?: INavigationOptions): void;
         navigateBack(): void;
     }

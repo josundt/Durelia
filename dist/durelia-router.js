@@ -85,15 +85,52 @@ define(["require", "exports", "plugins/router", "durelia-dependency-injection"],
                 var replacement;
                 if (Object.keys(args).indexOf(group1) >= 0) {
                     delete queryStringParams[group1];
-                    replacement = encodeURIComponent(String(args[group1]));
+                    replacement = NavigationController.urlSerialize(args[group1]);
                 }
                 return replacement;
             });
             if (Object.keys(queryStringParams).length) {
-                var queryStringParts = Object.keys(queryStringParams).map(function (k) { return (k + "=" + encodeURIComponent(String(queryStringParams[k]))); });
+                var queryStringParts = Object.keys(queryStringParams).map(function (k) {
+                    var key = NavigationController.urlSerialize(k);
+                    var value = NavigationController.urlSerialize(queryStringParams[k]);
+                    return key + "=" + value;
+                });
                 url = url + "?" + queryStringParts.join("&");
             }
             return url;
+        };
+        NavigationController.urlSerialize = function (value) {
+            var result;
+            if (value instanceof Date) {
+                result = value.toISOString();
+            }
+            else {
+                result = String(value);
+            }
+            return encodeURIComponent(result);
+        };
+        NavigationController.urlDeserialize = function (text) {
+            var intValue;
+            var floatValue;
+            text = decodeURIComponent(text);
+            if (text === "false") {
+                return false;
+            }
+            else if (text === "true") {
+                return true;
+            }
+            else if (!isNaN(intValue = parseInt(text, 10))) {
+                return intValue;
+            }
+            else if (!isNaN(floatValue = parseFloat(text))) {
+                return floatValue;
+            }
+            else if (NavigationController.isoDateStringRegex.test(text)) {
+                return new Date(text);
+            }
+            else {
+                return text;
+            }
         };
         /** @internal */
         NavigationController.prototype.fragmentToUrl = function (fragment) {
@@ -115,10 +152,7 @@ define(["require", "exports", "plugins/router", "durelia-dependency-injection"],
                         routeParams = routeParams || {};
                         for (var i = 0; i < routeParamProperties.length; i++) {
                             var prop = routeParamProperties[i].replace(/[\(\)\:]/g, "");
-                            var numValue = parseInt(routeParamValues[i], 10);
-                            var value = isNaN(numValue)
-                                ? routeParamValues[i]
-                                : numValue;
+                            var value = NavigationController.urlDeserialize(routeParamValues[i]);
                             routeParams[prop] = value;
                         }
                     }
@@ -151,6 +185,7 @@ define(["require", "exports", "plugins/router", "durelia-dependency-injection"],
         };
         /** @internal */
         NavigationController.routeExpandRegex = /\:([^\:\/\(\)\?\=\&]+)/g;
+        NavigationController.isoDateStringRegex = /^\d{4}\-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?([\+\-]\d{2}:\d{2}|[A-Z])$/i;
         /** @internal */
         NavigationController.routerModelActivationEnabled = false;
         NavigationController = __decorate([

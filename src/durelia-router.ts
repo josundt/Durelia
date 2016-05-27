@@ -94,18 +94,55 @@ export class NavigationController {
             let replacement;
             if (Object.keys(args).indexOf(group1) >= 0) {
                 delete queryStringParams[group1];
-                replacement = encodeURIComponent(String(args[group1]));
+                replacement = NavigationController.urlSerialize(args[group1]);
             }
             return replacement;
         });
         if (Object.keys(queryStringParams).length) {
-            let queryStringParts = Object.keys(queryStringParams).map(k => `${k}=${encodeURIComponent(String(queryStringParams[k]))}`);
+            let queryStringParts = Object.keys(queryStringParams).map(k => {
+                let key = NavigationController.urlSerialize(k);
+                let value = NavigationController.urlSerialize(queryStringParams[k]);
+                return `${key}=${value}`;
+            });
             url = `${url}?${queryStringParts.join("&")}`;
         }
         
         return url;
     }
     
+    private static isoDateStringRegex: RegExp = /^\d{4}\-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?([\+\-]\d{2}:\d{2}|[A-Z])$/i;
+
+    private static urlSerialize(value: any): string {
+        let result: string;
+        if (value instanceof Date) {
+            result = (<Date>value).toISOString();
+        } else {
+            result = String(value);
+        }
+        return encodeURIComponent(result);
+    }
+    
+    private static urlDeserialize(text: string): any {
+        let intValue: number;
+        let floatValue: number;
+        
+        text = decodeURIComponent(text);
+        
+        if (text === "false") {
+            return false;
+        } else if (text === "true") {
+            return true;
+        } else if (!isNaN(intValue = parseInt(text, 10))) {
+            return intValue;
+        } else if (!isNaN(floatValue = parseFloat(text))) {
+            return floatValue;
+        } else if (NavigationController.isoDateStringRegex.test(text)) {
+            return new Date(text);
+        } else {
+            return text;
+        }
+    }
+
     /** @internal */
     private fragmentToUrl(fragment: string): string {
         
@@ -133,11 +170,7 @@ export class NavigationController {
                     routeParams = routeParams || {};
                     for (let i = 0; i < routeParamProperties.length; i++) {
                         let prop = routeParamProperties[i].replace(/[\(\)\:]/g, "");
-                        let numValue = parseInt(routeParamValues[i], 10);
-                        let value: string | number = isNaN(numValue)
-                            ? routeParamValues[i]
-                            : numValue;
-                        
+                        let value = NavigationController.urlDeserialize(routeParamValues[i]);
                         routeParams[prop] = value;
                     }
                 } else {
