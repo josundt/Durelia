@@ -97,11 +97,16 @@ export default class NoteDetail implements IViewModel<INoteDetailActivationModel
     
     canDeactivate(): Promise<boolean> {
         if (this.hasUnsavedChanges) {
-            return this.dialogService.confirm("Do you want to save the note before leaving?", "Save changes")
-                .then(confirmed => {
-                    return confirmed 
-                        ? this.save(this.noteModel, true).then(() => true)
-                        : Promise.resolve(false);
+            let buttonTexts = ["Save", "Abandon changes", "Stay on page"];
+            return this.dialogService.messageBox("Do you want to save the note before leaving?", "Save changes", buttonTexts, { cancelButtonIndex: 2 })
+                .then(result => {
+                    if (result.wasCancelled) {
+                        return Promise.resolve(false);
+                    } else if (result.output === buttonTexts[1]) {
+                        return Promise.resolve(true);
+                    } else {
+                        return this.save(this.noteModel, true).then(() => true); 
+                    }
                 });
         } else {
             return Promise.resolve(true);

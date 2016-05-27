@@ -15,8 +15,6 @@ export default class Home implements IViewModel<void> {
         private navigator: INavigationController
     ) {}
     
-    heading: string;
-    
     goToNotesSamePageEditMode() {
         this.navigator.navigateToRoute<INoteListActivationModel>("Notes", { editMode: "samepage" });
     }
@@ -26,7 +24,6 @@ export default class Home implements IViewModel<void> {
     }
     
     activate(): Promise<any> {
-        this.heading = "Home";
         return this.termsPartial.activate();
     }
 

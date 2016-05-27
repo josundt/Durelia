@@ -38,7 +38,7 @@ export class TermsPartial implements IViewModel<void> {
     }
     
     activate(): Promise<any> {
-        this.heading = "Terms Partial";
+        this.heading = "Terms";
         return Promise.resolve(true);
     }
     

@@ -1,6 +1,7 @@
 import * as durandalRouter from "plugins/router";
+import * as durandalApp from "durandal/app";
 import {IViewModel} from "durelia-viewmodel";
-import {singleton, inject, observe, useView} from "durelia-framework";
+import {singleton, inject, observe, useView, computedFrom} from "durelia-framework";
 
 @observe(true)
 @useView("views/shell.html")
@@ -12,6 +13,11 @@ export default class Shell implements IViewModel<void> {
         public router: DurandalRootRouter
     ) {}
     
+    @computedFrom("durandalApp.title")
+    get heading(): string {
+        return `${durandalApp.title} - ${this.router.activeInstruction().config.title}`;
+    }
+
     configureRouter(): Promise<any> {
         
         this.router.map([

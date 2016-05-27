@@ -31,8 +31,6 @@ export default class NoteList implements IViewModel<INoteListActivationModel> {
 
     hasUnsavedChanges: boolean = false;
 
-    heading: string;
-
     noteModels: INoteViewModel[] = [];
 
     sortPropOptions: LabeledItem<string>[] = [
@@ -169,7 +167,6 @@ export default class NoteList implements IViewModel<INoteListActivationModel> {
    
     activate(model: INoteListActivationModel): Promise<any> {
         this.allowEditing = model && model.editMode === "samepage";
-        this.heading = "Notes";
         return this.loadData();
     }
     

@@ -1,15 +1,30 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    /*background-image: linear-gradient(90deg, #eeeeee 0%, #eeeeee 60%, #cccccc 90%);*/
+}
+
 body, table, input, button, select, text-area {
-    font-family: 'Segoe UI', Calibri, 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif 
+    font-family: 'Segoe UI', Calibri, 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 table, input, button, select, text-area {
     font-size: inherit;
 }
 
+h1, h2, h3, h4, h5 {
+    color: #869786;
+}
 h1, h2 {
     text-transform: uppercase;
-    color: #707070;
-    text-shadow: 2px 2px 0px #eee, 3px 3px 0px #707070;
+    text-shadow: 1px 1px 0px #eee, 2px 2px 2px #869786;
 }
 
 input[type='button'], button, a.button {
@@ -27,13 +42,13 @@ input[type='button'], button, a.button {
 input[type='button']:focus, 
 button:focus,
 a.button:focus {
-    background-image: radial-gradient(#FFF 25%, #eef9ee 60%, #ccddcc 90%);
+    background-image: radial-gradient(#FFF 25%, #eeeeee 60%, #cccccc 90%);
 }
 
 input[type='button']:hover, 
 button:hover, 
 a.button:hover {
-    background-image: radial-gradient(#FFF 25%, #eeffee 60%, #ccddcc 90%);
+    background-image: radial-gradient(#FFF 25%, #eeeeee 60%, #cccccc 90%);
 }
 
 
@@ -56,12 +71,32 @@ input[readonly][type='text'] {
     background-color: #EEE;
 }
 
-.navigation-menu {
+.shell-header {
+    padding: 0 10px;
+    position: fixed; 
+    left: 0; 
+    top: 0; 
+    right: 0; 
+    height: 50px;
+    /*background-image: linear-gradient(rgba(204, 204, 204, 1), rgba(204, 204, 204, .1) 50%, rgba(204, 204, 204, 0));*/
+}
+.shell-leftside {
     position: fixed; 
     left: 0; 
     top: 0; 
     bottom: 0; 
     width: 200px;
+    /*background-image: linear-gradient(90deg, #cccccc 0%, #eeeeee 60%, #eeeeee 100%);*/
+}
+.shell-main {
+    padding: 70px 20px 20px;
+    margin-left: 200px;
+}
+.shell-heading {
+    margin: 0;
+}
+.navigation-menu {
+    margin-top: 100px;
 }
 .navigation-menu ul {
     margin: 30px 20px 0 10px;
@@ -77,15 +112,11 @@ input[readonly][type='text'] {
     display: block;
 }
 .navigation-menu ul li a.active {
-    background-image: radial-gradient(#FFF 25%, #eef9ee 60%, #ccddcc 90%);
+    background-image: radial-gradient(#FFF 25%, #eeeeee 60%, #cccccc 90%);
 }
 
 .navigation-menu ul li a:hover, .navigation-menu ul li a:focus {
-    background-image: radial-gradient(#FFF 25%, #eef9ee 60%, #ccddcc 90%);
-}
-
-.main-content {
-    margin-left: 200px;
+    background-image: radial-gradient(#FFF 25%, #eeeeee 60%, #cccccc 90%);
 }
 
 .form-group {
@@ -118,11 +149,11 @@ input[readonly][type='text'] {
     margin-left: 0;
     margin-right: 0;
 }
-.button-group > button:first-child {
+.button-group > :first-child {
     border-bottom-left-radius: 5px;
     border-top-left-radius: 5px;
 }
-.button-group > button:last-child {
+.button-group > :last-child {
     border-bottom-right-radius: 5px;
     border-top-right-radius: 5px;
 }
@@ -149,13 +180,18 @@ table.grid > tbody > tr:nth-child(odd) {
 }
 
 .notelist-sortcontrols {
-    text-align: center;
     display: inline-block;
-    min-width: 320px;
+    cursor: pointer;
+    text-decoration: none;
     padding: 10px;
-    border: solid 1px #cdc;
+    border: 1px solid #999;
+    border-radius: 5px;
+    background-image: radial-gradient(#FFF 25%, #EEE 60%, #DDD 90%);
+    box-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+    outline: none;
     margin: 0 0 10px 5px;
-    background-image: radial-gradient(#FFF 25%, #eef9ee 60%, #ccddcc 90%);
+    width: 300px;
+    text-align: center;
 }
 .notelist-sortcontrols a {
     color: inherit;
@@ -174,7 +210,7 @@ table.grid > tbody > tr:nth-child(odd) {
     background-color: #FFFF99;
     background-image: linear-gradient(#f8f7b6, #f8f7b6 18%, #fefecc 19%, #fcf9a1);
     padding: 20px;
-    font-family: 'Comic Sans MS';
+    font-family: 'Comic Sans MS', Monaco, 'Courier New', Courier, monospace;
     margin: 6px;
     box-shadow: 15px 15px 40px rgba(0,0,0,.2);
 }
@@ -227,7 +263,7 @@ table.grid > tbody > tr:nth-child(odd) {
     background-color: transparent;
     border: none;
     width: 300px;
-    height: 220px;
+    height: 185px;
     resize: none;
     outline: none;
     font-size: 12pt;

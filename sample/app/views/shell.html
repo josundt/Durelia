@@ -1,8 +1,13 @@
-<div class="navigation-menu">
-    <ul data-bind="foreach: router.navigationModel">
-        <li><a class="button" data-bind="attr: { href: hash }, text: title, css: { active: isActive }"></a></li>
-    </ul>
+<div class="shell-leftside">
+    <div class="navigation-menu">
+        <ul data-bind="foreach: router.navigationModel">
+            <li><a class="button" data-bind="attr: { href: hash }, text: title, css: { active: isActive }"></a></li>
+        </ul>
+    </div>
 </div>
-<div class="main-content">
+<div class="shell-header">
+    <h1 class="shell-heading" data-bind="text: heading"></h1>
+</div>
+<div class="shell-main">
     <div data-bind="router: { transition: null }"></div>
 </div>

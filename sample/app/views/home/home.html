@@ -1,15 +1,15 @@
 <div>
-    <h1 data-bind="text: heading"></h1>
-    
-    <div data-bind="compose: {
-        model: termsPartial,
-        view: 'views/home/home.terms.html'
-    }"></div>
-    
+
     <p>
         <a href="javascript://" data-bind="click: goToNotesSamePageEditMode"><i class="fa fa-arrow-right"></i> Go to notes (in-page edit mode)</a>
     </p>
     <p>
         <a href="javascript://" data-bind="click: goToNotesSeparatePageEditMode"><i class="fa fa-arrow-right"></i> Go to notes (separate-page edit mode)</a>
     </p>
+
+    <div data-bind="compose: {
+        model: termsPartial,
+        view: 'views/home/home.terms.html'
+    }"></div>
+    
 </div>

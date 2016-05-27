@@ -14,8 +14,14 @@ define(["require", "exports", "plugins/dialog", "durelia-dependency-injection"],
             var vm = this.container.resolve(options.viewModel);
             return durandalDialog.show(vm, options.model);
         };
-        DialogService.prototype.messageBox = function (message, title, buttonTexts) {
-            return durandalDialog.showMessage(message, title, buttonTexts);
+        DialogService.prototype.messageBox = function (message, title, buttonTexts, options) {
+            return durandalDialog.showMessage(message, title, buttonTexts)
+                .then(function (buttonText) {
+                return {
+                    output: buttonText,
+                    wasCancelled: options && options.cancelButtonIndex && options.cancelButtonIndex === buttonTexts.indexOf(buttonText)
+                };
+            });
         };
         DialogService.prototype.confirm = function (message, title) {
             return durandalDialog.showMessage(message, title, ["OK", "Cancel"])
