@@ -277,6 +277,8 @@ export default class MyPage {
 *Editors remark: I know you MVVM purists out there won't like this; but concider
 it a temporary necessary evil. 
 
+##Getting started
+
 ###Prerequisites
 **a)** You have already; or are planning to change your javascript/typescript 
 code base into ES2015 class implementations.
@@ -284,7 +286,7 @@ code base into ES2015 class implementations.
 **b)** You have installed the durelia javascript (and typings) f.ex. using bower:
 
 ```bash
-bower install https://github.com/josundt/Durelia.git#1.0.0
+bower install durelia --save
 
 ```
 
