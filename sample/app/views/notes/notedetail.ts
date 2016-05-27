@@ -3,21 +3,23 @@ import {INoteRepository, NoteRepository, Note} from "services/noterepository";
 import {transient, inject, Lazy, observe, useView} from "durelia-framework";
 import {INoteViewModel, INoteViewModelActivationOptions, NoteViewModel} from "views/_shared/note";
 import {IDialogService, DialogService} from "durelia-dialog";
+import {INavigationController, NavigationController} from "durelia-router";
 
 
-interface INoteDetailActivationModel {
+export interface INoteDetailActivationModel {
     id: number;
 }
 
 @useView("views/notes/notedetail.html")
 @observe(true)
 @transient
-@inject(NoteRepository, NoteViewModel, DialogService)
+@inject(NoteRepository, NoteViewModel, DialogService, NavigationController)
 export default class NoteDetail implements IViewModel<INoteDetailActivationModel> {
     constructor(
         private noteRepository: INoteRepository,
         public noteModel: INoteViewModel,
-        private dialogService: IDialogService
+        private dialogService: IDialogService,
+        private navigator: INavigationController
     ) {}
 
     heading: string;
@@ -52,11 +54,11 @@ export default class NoteDetail implements IViewModel<INoteDetailActivationModel
     }
 
     add(): void {
-        location.assign("#items/-1");
+        this.navigator.navigateToRoute<INoteDetailActivationModel>("NoteDetail", { id: -1 });
     }
 
     back(): void {
-        window.history.back();
+        this.navigator.navigateBack();
     }
 
     cancel(): Promise<any> {

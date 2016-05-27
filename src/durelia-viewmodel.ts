@@ -1,9 +1,9 @@
-export interface IViewModel<TActivationOptions> {
-    canActivate?(options?: TActivationOptions): Promise<boolean>;
-    activate?(options?: TActivationOptions): Promise<any>;
+export interface IViewModel<TActivationModel> {
+    canActivate?(options?: TActivationModel): Promise<boolean>;
+    activate?(options?: TActivationModel): Promise<any>;
     canDeactivate?(): Promise<boolean>;
     deactivate?(): Promise<any>;
 }
 
-export interface IDialogViewModel<TActivationOptions, TDialogResult> extends IViewModel<TActivationOptions> {
+export interface IDialogViewModel<TActivationModel, TResultOutput> extends IViewModel<TActivationModel> {
 }
