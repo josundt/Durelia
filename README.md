@@ -43,6 +43,17 @@ dureliaBootstrapper
     .useES20015Promise(Bluebird);
 ```  
 
+If you are using the TypeScript typings e.g. from definitelyTyped, you
+may want to include a es6-promise typings file, and change the Promise
+definition in the Durandal typings file.
+Change one of the first lines in the Durandal .d.ts file as follows.
+```typescript
+// Change:
+interface DurandalPromise<T> extends JQueryPromise<T> { }
+// to:
+interface DurandalPromise<T> extends Promise<T> { }
+```
+
 ###2. Dependency injection
 Durelia provides a Dependecy Injection Container and ESNEXT decorators support 
 with the exact same signatures as the ones in Aurelia.
