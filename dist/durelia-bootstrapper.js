@@ -7,7 +7,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             this.container = container;
             this.logger = logger;
             this.config = {
-                useuseES20015Promise: false,
+                useuseES2015Promise: false,
                 useObserveDecorator: false,
                 useViewModelDefaultExports: false,
                 useRouterModelActivation: false
@@ -33,11 +33,11 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
                 }
             };
         };
-        DureliaBootstrapper.prototype.useES20015Promise = function (promisePolyfill) {
-            if (this.config.useuseES20015Promise) {
+        DureliaBootstrapper.prototype.useES2015Promise = function (promisePolyfill) {
+            if (this.config.useuseES2015Promise) {
                 return;
             }
-            this.config.useuseES20015Promise = true;
+            this.config.useuseES2015Promise = true;
             var logMsg = "Durelia Boostrapper: Enabling ES2015 Promise for Durandal";
             if (promisePolyfill) {
                 logMsg += " using specified polyfill.";

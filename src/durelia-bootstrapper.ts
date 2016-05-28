@@ -40,7 +40,7 @@ interface Deferred<T> {
 
 /** @internal */
 export interface IDureliaConfiguration {
-    useuseES20015Promise: boolean;
+    useuseES2015Promise: boolean;
     useObserveDecorator: boolean;
     useViewModelDefaultExports: boolean;
     useRouterModelActivation: boolean;
@@ -49,49 +49,49 @@ export interface IDureliaConfiguration {
 export interface IDureliaBootstrapper {
     /** Configures Durandal to use ES2015 Promise instead of JQueryDeferred/JQueryPromise.
      * @param {PromiseConstructorLike} promisePolyfill. Optional; if specified the object will used by the browser as global Promise polyfill.
-     * @returns {this} Returns this instance to enable chaining. 
+     * @returns {this} Returns this instance to enable chaining.
     */
-    useES20015Promise(promisePolyfill?: PromiseConstructorLike): this;
-    /** Configures Durandal to use the observable plugin, but only for viewmodel classes decorated with the @observe decorator.  
-     * @returns {this} Returns this instance to enable chaining. 
+    useES2015Promise(promisePolyfill?: PromiseConstructorLike): this;
+    /** Configures Durandal to use the observable plugin, but only for viewmodel classes decorated with the @observe decorator.
+     * @returns {this} Returns this instance to enable chaining.
     */
     useObserveDecorator(): this;
-    /** Configures Durandal to support viewmodel modules with multiple exports. If it finds a default export it will use this as the viewmodel class.  
-     * @returns {this} Returns this instance to enable chaining. 
+    /** Configures Durandal to support viewmodel modules with multiple exports. If it finds a default export it will use this as the viewmodel class.
+     * @returns {this} Returns this instance to enable chaining.
     */
     useViewModelDefaultExports(): this;
     /** Configures the router to activate viewmodels using a single activation object instead of an array of strings
      * The route /items/:categoryId/:itemId using url /items/1/2 would normally call activate like this: activate("1", "2").
      * With model activation enabled it will call activate like this: activate({ categoryId: 1, itemId: 2 }).
-     * @returns {this} Returns this instance to enable chaining. 
+     * @returns {this} Returns this instance to enable chaining.
     */
     useRouterModelActivation(): this;
-    
+
 }
 
 let originalBinderBindingMethod = durandalBinder.binding;
 let originalRouterActivateRouteMethod = durandalRouter["activateRoute"];
 
-class DureliaBootstrapper {
+class DureliaBootstrapper implements IDureliaBootstrapper {
     constructor(
         public container: IDependencyInjectionContainer,
         private logger: ILogger
     ) {
-        
+
         this.config = {
-            useuseES20015Promise: false,
+            useuseES2015Promise: false,
             useObserveDecorator: false,
             useViewModelDefaultExports: false,
             useRouterModelActivation: false
         };
-        
+
         this.enableDependencyInjection();
-        
+
     }
-    
+
     /** @internal */
     config: IDureliaConfiguration;
-    
+
     private static defer<T>(): Deferred<T> {
         let result = <Deferred<T>>{};
         result.promise = new Promise(function (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) {
@@ -111,13 +111,13 @@ class DureliaBootstrapper {
         };
     }
 
-    useES20015Promise(promisePolyfill?: PromiseConstructorLike): this {
-        
-        if (this.config.useuseES20015Promise) {
+    useES2015Promise(promisePolyfill?: PromiseConstructorLike): this {
+
+        if (this.config.useuseES2015Promise) {
             return;
         }
-        this.config.useuseES20015Promise = true;
-        
+        this.config.useuseES2015Promise = true;
+
         let logMsg = "Durelia Boostrapper: Enabling ES2015 Promise for Durandal";
         if (promisePolyfill) {
             logMsg += ` using specified polyfill.`;
@@ -125,15 +125,15 @@ class DureliaBootstrapper {
             logMsg += ", expecting existing browser support or polyfill.";
         }
         this.logger.debug(logMsg);
-        
+
         if (promisePolyfill) {
             window["Promise"] = promisePolyfill;
         }
-        
+
         if (!Promise.prototype["fail"]) {
             Promise.prototype["fail"] = Promise.prototype.catch;
         }
-        
+
         durandalSystem.defer = function(action?: Function) {
 
             let deferred = Promise["defer"] && typeof Promise["defer"] === "function"
@@ -146,19 +146,19 @@ class DureliaBootstrapper {
             return deferred;
 
         };
-        
+
         return this;
     }
-    
+
     useViewModelDefaultExports(): this {
-        
+
         if (this.config.useViewModelDefaultExports) {
             return;
         }
         this.config.useViewModelDefaultExports = true;
-        
+
         this.logger.debug("Durelia Bootstrapper: Enabling default export for viewmodel modules.");
-        
+
         durandalSystem["resolveObject"] = (module) => {
             if (module && module.default && durandalSystem.isFunction(module.default)) {
                 let vm = this.container.resolve(module.default);
@@ -169,30 +169,30 @@ class DureliaBootstrapper {
                 return module;
             }
         };
-        
+
         return this;
     }
-    
-    /** @internal */ 
+
+    /** @internal */
     private get isObservablePluginInstalled() {
         return durandalBinder.binding.toString().indexOf("convertObject") >= 0;
     }
-        
+
     useObserveDecorator(): this {
         if (this.config.useObserveDecorator) {
             return;
         }
         this.config.useObserveDecorator = true;
-        
+
         if (!this.isObservablePluginInstalled) {
             this.logger.error("Durelia Bootstrapper: Durandal observable plugin is not installed. Cannot enable observe decorator.");
         } else {
             this.logger.debug("Durelia Bootstrapper: Enabling observe decorator to use the Durandal observable plugin on a per-viewmodel basis.");
-            
+
             durandalBinder.binding = function(obj, view, instruction) {
-                
+
                 let hasObserveDecorator = !!(obj && obj.constructor && obj.constructor[observeDecoratorKeyName]);
-                
+
                 if (instruction.applyBindings && !instruction["skipConversion"] && hasObserveDecorator) {
                     durandalObservable.convertObject(obj);
                 }
@@ -207,24 +207,24 @@ class DureliaBootstrapper {
 
             // skipPromises = options.skipPromises;
             // shouldIgnorePropertyName = options.shouldIgnorePropertyName || defaultShouldIgnorePropertyName;
-                
+
         }
         return this;
     }
-    
+
     useRouterModelActivation(): this {
         if (this.config.useRouterModelActivation) {
             return;
         }
         this.config.useRouterModelActivation = true;
-        
+
         this.logger.debug("Durelia Bootstrapper: Enabling router model activation (invoking viewmodel activate methods with a single object literal arg instead of multiple string args).");
 
         NavigationController.enableRouterModelActivation();
-        
+
         return this;
     }
-    
+
 }
 
 export let dureliaBootstrapper: IDureliaBootstrapper = new DureliaBootstrapper(container, new Logger());

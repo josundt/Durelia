@@ -24,12 +24,12 @@ app.configurePlugins({
 });
 
 app.start().then((result) => {
-    
+
     viewLocator.useConvention("views", "views");
 
     // BOOTSTRAPPING THE DURELIA EXTENSION //
     dureliaBootstrapper
-        .useES20015Promise(Q.Promise) // Using Q as ES2015 Promise override
+        .useES2015Promise(Q.Promise) // Using Q as ES2015 Promise override
         //.useES20015Promise(bluebirdPromise) // Example on how to use BlueBird as promis polyfill
         .useViewModelDefaultExports()
         .useObserveDecorator()

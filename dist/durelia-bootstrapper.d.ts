@@ -4,7 +4,7 @@ declare module "durelia-bootstrapper" {
          * @param {PromiseConstructorLike} promisePolyfill. Optional; if specified the object will used by the browser as global Promise polyfill.
          * @returns {this} Returns this instance to enable chaining.
         */
-        useES20015Promise(promisePolyfill?: PromiseConstructorLike): this;
+        useES2015Promise(promisePolyfill?: PromiseConstructorLike): this;
         /** Configures Durandal to use the observable plugin, but only for viewmodel classes decorated with the @observe decorator.
          * @returns {this} Returns this instance to enable chaining.
         */
