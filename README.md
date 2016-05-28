@@ -45,7 +45,7 @@ dureliaBootstrapper
 *Bluebird will actuall give some warnings in the console, for now 
 I recommend using Q^1.4.1*
 
-If you are using TypeScript typings e.g. from definitelyTyped as intellisens
+If you are using TypeScript typings e.g. from definitelyTyped for intellisense
 support, you may want to include a es6-promise typings file, and change the 
 Promise definition in the Durandal typings file.
 Change one of the first lines in the Durandal .d.ts file as follows.
@@ -107,7 +107,7 @@ export default class MyPage { // Notice the "default" keyword; this class will b
 }
 ```
 
-##Limitations
+####Limitations
 When using classes as ViewModels, Durandal has no way to figure out from where it
 should load the HTML View for the ViewModel.
 Durelia provides a decorator (with the exact same signature as the one in Aurelia).
