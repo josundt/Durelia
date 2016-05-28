@@ -22,7 +22,7 @@ Promise instead (which is enabled in all current browsers and can also be polyfi
 import {dureliaBootstrapper} from "durelia-bootstrapper";
 
 dureliaBootstrapper
-    .useES20015Promise();
+    .useES2015Promise();
 ```
 
 *Example (when you want to install **Q** as ES2015 Promise a polyfill as you enable ES2015 Promise for Durandal):*
@@ -31,7 +31,7 @@ import {dureliaBootstrapper} from "durelia-bootstrapper";
 import * as Bluebird from "bluebird";
 
 dureliaBootstrapper
-    .useES20015Promise(Q.Promise);
+    .useES2015Promise(Q.Promise);
 ```  
 
 *Example (when you want to install **Bluebird** as ES2015 Promise a polyfill as you enable ES2015 Promise for Durandal):*
@@ -40,7 +40,7 @@ import {dureliaBootstrapper} from "durelia-bootstrapper";
 import * as Bluebird from "bluebird";
 
 dureliaBootstrapper
-    .useES20015Promise(Bluebird);
+    .useES2015Promise(Bluebird);
 ```  
 *Bluebird will actuall give some warnings in the console, for now 
 I recommend using Q^1.4.1*
@@ -380,7 +380,7 @@ NB! This needs to happen after app.start() has finished asynchronously:
 app.start().then((result) => {
 
     dureliaBootstrapper
-        .useES20015Promise()          // optional feature
+        .useES2015Promise()          // optional feature
         .useViewModelDefaultExports() // optional feature
         .useObserveDecorator()        // optional feature
         .useRouterModelActivation();  // optional feature

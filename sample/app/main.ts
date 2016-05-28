@@ -24,7 +24,7 @@ app.configurePlugins({
 });
 
 app.start().then((result) => {
-    
+
     viewLocator.useConvention("views", "views");
 
     // BOOTSTRAPPING THE DURELIA EXTENSION //

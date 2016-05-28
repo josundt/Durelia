@@ -40,7 +40,7 @@ interface Deferred<T> {
 
 /** @internal */
 export interface IDureliaConfiguration {
-    usesES20015Promise: boolean;
+    usesES2015Promise: boolean;
     usesObserveDecorator: boolean;
     usesViewModelDefaultExports: boolean;
     usesRouterModelActivation: boolean;
@@ -79,7 +79,7 @@ class DureliaBootstrapper {
     ) {
         
         this.config = {
-            usesES20015Promise: false,
+            usesES2015Promise: false,
             usesObserveDecorator: false,
             usesViewModelDefaultExports: false,
             usesRouterModelActivation: false
@@ -114,10 +114,10 @@ class DureliaBootstrapper {
 
     useES2015Promise(promisePolyfill?: PromiseConstructorLike): this {
         
-        if (this.config.usesES20015Promise) {
+        if (this.config.usesES2015Promise) {
             return;
         }
-        this.config.usesES20015Promise = true;
+        this.config.usesES2015Promise = true;
         
         let logMsg = "Durelia Boostrapper: Enabling ES2015 Promise for Durandal";
         if (promisePolyfill) {
