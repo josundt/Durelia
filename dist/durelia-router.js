@@ -134,12 +134,19 @@ define(["require", "exports", "plugins/router", "durelia-dependency-injection"],
         };
         /** @internal */
         NavigationController.prototype.fragmentToUrl = function (fragment) {
-            var currentFragment = durandalRouter.activeInstruction().fragment;
-            var newUrl = location.href.substring(0, location.href.lastIndexOf(currentFragment)) + fragment;
+            var activeInstruction = durandalRouter.activeInstruction();
+            var activeHash = activeInstruction.config.hash;
+            var activeFragment = activeInstruction.fragment;
+            var appRoot = location.href.substring(0, location.href.lastIndexOf(activeFragment));
+            if (activeHash && appRoot.indexOf(activeHash) < 0) {
+                appRoot += "#";
+            }
+            var newUrl = appRoot + fragment;
             return newUrl;
         };
         /** @internal */
         NavigationController.enableRouterModelActivation = function () {
+            // Used by DureliaBootstrapper
             if (NavigationController.routerModelActivationEnabled) {
                 return;
             }

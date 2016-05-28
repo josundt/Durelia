@@ -40,10 +40,10 @@ interface Deferred<T> {
 
 /** @internal */
 export interface IDureliaConfiguration {
-    useuseES20015Promise: boolean;
-    useObserveDecorator: boolean;
-    useViewModelDefaultExports: boolean;
-    useRouterModelActivation: boolean;
+    usesES20015Promise: boolean;
+    usesObserveDecorator: boolean;
+    usesViewModelDefaultExports: boolean;
+    usesRouterModelActivation: boolean;
 }
 
 export interface IDureliaBootstrapper {
@@ -51,7 +51,7 @@ export interface IDureliaBootstrapper {
      * @param {PromiseConstructorLike} promisePolyfill. Optional; if specified the object will used by the browser as global Promise polyfill.
      * @returns {this} Returns this instance to enable chaining. 
     */
-    useES20015Promise(promisePolyfill?: PromiseConstructorLike): this;
+    useES2015Promise(promisePolyfill?: PromiseConstructorLike): this;
     /** Configures Durandal to use the observable plugin, but only for viewmodel classes decorated with the @observe decorator.  
      * @returns {this} Returns this instance to enable chaining. 
     */
@@ -79,10 +79,10 @@ class DureliaBootstrapper {
     ) {
         
         this.config = {
-            useuseES20015Promise: false,
-            useObserveDecorator: false,
-            useViewModelDefaultExports: false,
-            useRouterModelActivation: false
+            usesES20015Promise: false,
+            usesObserveDecorator: false,
+            usesViewModelDefaultExports: false,
+            usesRouterModelActivation: false
         };
         
         this.enableDependencyInjection();
@@ -92,15 +92,6 @@ class DureliaBootstrapper {
     /** @internal */
     config: IDureliaConfiguration;
     
-    private static defer<T>(): Deferred<T> {
-        let result = <Deferred<T>>{};
-        result.promise = new Promise(function (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) {
-            result.resolve = <any>resolve;
-            result.reject = <any>reject;
-        });
-        return result;
-    }
-
     private enableDependencyInjection() {
         durandalSystem["resolveObject"] = (module) => {
             if (durandalSystem.isFunction(module)) {
@@ -110,13 +101,23 @@ class DureliaBootstrapper {
             }
         };
     }
+    
+    /** @internal */
+    private static defer<T>(): Deferred<T> {
+        let result = <Deferred<T>>{};
+        result.promise = new Promise(function (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) {
+            result.resolve = <any>resolve;
+            result.reject = <any>reject;
+        });
+        return result;
+    }
 
-    useES20015Promise(promisePolyfill?: PromiseConstructorLike): this {
+    useES2015Promise(promisePolyfill?: PromiseConstructorLike): this {
         
-        if (this.config.useuseES20015Promise) {
+        if (this.config.usesES20015Promise) {
             return;
         }
-        this.config.useuseES20015Promise = true;
+        this.config.usesES20015Promise = true;
         
         let logMsg = "Durelia Boostrapper: Enabling ES2015 Promise for Durandal";
         if (promisePolyfill) {
@@ -136,9 +137,11 @@ class DureliaBootstrapper {
         
         durandalSystem.defer = function(action?: Function) {
 
-            let deferred = Promise["defer"] && typeof Promise["defer"] === "function"
-                ? Promise["defer"]()
-                : DureliaBootstrapper.defer();
+            let deferred: any =
+                DureliaBootstrapper.defer();
+                // Promise["defer"] && typeof Promise["defer"] === "function"
+                //     ? Promise["defer"]()
+                //     : DureliaBootstrapper.defer();
 
             if (action) { action.call(deferred, deferred); }
             let prom = deferred.promise;
@@ -152,10 +155,10 @@ class DureliaBootstrapper {
     
     useViewModelDefaultExports(): this {
         
-        if (this.config.useViewModelDefaultExports) {
+        if (this.config.usesViewModelDefaultExports) {
             return;
         }
-        this.config.useViewModelDefaultExports = true;
+        this.config.usesViewModelDefaultExports = true;
         
         this.logger.debug("Durelia Bootstrapper: Enabling default export for viewmodel modules.");
         
@@ -179,10 +182,10 @@ class DureliaBootstrapper {
     }
         
     useObserveDecorator(): this {
-        if (this.config.useObserveDecorator) {
+        if (this.config.usesObserveDecorator) {
             return;
         }
-        this.config.useObserveDecorator = true;
+        this.config.usesObserveDecorator = true;
         
         if (!this.isObservablePluginInstalled) {
             this.logger.error("Durelia Bootstrapper: Durandal observable plugin is not installed. Cannot enable observe decorator.");
@@ -213,10 +216,10 @@ class DureliaBootstrapper {
     }
     
     useRouterModelActivation(): this {
-        if (this.config.useRouterModelActivation) {
+        if (this.config.usesRouterModelActivation) {
             return;
         }
-        this.config.useRouterModelActivation = true;
+        this.config.usesRouterModelActivation = true;
         
         this.logger.debug("Durelia Bootstrapper: Enabling router model activation (invoking viewmodel activate methods with a single object literal arg instead of multiple string args).");
 

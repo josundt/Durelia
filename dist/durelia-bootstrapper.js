@@ -7,21 +7,13 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             this.container = container;
             this.logger = logger;
             this.config = {
-                useuseES20015Promise: false,
-                useObserveDecorator: false,
-                useViewModelDefaultExports: false,
-                useRouterModelActivation: false
+                usesES20015Promise: false,
+                usesObserveDecorator: false,
+                usesViewModelDefaultExports: false,
+                usesRouterModelActivation: false
             };
             this.enableDependencyInjection();
         }
-        DureliaBootstrapper.defer = function () {
-            var result = {};
-            result.promise = new Promise(function (resolve, reject) {
-                result.resolve = resolve;
-                result.reject = reject;
-            });
-            return result;
-        };
         DureliaBootstrapper.prototype.enableDependencyInjection = function () {
             var _this = this;
             durandalSystem["resolveObject"] = function (module) {
@@ -33,11 +25,20 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
                 }
             };
         };
-        DureliaBootstrapper.prototype.useES20015Promise = function (promisePolyfill) {
-            if (this.config.useuseES20015Promise) {
+        /** @internal */
+        DureliaBootstrapper.defer = function () {
+            var result = {};
+            result.promise = new Promise(function (resolve, reject) {
+                result.resolve = resolve;
+                result.reject = reject;
+            });
+            return result;
+        };
+        DureliaBootstrapper.prototype.useES2015Promise = function (promisePolyfill) {
+            if (this.config.usesES20015Promise) {
                 return;
             }
-            this.config.useuseES20015Promise = true;
+            this.config.usesES20015Promise = true;
             var logMsg = "Durelia Boostrapper: Enabling ES2015 Promise for Durandal";
             if (promisePolyfill) {
                 logMsg += " using specified polyfill.";
@@ -53,9 +54,10 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
                 Promise.prototype["fail"] = Promise.prototype.catch;
             }
             durandalSystem.defer = function (action) {
-                var deferred = Promise["defer"] && typeof Promise["defer"] === "function"
-                    ? Promise["defer"]()
-                    : DureliaBootstrapper.defer();
+                var deferred = DureliaBootstrapper.defer();
+                // Promise["defer"] && typeof Promise["defer"] === "function"
+                //     ? Promise["defer"]()
+                //     : DureliaBootstrapper.defer();
                 if (action) {
                     action.call(deferred, deferred);
                 }
@@ -67,10 +69,10 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
         };
         DureliaBootstrapper.prototype.useViewModelDefaultExports = function () {
             var _this = this;
-            if (this.config.useViewModelDefaultExports) {
+            if (this.config.usesViewModelDefaultExports) {
                 return;
             }
-            this.config.useViewModelDefaultExports = true;
+            this.config.usesViewModelDefaultExports = true;
             this.logger.debug("Durelia Bootstrapper: Enabling default export for viewmodel modules.");
             durandalSystem["resolveObject"] = function (module) {
                 if (module && module.default && durandalSystem.isFunction(module.default)) {
@@ -95,10 +97,10 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             configurable: true
         });
         DureliaBootstrapper.prototype.useObserveDecorator = function () {
-            if (this.config.useObserveDecorator) {
+            if (this.config.usesObserveDecorator) {
                 return;
             }
-            this.config.useObserveDecorator = true;
+            this.config.usesObserveDecorator = true;
             if (!this.isObservablePluginInstalled) {
                 this.logger.error("Durelia Bootstrapper: Durandal observable plugin is not installed. Cannot enable observe decorator.");
             }
@@ -115,10 +117,10 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             return this;
         };
         DureliaBootstrapper.prototype.useRouterModelActivation = function () {
-            if (this.config.useRouterModelActivation) {
+            if (this.config.usesRouterModelActivation) {
                 return;
             }
-            this.config.useRouterModelActivation = true;
+            this.config.usesRouterModelActivation = true;
             this.logger.debug("Durelia Bootstrapper: Enabling router model activation (invoking viewmodel activate methods with a single object literal arg instead of multiple string args).");
             durelia_router_1.NavigationController.enableRouterModelActivation();
             return this;

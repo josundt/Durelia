@@ -1,7 +1,7 @@
 /* tslint:disable:class-name */
 
 import * as Q from "q";
-import * as bluebirdPromise from "bluebird";
+import * as Bluebird from "bluebird";
 
 import * as app from "durandal/app";
 import * as viewLocator from "durandal/viewLocator";
@@ -29,8 +29,8 @@ app.start().then((result) => {
 
     // BOOTSTRAPPING THE DURELIA EXTENSION //
     dureliaBootstrapper
-        .useES20015Promise(Q.Promise) // Using Q as ES2015 Promise override
-        //.useES20015Promise(bluebirdPromise) // Example on how to use BlueBird as promis polyfill
+        .useES2015Promise(Q.Promise) // Using Q as ES2015 Promise override
+        //.useES2015Promise(Bluebird) // Example on how to use BlueBird as promis polyfill
         .useViewModelDefaultExports()
         .useObserveDecorator()
         .useRouterModelActivation();

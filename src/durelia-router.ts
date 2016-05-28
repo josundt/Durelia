@@ -145,9 +145,14 @@ export class NavigationController {
 
     /** @internal */
     private fragmentToUrl(fragment: string): string {
-        
-        let currentFragment: string = durandalRouter.activeInstruction().fragment;
-        let newUrl = location.href.substring(0, location.href.lastIndexOf(currentFragment)) + fragment;
+        let activeInstruction = durandalRouter.activeInstruction();
+        let activeHash = activeInstruction.config.hash;
+        let activeFragment: string = activeInstruction.fragment;
+        let appRoot = location.href.substring(0, location.href.lastIndexOf(activeFragment));
+        if (activeHash && appRoot.indexOf(activeHash) < 0) {
+            appRoot += "#";
+        }
+        let newUrl = appRoot + fragment;
         return newUrl;
     }
     
@@ -156,7 +161,9 @@ export class NavigationController {
     
     /** @internal */
     static enableRouterModelActivation(): void {
-        
+
+        // Used by DureliaBootstrapper
+
         if (NavigationController.routerModelActivationEnabled) {
             return;
         }

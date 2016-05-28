@@ -40,7 +40,7 @@ let require: IRequireJsConfig = {
         "durandal": "../bower_components/durandal/js",
         "plugins": "../bower_components/durandal/js/plugins",
 
-        "bluebird": "../bower_components/bluebird/js/browser/bluebird",
+        "bluebird": "../bower_components/bluebird/js/browser/bluebird.core",
         "text": "../bower_components/requirejs-text/text",
         "transitions": "../bower_components/durandal/js/transitions",
         "jquery": "../bower_components/jquery/dist/jquery",
