@@ -2,14 +2,19 @@
   "name": "durelia-build",
   "version": "1.0.0",
   "description": "",
-  "main": "build.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "install": "bower install",
+    "postinstall": "node build",
+    "start": "node server",
+    "prestart": "node prestart"
   },
-  "author": "",
+  "author": "Jørn Andre Sundt",
   "license": "ISC",
   "devDependencies": {
+    "bower": "^1.7.9",
     "express": "^4.13.4",
+    "openurl": "^1.1.1",
     "rimraf": "^2.5.2",
     "typescript": "^1.8.10"
   }
