@@ -335,7 +335,7 @@ TypeScript. Please disregard the bad UI design and lack of creativity in
 feature set; the interesting part is the TypeScript code and the typical usage
 scenarios it demonstrates.
 
-To run the sample application; clone the repository and run following from a console window:
+To run the sample application; clone the repository and run following from the console:
 ```bash
 npm install
 npm start
