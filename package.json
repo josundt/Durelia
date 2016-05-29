@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "express": "^4.13.4",
     "rimraf": "^2.5.2",
     "typescript": "^1.8.10"
   }
