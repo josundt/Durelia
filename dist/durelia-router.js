@@ -138,7 +138,7 @@ define(["require", "exports", "plugins/router", "durelia-dependency-injection"],
             var activeHash = activeInstruction.config.hash;
             var activeFragment = activeInstruction.fragment;
             var appRoot = location.href.substring(0, location.href.lastIndexOf(activeFragment));
-            if (activeHash && appRoot.indexOf(activeHash) < 0) {
+            if (activeHash && appRoot.indexOf("#") < 0) {
                 appRoot += "#";
             }
             var newUrl = appRoot + fragment;

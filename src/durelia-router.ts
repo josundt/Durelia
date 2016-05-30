@@ -149,7 +149,7 @@ export class NavigationController {
         let activeHash = activeInstruction.config.hash;
         let activeFragment: string = activeInstruction.fragment;
         let appRoot = location.href.substring(0, location.href.lastIndexOf(activeFragment));
-        if (activeHash && appRoot.indexOf(activeHash) < 0) {
+        if (activeHash && appRoot.indexOf("#") < 0) {
             appRoot += "#";
         }
         let newUrl = appRoot + fragment;

@@ -17,5 +17,8 @@
     "openurl": "^1.1.1",
     "rimraf": "^2.5.2",
     "typescript": "^1.8.10"
+  },
+  "engines": {
+     "node": ">=6.0.0"
   }
 }
