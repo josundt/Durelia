@@ -27,6 +27,9 @@ define(["require", "exports", "plugins/dialog", "durelia-dependency-injection"],
             return durandalDialog.showMessage(message, title, ["OK", "Cancel"])
                 .then(function (buttonText) { return buttonText === "OK"; });
         };
+        DialogService.prototype.areAnyDialogsOpen = function () {
+            return durandalDialog.isOpen();
+        };
         DialogService = __decorate([
             durelia_dependency_injection_1.singleton,
             durelia_dependency_injection_1.inject(durelia_dependency_injection_1.container)

@@ -11,6 +11,7 @@ export interface IDialogService {
     open<TActivationModel, TResultOutput>(options: IDialogOptions<TActivationModel>): Promise<IDialogResult<TResultOutput>>;
     messageBox(message: string, title: string, buttonTexts: string[], options: { cancelButtonIndex: number }): Promise<IDialogResult<string>>;
     confirm(message: string, title?: string): Promise<boolean>;
+    areAnyDialogsOpen(): boolean;
 }
 
 export interface IDialogResult<TResultOutput> {
@@ -52,6 +53,10 @@ export class DialogService implements IDialogService {
     confirm(message: string, title?: string): Promise<boolean> {
         return <any>durandalDialog.showMessage(message, title, ["OK", "Cancel"])
             .then(buttonText => buttonText === "OK");
+    }
+    
+    areAnyDialogsOpen(): boolean {
+        return durandalDialog.isOpen();
     }
 }
 
