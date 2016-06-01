@@ -37,7 +37,6 @@
     "build",
     "node_modules",
     "sample",
-    "src",
     ".gitignore",
     "build.js",
     "index.html",
