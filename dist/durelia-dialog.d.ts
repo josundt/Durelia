@@ -10,7 +10,7 @@ declare module "durelia-dialog" {
         messageBox(message: string, title: string, buttonTexts: string[], options: {
             cancelButtonIndex: number;
         }): Promise<IDialogResult<string>>;
-        confirm(message: string, title: string): Promise<boolean>;
+        confirm(message: string, title?: string): Promise<boolean>;
     }
     export interface IDialogResult<TResultOutput> {
         wasCancelled: boolean;
@@ -26,7 +26,7 @@ declare module "durelia-dialog" {
         messageBox(message: string, title: string, buttonTexts: string[], options?: {
             cancelButtonIndex: number;
         }): Promise<IDialogResult<string>>;
-        confirm(message: string, title: string): Promise<boolean>;
+        confirm(message: string, title?: string): Promise<boolean>;
     }
     export class DialogController<TResultOutput> implements IDialogController<TResultOutput> {
         ok(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>): void;
