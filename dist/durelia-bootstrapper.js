@@ -18,6 +18,9 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             var _this = this;
             durandalSystem["resolveObject"] = function (module) {
                 if (durandalSystem.isFunction(module)) {
+                    return _this.container.resolve(module);
+                }
+                else if (module && durandalSystem.isFunction(module.default)) {
                     return _this.container.resolve(module.default);
                 }
                 else {

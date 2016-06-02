@@ -95,6 +95,8 @@ class DureliaBootstrapper {
     private enableDependencyInjection() {
         durandalSystem["resolveObject"] = (module) => {
             if (durandalSystem.isFunction(module)) {
+                return this.container.resolve(module);
+            } else if (module && durandalSystem.isFunction(module.default)) {
                 return this.container.resolve(module.default);
             } else {
                 return module;

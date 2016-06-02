@@ -1,0 +1,13 @@
+<div style="min-width: 400px;">
+    <div>
+        <h3 data-bind="html: title"></h3>
+    </div>
+    <div>
+        <p data-bind="html: message"></p>
+    </div>
+    <div style="text-align: center; padding-top: 20px">
+        <!-- ko foreach: options -->
+        <button data-bind="click: $parent.selectOption.bind($parent), text: $data"></button>
+        <!-- /ko -->
+    </div>
+</div>

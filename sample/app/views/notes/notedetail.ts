@@ -2,7 +2,7 @@ import {IViewModel} from "durelia-viewmodel";
 import {INoteRepository, NoteRepository, Note} from "services/noterepository";
 import {transient, inject, Lazy, observe, useView} from "durelia-framework";
 import {INoteViewModel, INoteViewModelActivationOptions, NoteViewModel} from "views/_shared/note";
-import {IDialogService, DialogService} from "durelia-dialog";
+import {IPromptService, PromptService} from "services/prompt";
 import {INavigationController, NavigationController} from "durelia-router";
 
 export interface INoteDetailActivationModel {
@@ -12,12 +12,12 @@ export interface INoteDetailActivationModel {
 @useView("views/notes/notedetail.html")
 @observe(true)
 @transient
-@inject(NoteRepository, NoteViewModel, DialogService, NavigationController)
+@inject(NoteRepository, NoteViewModel, PromptService, NavigationController)
 export default class NoteDetail implements IViewModel<INoteDetailActivationModel> {
     constructor(
         private noteRepository: INoteRepository,
         public noteModel: INoteViewModel,
-        private dialogService: IDialogService,
+        private prompt: IPromptService,
         private navigator: INavigationController
     ) {}
 
@@ -31,12 +31,14 @@ export default class NoteDetail implements IViewModel<INoteDetailActivationModel
 
         return promise.then(() => {
             this.hasUnsavedChanges = false;
-            return skipGoBack ? Promise.resolve() : this.back();
-        });
+            
+            return this.prompt.messageBox("The note was saved", "Saved!", ["OK"]);
+
+        }).then(() => skipGoBack ? Promise.resolve() : this.back());
     }
 
     remove(noteViewModel: INoteViewModel): Promise<boolean> {
-        return this.dialogService.confirm("Are you sure you want to delete this note?", "Delete?")
+        return this.prompt.confirm("Are you sure you want to delete this note?", "Delete?")
             .then(confirmed => {
                 if (confirmed) {
                     return this.noteRepository.deleteById(noteViewModel.note.id)
@@ -98,7 +100,7 @@ export default class NoteDetail implements IViewModel<INoteDetailActivationModel
     canDeactivate(): Promise<boolean> {
         if (this.hasUnsavedChanges) {
             let buttonTexts = ["Save", "Abandon changes", "Stay on page"];
-            return this.dialogService.messageBox("Do you want to save the note before leaving?", "Save changes", buttonTexts, { cancelButtonIndex: 2 })
+            return this.prompt.messageBox("Do you want to save the note before leaving?", "Save changes", buttonTexts, 2)
                 .then(result => {
                     if (result.wasCancelled) {
                         return Promise.resolve(false);

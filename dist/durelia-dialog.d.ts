@@ -7,11 +7,6 @@ declare module "durelia-dialog" {
     }
     export interface IDialogService {
         open<TActivationModel, TResultOutput>(options: IDialogOptions<TActivationModel>): Promise<IDialogResult<TResultOutput>>;
-        messageBox(message: string, title: string, buttonTexts: string[], options: {
-            cancelButtonIndex: number;
-        }): Promise<IDialogResult<string>>;
-        confirm(message: string, title?: string): Promise<boolean>;
-        areAnyDialogsOpen(): boolean;
     }
     export interface IDialogResult<TResultOutput> {
         wasCancelled: boolean;
@@ -24,11 +19,6 @@ declare module "durelia-dialog" {
     export class DialogService implements IDialogService {
         constructor(container: IDependencyInjectionContainer);
         open<TActivationModel, TResult>(options: IDialogOptions<TActivationModel>): Promise<IDialogResult<TResult>>;
-        messageBox(message: string, title: string, buttonTexts: string[], options?: {
-            cancelButtonIndex: number;
-        }): Promise<IDialogResult<string>>;
-        confirm(message: string, title?: string): Promise<boolean>;
-        areAnyDialogsOpen(): boolean;
     }
     export class DialogController<TResultOutput> implements IDialogController<TResultOutput> {
         ok(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>): void;

@@ -35,6 +35,12 @@ define(["require", "exports", "durelia-logger"], function (require, exports, dur
             }
             return [];
         };
+        DependencyInjectionContainer.prototype.hasLifetimeDecorator = function (classType) {
+            return !!classType.__lifetime__;
+        };
+        DependencyInjectionContainer.prototype.isTransient = function (classType) {
+            return classType.__lifetime__ && classType.__lifetime__ === "transient";
+        };
         DependencyInjectionContainer.prototype.isSingleton = function (classType) {
             return !classType.__lifetime__ || classType.__lifetime__ === "singleton";
         };
@@ -83,20 +89,22 @@ define(["require", "exports", "durelia-logger"], function (require, exports, dur
                 var ctorInjectionArgs = depNode.children.map(function (c) { return c.instance; });
                 if (this.isSingleton(classType)) {
                     var idx = this.singletonTypeRegistry.indexOf(classType);
+                    var lifeTimeSpec = this.hasInjectionInstructions(classType) ? "singleton" : "unspecified -> singleton";
                     if (idx >= 0) {
                         depNode.instance = this.singletonInstances[idx];
-                        this.logger.debug("Durelia DependencyResolver: " + dependencyPath + " (singleton) resolved: Returned existing instance.");
+                        this.logger.debug("Durelia DependencyResolver: " + dependencyPath + " (" + lifeTimeSpec + ") resolved: Returned existing instance.");
                     }
                     else {
                         depNode.instance = new (classType.bind.apply(classType, [void 0].concat(ctorInjectionArgs)))();
                         this.singletonTypeRegistry.push(classType);
                         this.singletonInstances.push(depNode.instance);
-                        this.logger.debug("Durelia DependencyResolver: " + dependencyPath + " (singleton) resolved: Created new instance.");
+                        this.logger.debug("Durelia DependencyResolver: " + dependencyPath + " (" + lifeTimeSpec + ") resolved: Created new instance.");
                     }
                 }
                 else {
                     depNode.instance = new (classType.bind.apply(classType, [void 0].concat(ctorInjectionArgs)))();
-                    this.logger.debug("Durelia DependencyResolver: " + dependencyPath + " (transient) resolved: Created new instance.");
+                    var lifeTimeSpec = this.hasInjectionInstructions(classType) ? "transient" : "unspecified -> transient";
+                    this.logger.debug("Durelia DependencyResolver: " + dependencyPath + " (" + lifeTimeSpec + ") resolved: Created new instance.");
                 }
                 return depNode;
             }

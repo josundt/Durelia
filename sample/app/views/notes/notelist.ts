@@ -3,7 +3,7 @@ import {transient, inject, Lazy, observe, useView} from "durelia-framework";
 import {INoteDetailActivationModel} from "views/notes/notedetail";
 import {INoteRepository, NoteRepository, Note, ISortOrder} from "services/noterepository";
 import {INoteViewModel, INoteViewModelActivationOptions, NoteViewModel} from "views/_shared/note";
-import {IDialogService, DialogService} from "durelia-dialog";
+import {IPromptService, PromptService} from "services/prompt";
 import {INavigationController, NavigationController} from "durelia-router";
 
 interface LabeledItem<T> {
@@ -18,12 +18,12 @@ export interface INoteListActivationModel {
 @observe(true)
 @useView("views/notes/notelist.html")
 @transient
-@inject(NoteRepository, Lazy.of(NoteViewModel), DialogService, NavigationController)
+@inject(NoteRepository, Lazy.of(NoteViewModel), PromptService, NavigationController)
 export default class NoteList implements IViewModel<INoteListActivationModel> {
     constructor(
         private noteRepository: INoteRepository,
         private createNoteViewModel: () => INoteViewModel,
-        private dialogService: IDialogService,
+        private prompt: IPromptService,
         private navigator: INavigationController
     ) {}
     
@@ -70,7 +70,7 @@ export default class NoteList implements IViewModel<INoteListActivationModel> {
     }
     
     remove(noteViewModel: INoteViewModel): Promise<boolean> {
-        return this.dialogService.confirm("Are you sure you want to delete this note?", "Delete?")
+        return this.prompt.confirm("Are you sure you want to delete this note?", "Delete?")
             .then(confirmed => {
                 if (confirmed) {
                     return this.noteRepository.deleteById(noteViewModel.note.id)
@@ -107,6 +107,7 @@ export default class NoteList implements IViewModel<INoteListActivationModel> {
         return promise.then(() => {
             this.hasUnsavedChanges = false;
             this.sort();
+            return this.prompt.messageBox("The note was saved", "Saved!", ["OK"]);
         });
     }
     

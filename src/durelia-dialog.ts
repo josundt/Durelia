@@ -9,9 +9,6 @@ export interface IDialogOptions<TActivationModel> {
 
 export interface IDialogService {
     open<TActivationModel, TResultOutput>(options: IDialogOptions<TActivationModel>): Promise<IDialogResult<TResultOutput>>;
-    messageBox(message: string, title: string, buttonTexts: string[], options: { cancelButtonIndex: number }): Promise<IDialogResult<string>>;
-    confirm(message: string, title?: string): Promise<boolean>;
-    areAnyDialogsOpen(): boolean;
 }
 
 export interface IDialogResult<TResultOutput> {
@@ -38,25 +35,6 @@ export class DialogService implements IDialogService {
     open<TActivationModel, TResult>(options: IDialogOptions<TActivationModel>): Promise<IDialogResult<TResult>> {
         let vm = this.container.resolve<IDialogViewModel<TActivationModel, TResult>>(options.viewModel);
         return durandalDialog.show(vm, options.model) as any;
-    }
-    
-    messageBox(message: string, title: string, buttonTexts: string[], options?: { cancelButtonIndex: number }): Promise<IDialogResult<string>> {
-        return <any>durandalDialog.showMessage(message, title, buttonTexts)
-            .then(buttonText => {
-                return {
-                    output: buttonText, 
-                    wasCancelled: options && options.cancelButtonIndex && options.cancelButtonIndex === buttonTexts.indexOf(buttonText)
-                };
-            });
-    }
-    
-    confirm(message: string, title?: string): Promise<boolean> {
-        return <any>durandalDialog.showMessage(message, title, ["OK", "Cancel"])
-            .then(buttonText => buttonText === "OK");
-    }
-    
-    areAnyDialogsOpen(): boolean {
-        return durandalDialog.isOpen();
     }
 }
 

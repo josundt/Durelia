@@ -37,6 +37,7 @@ input[type='button'], button, a.button {
     background-image: radial-gradient(#FFF 25%, #EEE 60%, #DDD 90%);
     box-shadow: 3px 3px 6px rgba(0,0,0,0.5);
     outline: none;
+    min-width: 100px;
 }
 
 input[type='button']:focus, 
