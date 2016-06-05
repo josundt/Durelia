@@ -169,7 +169,13 @@ export class NavigationController {
         }
         
         durandalRouter.on("router:route:activating").then((viewmodel: any, instruction: DurandalRouteInstruction, router: DurandalRouter) => {
-            let routeParamProperties = instruction.config.routePattern.exec(<string>instruction.config.route).splice(1);
+            //let routeParamProperties = instruction.config.routePattern.exec(<string>instruction.config.route).splice(1);
+            let routeParamProperties: string[] = [];
+            let match: RegExpExecArray;
+            while (match = NavigationController.routeExpandRegex.exec(<string>instruction.config.route)) {
+                routeParamProperties.push(match[1]);
+            }
+            
             let routeParamValues = instruction.config.routePattern.exec(instruction.fragment).splice(1);
             let routeParams: { [routeParam: string]: string | number } = undefined;
             if (routeParamProperties.length && routeParamValues.length) {

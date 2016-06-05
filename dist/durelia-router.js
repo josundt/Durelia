@@ -151,7 +151,12 @@ define(["require", "exports", "plugins/router", "durelia-dependency-injection"],
                 return;
             }
             durandalRouter.on("router:route:activating").then(function (viewmodel, instruction, router) {
-                var routeParamProperties = instruction.config.routePattern.exec(instruction.config.route).splice(1);
+                //let routeParamProperties = instruction.config.routePattern.exec(<string>instruction.config.route).splice(1);
+                var routeParamProperties = [];
+                var match;
+                while (match = NavigationController.routeExpandRegex.exec(instruction.config.route)) {
+                    routeParamProperties.push(match[1]);
+                }
                 var routeParamValues = instruction.config.routePattern.exec(instruction.fragment).splice(1);
                 var routeParams = undefined;
                 if (routeParamProperties.length && routeParamValues.length) {
