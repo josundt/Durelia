@@ -15,22 +15,25 @@ export class MessageBox implements IDialogViewModel<IMessageBoxModel, string> {
     constructor(
         private controller: IDialogController<string>
     ) {}
+
     message: string;
     title: string;
     options: string[];
     private cancelOptionIndex: number;
-    selectOption(option: string) {
-        if (this.options.indexOf(option) === this.cancelOptionIndex) {
-            this.controller.cancel(option, this);
-        } else {
-            this.controller.ok(option, this);
-        }
-    }
+
     activate(model: IMessageBoxModel): Promise<any> {
         this.message = model.message;
         this.title = model.title;
         this.options = model.options || ["OK"];
         this.cancelOptionIndex = model.cancelOptionIndex || -1;
         return Promise.resolve();
+    }
+
+    selectOption(option: string) {
+        if (this.options.indexOf(option) === this.cancelOptionIndex) {
+            this.controller.cancel(option, this);
+        } else {
+            this.controller.ok(option, this);
+        }
     }
 }

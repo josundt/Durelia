@@ -1,3 +1,5 @@
+"use strict";
+
 /* jshint ignore:start */
 let exec = require("child_process").exec;
 let ChildProcess = require("child_process").ChildProcess;

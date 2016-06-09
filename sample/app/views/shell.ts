@@ -12,10 +12,18 @@ export default class Shell implements IViewModel<void> {
     constructor(
         public router: DurandalRootRouter
     ) {}
-    
+
     @computedFrom("durandalApp.title")
     get heading(): string {
         return `${durandalApp.title} - ${this.router.activeInstruction().config.title}`;
+    }
+
+    activate(): Promise<any> {
+        return this.configureRouter();
+    }
+
+    deactivate(): Promise<any> {
+        return Promise.resolve();
     }
 
     configureRouter(): Promise<any> {
@@ -27,9 +35,5 @@ export default class Shell implements IViewModel<void> {
         ]).buildNavigationModel();
         
         return this.router.activate() as any;
-    }
-
-    activate(): Promise<any> {
-        return this.configureRouter();
     }
 }

@@ -2,14 +2,14 @@ import {inject, singleton} from "durelia-framework";
 import {IDialogService, DialogService, IDialogResult} from "durelia-dialog";
 import {MessageBox, IMessageBoxModel} from "views/_shared/messagebox";
 
-export interface IPromptService {
+export interface ICommonDialogs {
     messageBox(message: string, title?: string, options?: string[], cancelOptionIndex?: number): Promise<IDialogResult<string>>;
     confirm(message: string, title?: string): Promise<boolean>;
 }
 
 @singleton
 @inject(DialogService)
-export class PromptService {
+export class CommonDialogs {
     constructor(
         private dialog: IDialogService
     ) {}

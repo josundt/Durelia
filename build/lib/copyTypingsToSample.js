@@ -1,3 +1,5 @@
+"use strict";
+
 /* jshint ignore:start */
 let fs = require("fs");
 let path = require("path");

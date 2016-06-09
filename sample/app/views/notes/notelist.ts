@@ -1,9 +1,9 @@
 import {IViewModel} from "durelia-viewmodel";
-import {transient, inject, Lazy, observe, useView} from "durelia-framework";
+import {transient, inject, observe, useView, computedFrom} from "durelia-framework";
 import {INoteDetailActivationModel} from "views/notes/notedetail";
 import {INoteRepository, NoteRepository, Note, ISortOrder} from "services/noterepository";
-import {INoteViewModel, INoteViewModelActivationOptions, NoteViewModel} from "views/_shared/note";
-import {IPromptService, PromptService} from "services/prompt";
+import {INoteViewModelActivationOptions} from "views/_shared/note";
+import {ICommonDialogs, CommonDialogs} from "services/common-dialogs";
 import {INavigationController, NavigationController} from "durelia-router";
 
 interface LabeledItem<T> {
@@ -18,12 +18,11 @@ export interface INoteListActivationModel {
 @observe(true)
 @useView("views/notes/notelist.html")
 @transient
-@inject(NoteRepository, Lazy.of(NoteViewModel), PromptService, NavigationController)
+@inject(NoteRepository, CommonDialogs, NavigationController)
 export default class NoteList implements IViewModel<INoteListActivationModel> {
     constructor(
         private noteRepository: INoteRepository,
-        private createNoteViewModel: () => INoteViewModel,
-        private prompt: IPromptService,
+        private commonDialogs: ICommonDialogs,
         private navigator: INavigationController
     ) {}
     
@@ -31,7 +30,7 @@ export default class NoteList implements IViewModel<INoteListActivationModel> {
 
     hasUnsavedChanges: boolean = false;
 
-    noteModels: INoteViewModel[] = [];
+    notes: Note[] = [];
 
     sortPropOptions: LabeledItem<string>[] = [
         { text: "date", value: "modified" }, 
@@ -39,9 +38,22 @@ export default class NoteList implements IViewModel<INoteListActivationModel> {
     ];
 
     sortProp: LabeledItem<string> = this.sortPropOptions[0];
-
     sortDesc: boolean = false;
     
+    @computedFrom("allowEditing")
+    get toggleEditModeButtonText() {
+        return `Switch to ${this.allowEditing ? "separate-page" : "same-page"} edit-mode`;
+    }
+    
+    activate(model: INoteListActivationModel): Promise<any> {
+        this.allowEditing = model && model.editMode === "samepage";
+        return this.loadData();
+    }
+    
+    deactivate(): Promise<any> {
+        return Promise.resolve();
+    }
+
     toggleSortProp() {
         let curIdx = this.sortPropOptions.indexOf(this.sortProp);
         this.sortProp = (curIdx === this.sortPropOptions.length - 1)
@@ -49,11 +61,7 @@ export default class NoteList implements IViewModel<INoteListActivationModel> {
             : this.sortPropOptions[curIdx + 1];
         this.sort();
     }
-    
-    get toggleEditModeButtonText() {
-        return `Switch to ${this.allowEditing ? "separate-page" : "same-page"} edit-mode`;
-    }
-    
+
     toggleSortDirection() {
         this.sortDesc = !this.sortDesc;
         this.sort();
@@ -64,18 +72,18 @@ export default class NoteList implements IViewModel<INoteListActivationModel> {
     }
 
 
-    edit(noteViewModel: INoteViewModel): Promise<any> {
-        this.navigator.navigateToRoute<INoteDetailActivationModel>("NoteDetail", { id: noteViewModel.note.id });
+    edit(note: Note): Promise<any> {
+        this.navigator.navigateToRoute<INoteDetailActivationModel>("NoteDetail", { id: note.id });
         return Promise.resolve();
     }
     
-    remove(noteViewModel: INoteViewModel): Promise<boolean> {
-        return this.prompt.confirm("Are you sure you want to delete this note?", "Delete?")
+    remove(note: Note): Promise<boolean> {
+        return this.commonDialogs.confirm("Are you sure you want to delete this note?", "Delete?")
             .then(confirmed => {
                 if (confirmed) {
-                    return this.noteRepository.deleteById(noteViewModel.note.id)
+                    return this.noteRepository.deleteById(note.id)
                         .then((result) => {
-                            this.noteModels.splice(this.noteModels.indexOf(noteViewModel), 1);
+                            this.notes.splice(this.notes.indexOf(note), 1);
                             return result;
                         });
                     
@@ -87,58 +95,53 @@ export default class NoteList implements IViewModel<INoteListActivationModel> {
     
     add(): Promise<any> {
         if (this.allowEditing) {
-            let note = this.noteRepository.createNew();
-            let noteModel = this.createNoteViewModel();
-            return noteModel.activate(this.getNotePartialActivationOptions(note)).then(() => {
-                this.noteModels.push(noteModel);
-                this.sort();
-            });
+            this.notes.push(this.noteRepository.createNew());
         } else {
             this.navigator.navigateToRoute<INoteDetailActivationModel>("NoteDetail", { id: -1 });
-            return Promise.resolve();
         }
+        return Promise.resolve();
     }
     
-    save(noteViewModel: INoteViewModel): Promise<any> {
-        let promise = noteViewModel.note.id >= 0
-            ? this.noteRepository.update(noteViewModel.note)
-            : this.noteRepository.add(noteViewModel.note);
+    save(note: Note): Promise<any> {
+        let promise = note.id >= 0
+            ? this.noteRepository.update(note)
+            : this.noteRepository.add(note);
 
         return promise.then(() => {
             this.hasUnsavedChanges = false;
             this.sort();
-            return this.prompt.messageBox("The note was saved", "Saved!", ["OK"]);
+            return this.commonDialogs.messageBox("The note was saved", "Saved!", ["OK"]);
         });
     }
     
-    private loadData(): Promise<any> {
-        return this.getNoteModels()
-            .then((noteModels) => {
-                this.noteModels = noteModels;
-            });
+    getNoteViewModelActivationData(note: Note): INoteViewModelActivationOptions {
+        return {
+            note: note,
+            readonly: !this.allowEditing,
+            handlers: {
+                edit: this.allowEditing ? undefined : n => this.edit(n),
+                remove: n => this.remove(n),
+                save: this.allowEditing ? n => this.save(n) : undefined
+            }
+        };
     }
-    
-    private getNoteModels(): Promise<INoteViewModel[]> {
-        return this.noteRepository.get({ orderBy: { prop: this.sortProp.value, desc: this.sortDesc }})
-            .then(notes => {
-                let noteModels: INoteViewModel[] = [];
-                return Promise.all(
-                    notes.map(note => {
-                        let notePartial = this.createNoteViewModel();
-                        noteModels.push(notePartial); 
-                        return notePartial.activate(this.getNotePartialActivationOptions(note));
-                    })
-                ).then(() => noteModels);
-            });
+   
+    private loadData(): Promise<any> {
+        return this.noteRepository.get({ 
+            orderBy: { 
+                prop: this.sortProp.value, 
+                desc: this.sortDesc 
+            }
+        }).then(notes => {
+            this.notes = notes;
+        });
     }
     
     private sort() {
         let prop = this.sortProp.value;
         let desc = this.sortDesc;
         
-        let sortFn = (noteModelA: INoteViewModel, noteModelB: INoteViewModel) => {
-            let noteA: Note = noteModelA.note;
-            let noteB: Note = noteModelB.note;
+        let sortFn = (noteA: Note, noteB: Note) => {
             let valA: any = noteA[prop];
             let valB: any = noteB[prop];
             if (valA instanceof Date && valB instanceof Date) {
@@ -149,29 +152,6 @@ export default class NoteList implements IViewModel<INoteListActivationModel> {
                 ? (desc ? 1 : -1) 
                 : (desc ? -1 : 1);
         };
-        this.noteModels.sort(sortFn);
-    }
-    
-    
-    private getNotePartialActivationOptions(note: Note) {
-        return {
-            note: note,
-            readonly: !this.allowEditing,
-            owner: this,
-            handlers: {
-                edit: this.allowEditing ? undefined : this.edit,
-                remove: this.remove,
-                save: this.allowEditing ? this.save : undefined
-            }
-        };
-    }
-   
-    activate(model: INoteListActivationModel): Promise<any> {
-        this.allowEditing = model && model.editMode === "samepage";
-        return this.loadData();
-    }
-    
-    deactivate(): Promise<any> {
-        return Promise.all(this.noteModels.map(n => n.deactivate()));
+        this.notes.sort(sortFn);
     }
 }

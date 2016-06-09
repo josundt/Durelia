@@ -1,4 +1,4 @@
-import {IViewModel, IDialogViewModel} from "durelia-viewmodel";
+import {IViewModel} from "durelia-viewmodel";
 import {ITermsPartialModal, TermsPartialModal, ITermsPartialModalActivationModel, ITermsPartialModalOutput} from "views/home/home.terms.concentmodal";
 import {IDialogService, DialogService} from "durelia-dialog";
 import {transient, inject, computedFrom, observe, useView} from "durelia-framework";
@@ -9,20 +9,37 @@ export interface ITermsPartial extends IViewModel<void> {}
 @observe(true)
 @transient
 @inject(DialogService)
-export class TermsPartial implements IViewModel<void> {
+export default class TermsPartial implements ITermsPartial {
     
     constructor(
         private dialogService: IDialogService
     ) {}
     
     heading: string;
-    
     agreed: boolean = false;
     
     @computedFrom("agreed")
     get agreedText(): string {
         let agreed = this.agreed;
         return `The user ${agreed ? "HAS" : "has NOT"} agreed to the terms`;
+    }
+
+    activate(): Promise<any> {
+        this.heading = "Terms";
+        return Promise.resolve(true);
+    }
+    
+    deactivate(): Promise<any> {
+        let observables: {} = <any>this["__observables__"];
+        if (observables) {
+            for (let key of Object.keys(observables)) {
+                let o = observables["key"];
+                if (o["dispose"] && typeof o["dispose"] === "function") {
+                    o["dispose"]();
+                }
+            }
+        }
+        return Promise.resolve();
     }
         
     openDialog(): Promise<any> {
@@ -36,15 +53,4 @@ export class TermsPartial implements IViewModel<void> {
             }
         });
     }
-    
-    activate(): Promise<any> {
-        this.heading = "Terms";
-        return Promise.resolve(true);
-    }
-    
-    deactivate(): Promise<any> {
-        return Promise.resolve();
-    }
-    
-    
 }

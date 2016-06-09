@@ -1,5 +1,5 @@
 import {Note} from "services/noterepository";
-import {transient} from "durelia-framework";
+import {transient, useView  } from "durelia-framework";
 import {IViewModel} from "durelia-viewmodel";
 
 export interface INoteViewModel extends IViewModel<INoteViewModelActivationOptions> {
@@ -8,53 +8,56 @@ export interface INoteViewModel extends IViewModel<INoteViewModelActivationOptio
 
 export interface INoteViewModelActivationOptions {
     note: Note;
-    owner: IViewModel<any>;
     readonly?: boolean;
     handlers?: INoteViewModelEventHandlers;
 }
 
 interface INoteViewModelEventHandlers {
-    edit?: (noteViewModel: INoteViewModel) => Promise<any>;
-    save?: (noteViewModel: INoteViewModel) => Promise<any>;
-    remove?: (noteViewModel: INoteViewModel) => Promise<any>;
-    cancel?: (noteViewModel: INoteViewModel) => Promise<any>;
+    edit?: (note: Note) => Promise<any>;
+    save?: (note: Note) => Promise<any>;
+    remove?: (note: Note) => Promise<any>;
+    cancel?: (note: Note) => Promise<any>;
 }
 
 @transient
-export class NoteViewModel implements INoteViewModel {
+@useView("views/_shared/note")
+export default class NoteViewModel implements INoteViewModel {
     note: Note;
     readonly: boolean = true;
-    
+
+    activate(model: INoteViewModelActivationOptions): Promise<any> {
+        this.note = model.note;
+        this.readonly = !!model.readonly;
+        this.handlers = model.handlers;
+        return Promise.resolve();
+    }
+
+    deactivate(): Promise<any> {
+        this.handlers = null;
+        return Promise.resolve();
+    }
+
     edit(): Promise<any> {
         return this.invokeEvent(this.handlers.edit);
     }
+
     save(): Promise<any> {
         return this.invokeEvent(this.handlers.save);
     }
+
     remove(): Promise<any> {
         return this.invokeEvent(this.handlers.remove);
     }
+
     cancel(): Promise<any> {
         return this.invokeEvent(this.handlers.cancel);
     }
-    private invokeEvent(handler: (noteViewModel: NoteViewModel) => Promise<any>) {
+
+    private invokeEvent(handler: (note: Note) => Promise<any>) {
         return handler
-            ? handler.call(this.owner, this)
+            ? handler(this.note)
             : Promise.resolve();
     }
 
-    private owner: IViewModel<any>;
-    private handlers: INoteViewModelEventHandlers;
-
-    activate(options: INoteViewModelActivationOptions): Promise<any> {
-        this.note = options.note;
-        this.readonly = !!options.readonly;
-        this.owner = options.owner;
-        this.handlers = options.handlers || {};
-        return Promise.resolve();
-    }
-    
-    deactivate(): Promise<any> {
-        return Promise.resolve();
-    }
+    private handlers: INoteViewModelEventHandlers = {};
 }

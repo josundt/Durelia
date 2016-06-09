@@ -1,3 +1,5 @@
+"use strict";
+
 /* jshint ignore:start */
 let paths = require("./paths");
 let tsc = require("./lib/tsc");

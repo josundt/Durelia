@@ -1,3 +1,5 @@
+"use strict";
+
 /* jshint ignore:start */
 let path = require("path");
 

@@ -18,13 +18,16 @@ export class TermsPartialModal implements IDialogViewModel<ITermsPartialModalAct
     ) {}
     
     heading: string;
-    
     text: string;
     
     activate(model: ITermsPartialModalActivationModel): Promise<any> {
         this.text = model.text;
         this.heading = "Home Partial Modal";
-        return Promise.resolve(true);
+        return Promise.resolve();
+    }
+
+    deactivate(): Promise<any> {
+        return Promise.resolve();
     }
         
     agree(): void {

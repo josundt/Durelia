@@ -1,10 +1,11 @@
 <div>
     <h3 data-bind="text: heading"></h3>
-    <!-- ko if: noteModel -->
-    <div data-bind="compose: {
-        view: 'views/_shared/note.html',
-        model: noteModel,
-        activate: false
-    }"></div>
+    <!-- ko if: note -->
+        <!-- ko compose: {
+            model: 'views/_shared/note',
+            activate: true,
+            activationData: getNoteViewModelActivationData(note)
+        } -->
+        <!-- /ko -->
     <!-- /ko -->
 </div>

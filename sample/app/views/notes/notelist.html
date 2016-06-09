@@ -8,11 +8,11 @@
             <a id="sortProp" href="javascript://" data-bind="click: toggleSortProp, text: sortProp.text"></a>
         </div>
     </div>
-    <!-- ko foreach: noteModels -->
+    <!-- ko foreach: notes -->
         <!-- ko compose: { 
-            view: 'views/_shared/note.html', 
-            model: $data,
-            activate: false
+            model: "views/_shared/note",
+            activate: true,
+            activationData: $parent.getNoteViewModelActivationData($data)
         } -->
         <!-- /ko -->
     <!-- /ko -->

@@ -1,8 +1,8 @@
 import {IViewModel} from "durelia-viewmodel";
 import {INoteRepository, NoteRepository, Note} from "services/noterepository";
 import {transient, inject, Lazy, observe, useView} from "durelia-framework";
-import {INoteViewModel, INoteViewModelActivationOptions, NoteViewModel} from "views/_shared/note";
-import {IPromptService, PromptService} from "services/prompt";
+import {INoteViewModel, INoteViewModelActivationOptions} from "views/_shared/note";
+import {ICommonDialogs, CommonDialogs} from "services/common-dialogs";
 import {INavigationController, NavigationController} from "durelia-router";
 
 export interface INoteDetailActivationModel {
@@ -12,36 +12,72 @@ export interface INoteDetailActivationModel {
 @useView("views/notes/notedetail.html")
 @observe(true)
 @transient
-@inject(NoteRepository, NoteViewModel, PromptService, NavigationController)
+@inject(NoteRepository, CommonDialogs, NavigationController)
 export default class NoteDetail implements IViewModel<INoteDetailActivationModel> {
     constructor(
         private noteRepository: INoteRepository,
-        public noteModel: INoteViewModel,
-        private prompt: IPromptService,
+        private commonDialogs: ICommonDialogs,
         private navigator: INavigationController
     ) {}
 
     heading: string;
     hasUnsavedChanges: boolean = false;
+    note: Note;
 
-    save(noteViewModel: INoteViewModel, skipGoBack?: boolean): Promise<any> {
-        let promise = noteViewModel.note.id >= 0
-            ? this.noteRepository.update(noteViewModel.note)
-            : this.noteRepository.add(noteViewModel.note);
+    activate(model: INoteDetailActivationModel): Promise<any> {
+        if (model.id < 0) {
+            this.heading = "New note";
+            this.hasUnsavedChanges = true;
+            this.note = this.noteRepository.createNew();
+            return Promise.resolve();
+        } else {
+            this.heading = "Edit note";
+            return this.noteRepository.getById(model.id).then(note => {
+                this.note = note;
+            });
+        }
+    }
+    
+    canDeactivate(): Promise<boolean> {
+        if (this.hasUnsavedChanges) {
+            let buttonTexts = ["Save", "Abandon changes", "Stay on page"];
+            return this.commonDialogs.messageBox("Do you want to save the note before leaving?", "Save changes", buttonTexts, 2)
+                .then(result => {
+                    if (result.wasCancelled) {
+                        return Promise.resolve(false);
+                    } else if (result.output === buttonTexts[1]) {
+                        return Promise.resolve(true);
+                    } else {
+                        return this.save(this.note, true).then(() => true); 
+                    }
+                });
+        } else {
+            return Promise.resolve(true);
+        }
+    }
+
+    deactivate(): Promise<any> {
+        return Promise.resolve();
+    }
+    
+    save(note: Note, skipGoBack?: boolean): Promise<any> {
+        let promise = note.id >= 0
+            ? this.noteRepository.update(note)
+            : this.noteRepository.add(note);
 
         return promise.then(() => {
             this.hasUnsavedChanges = false;
             
-            return this.prompt.messageBox("The note was saved", "Saved!", ["OK"]);
+            return this.commonDialogs.messageBox("The note was saved", "Saved!", ["OK"]);
 
         }).then(() => skipGoBack ? Promise.resolve() : this.back());
     }
 
-    remove(noteViewModel: INoteViewModel): Promise<boolean> {
-        return this.prompt.confirm("Are you sure you want to delete this note?", "Delete?")
+    remove(note: Note): Promise<boolean> {
+        return this.commonDialogs.confirm("Are you sure you want to delete this note?", "Delete?")
             .then(confirmed => {
                 if (confirmed) {
-                    return this.noteRepository.deleteById(noteViewModel.note.id)
+                    return this.noteRepository.deleteById(note.id)
                         .then((result) => {
                             this.hasUnsavedChanges = false;
                             this.back();
@@ -67,54 +103,18 @@ export default class NoteDetail implements IViewModel<INoteDetailActivationModel
         return Promise.resolve();
     }
 
-    getNotePartialActivationOptions(note: Note): INoteViewModelActivationOptions {
+    getNoteViewModelActivationData(note: Note): INoteViewModelActivationOptions {
         return {
             note: note,
             readonly: false,
-            owner: this,
             handlers: {
-                save: this.save,
-                remove: this.remove,
-                cancel: this.cancel
+                save: n => this.save(n),
+                remove: n => this.remove(n),
+                cancel: n => this.cancel()
             }
         };
     }
 
-    activate(model: INoteDetailActivationModel): Promise<any> {
-        let note: Note;
-        let notePromise: Promise<Note>;
-        if (model.id < 0) {
-            this.heading = "New note";
-            this.hasUnsavedChanges = true;
-            notePromise = Promise.resolve(this.noteRepository.createNew());
-        } else {
-            this.heading = "Edit note";
-            notePromise = this.noteRepository.getById(model.id);
-        }
-        return notePromise.then((n: Note) => {
-            //this.createSubscription(n.content, this.onNoteContentChange);
-            return this.noteModel.activate(this.getNotePartialActivationOptions(n));
-        });
-    }
-    
-    canDeactivate(): Promise<boolean> {
-        if (this.hasUnsavedChanges) {
-            let buttonTexts = ["Save", "Abandon changes", "Stay on page"];
-            return this.prompt.messageBox("Do you want to save the note before leaving?", "Save changes", buttonTexts, 2)
-                .then(result => {
-                    if (result.wasCancelled) {
-                        return Promise.resolve(false);
-                    } else if (result.output === buttonTexts[1]) {
-                        return Promise.resolve(true);
-                    } else {
-                        return this.save(this.noteModel, true).then(() => true); 
-                    }
-                });
-        } else {
-            return Promise.resolve(true);
-        }
-    }
-    
     private onNoteContentChange() {
         this.hasUnsavedChanges = true;
     }
