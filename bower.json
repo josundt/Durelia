@@ -1,7 +1,7 @@
 {
   "name": "durelia",
   "description": "Durandal extensions enabling a step by step transition from Durandal towards Aurelia.",
-  "main": "dist/aurelia-bootstrapper.js",
+  "main": "dist/durelia-framework.js",
   "authors": [
     "Jørn Andre Sundt <jorn.andre.sundt@jasmin.no>"
   ],

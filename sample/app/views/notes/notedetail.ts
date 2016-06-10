@@ -1,6 +1,6 @@
+import {inject, observe, useView} from "durelia-framework";
 import {IViewModel} from "durelia-viewmodel";
 import {INoteRepository, NoteRepository, Note} from "services/noterepository";
-import {transient, inject, Lazy, observe, useView} from "durelia-framework";
 import {INoteViewModel, INoteViewModelActivationOptions} from "views/_shared/note";
 import {ICommonDialogs, CommonDialogs} from "services/common-dialogs";
 import {INavigationController, NavigationController} from "durelia-router";
@@ -11,7 +11,6 @@ export interface INoteDetailActivationModel {
 
 @useView("views/notes/notedetail.html")
 @observe(true)
-@transient
 @inject(NoteRepository, CommonDialogs, NavigationController)
 export default class NoteDetail implements IViewModel<INoteDetailActivationModel> {
     constructor(

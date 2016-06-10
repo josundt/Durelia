@@ -1,4 +1,4 @@
-import {inject, transient, useView} from "durelia-framework";
+import {inject, useView} from "durelia-framework";
 import {IDialogController, DialogController} from "durelia-dialog";
 import {IDialogViewModel} from "durelia-viewmodel";
 

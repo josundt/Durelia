@@ -1,13 +1,12 @@
+import {inject, computedFrom, observe, useView} from "durelia-framework";
 import {IViewModel} from "durelia-viewmodel";
 import {ITermsPartialModal, TermsPartialModal, ITermsPartialModalActivationModel, ITermsPartialModalOutput} from "views/home/home.terms.concentmodal";
 import {IDialogService, DialogService} from "durelia-dialog";
-import {transient, inject, computedFrom, observe, useView} from "durelia-framework";
 
 export interface ITermsPartial extends IViewModel<void> {}
 
 @useView("views/home/home.terms.html")
 @observe(true)
-@transient
 @inject(DialogService)
 export default class TermsPartial implements ITermsPartial {
     

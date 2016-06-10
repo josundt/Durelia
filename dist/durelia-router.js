@@ -146,7 +146,7 @@ define(["require", "exports", "plugins/router", "durelia-dependency-injection"],
         };
         /** @internal */
         NavigationController.enableRouterModelActivation = function () {
-            // Used by DureliaBootstrapper
+            // Used by Durelia FrameworkConfiguration
             if (NavigationController.routerModelActivationEnabled) {
                 return;
             }

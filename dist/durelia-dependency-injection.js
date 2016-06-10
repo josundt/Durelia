@@ -1,8 +1,17 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 define(["require", "exports", "durelia-logger"], function (require, exports, durelia_logger_1) {
     "use strict";
     var lifetimePropName = "__lifetime__";
+    /** @internal */
     var DependencyInjectionContainer = (function () {
-        function DependencyInjectionContainer(logger) {
+        function DependencyInjectionContainer(
+            /** @internal */
+            logger) {
             if (logger === void 0) { logger = new durelia_logger_1.Logger(); }
             this.logger = logger;
             this.singletonTypeRegistry = [];
@@ -11,6 +20,30 @@ define(["require", "exports", "durelia-logger"], function (require, exports, dur
         }
         DependencyInjectionContainer.prototype.resolve = function (injectable) {
             return this.resolveRecursive(injectable).instance;
+        };
+        /** @internal */
+        DependencyInjectionContainer.prototype.registerInstance = function (classType, instance) {
+            var errMsg = "Cannor register instance:";
+            if (!instance) {
+                throw new Error(errMsg + " Instance is null or undefined.");
+            }
+            else if (!classType) {
+                throw new Error(errMsg + " Type is is null or undefined.");
+            }
+            else if (!instance.constructor || !this.isConstructorFunction(instance.constructor)) {
+                throw new Error(errMsg + " Instance is not a class instance.");
+            }
+            else if (!this.isConstructorFunction(classType)) {
+                throw new Error(errMsg + " Type is invalid (not a class/constructor function).");
+            }
+            else if (classType !== instance.constructor) {
+                throw new Error(errMsg + " Instance is not of the type specified.");
+            }
+            else if (this.singletonTypeRegistry.indexOf(classType) >= 0) {
+                throw new Error("The type " + classType + " is already a registered singleton.");
+            }
+            this.singletonTypeRegistry.push(classType);
+            this.singletonInstances.push(instance);
         };
         DependencyInjectionContainer.prototype.isConstructorFunction = function (o) {
             return !!(o && typeof o === "function" && o["prototype"]);
@@ -39,10 +72,10 @@ define(["require", "exports", "durelia-logger"], function (require, exports, dur
             return !!classType.__lifetime__;
         };
         DependencyInjectionContainer.prototype.isTransient = function (classType) {
-            return classType.__lifetime__ && classType.__lifetime__ === "transient";
+            return !classType.__lifetime__ || classType.__lifetime__ === "transient";
         };
         DependencyInjectionContainer.prototype.isSingleton = function (classType) {
-            return !classType.__lifetime__ || classType.__lifetime__ === "singleton";
+            return classType.__lifetime__ && classType.__lifetime__ === "singleton";
         };
         DependencyInjectionContainer.prototype.getDependencyPath = function (node) {
             var parts = [];
@@ -55,11 +88,11 @@ define(["require", "exports", "durelia-logger"], function (require, exports, dur
         DependencyInjectionContainer.prototype.resolveRecursive = function (injectable, parent) {
             if (parent === void 0) { parent = null; }
             if (this.isLazyInjection(injectable)) {
-                var lazy = injectable;
+                var lazy_1 = injectable;
                 var depNode = {
                     parent: parent,
-                    classType: lazy.constructor,
-                    instance: lazy.resolver,
+                    classType: lazy_1.constructor,
+                    instance: function () { return lazy_1.resolver; },
                     children: []
                 };
                 return depNode;
@@ -134,9 +167,13 @@ define(["require", "exports", "durelia-logger"], function (require, exports, dur
                 throw new Error(msg);
             }
         };
+        DependencyInjectionContainer = __decorate([
+            inject(durelia_logger_1.Logger),
+            singleton
+        ], DependencyInjectionContainer);
         return DependencyInjectionContainer;
     }());
-    exports.container = new DependencyInjectionContainer();
+    exports.DependencyInjectionContainer = DependencyInjectionContainer;
     function inject() {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
@@ -157,12 +194,20 @@ define(["require", "exports", "durelia-logger"], function (require, exports, dur
     exports.transient = transient;
     var Lazy = (function () {
         /** @internal */
-        function Lazy(classOrObject, cont) {
-            this.resolver = function () { return cont.resolve(classOrObject); };
+        function Lazy(_injectable) {
+            this._injectable = _injectable;
         }
         Lazy.of = function (injectable) {
-            return new Lazy(injectable, exports.container);
+            return new Lazy(injectable);
         };
+        Object.defineProperty(Lazy.prototype, "resolver", {
+            get: function () {
+                var _this = this;
+                return function () { return _this._injectable; };
+            },
+            enumerable: true,
+            configurable: true
+        });
         return Lazy;
     }());
     exports.Lazy = Lazy;

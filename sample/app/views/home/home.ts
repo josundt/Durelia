@@ -1,11 +1,10 @@
+import {inject, observe, useView} from "durelia-framework";
 import {IViewModel} from "durelia-viewmodel";
-import {transient, inject, observe, useView} from "durelia-framework";
 import {INavigationController, NavigationController} from "durelia-router";
 import {INoteListActivationModel} from "views/notes/notelist";
 
 @observe(true)
 @useView("views/home/home.html")
-@transient
 @inject(NavigationController)
 export default class Home implements IViewModel<void> {
         

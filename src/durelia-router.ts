@@ -162,7 +162,7 @@ export class NavigationController {
     /** @internal */
     static enableRouterModelActivation(): void {
 
-        // Used by DureliaBootstrapper
+        // Used by Durelia FrameworkConfiguration
 
         if (NavigationController.routerModelActivationEnabled) {
             return;

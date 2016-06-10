@@ -1,10 +1,11 @@
 import {ILogger, Logger} from "durelia-logger";
+import {Durelia} from "durelia-framework";
 
-export type IInjectable = Function | {};
+export type IInjectable = IResolvableConstructor | {};
 
-interface IResolvableInstance {}
+export interface IResolvableInstance {}
 
-interface IResolvableConstructor {
+export interface IResolvableConstructor {
     new (...injectables: IInjectable[]): IResolvableInstance;
     prototype: IResolvableInstance;
     inject?(): Array<IInjectable>;
@@ -21,13 +22,18 @@ interface IDependencyTreeNode {
 
 export interface IDependencyInjectionContainer {
     resolve<T>(injectable: IInjectable): T;
+    registerInstance(classType: IResolvableConstructor, instance: IResolvableInstance);
 }
 
 const lifetimePropName = "__lifetime__";
 
-class DependencyInjectionContainer implements IDependencyInjectionContainer {
+/** @internal */
+@inject(Logger)
+@singleton
+export class DependencyInjectionContainer implements IDependencyInjectionContainer {
     
     constructor(
+        /** @internal */
         private logger: ILogger = new Logger()
     ) {}
     
@@ -40,6 +46,27 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
         return this.resolveRecursive(injectable).instance as T;
     }
     
+    /** @internal */
+    registerInstance(classType: IResolvableConstructor, instance: IResolvableInstance) {
+        let errMsg = "Cannor register instance:";
+        if (!instance) {
+            throw new Error(`${errMsg} Instance is null or undefined.`);
+        } else if (!classType) {
+            throw new Error(`${errMsg} Type is is null or undefined.`);
+        } else if (!instance.constructor || !this.isConstructorFunction(instance.constructor)) {
+            throw new Error(`${errMsg} Instance is not a class instance.`);
+        } else if (!this.isConstructorFunction(classType)) {
+            throw new Error(`${errMsg} Type is invalid (not a class/constructor function).`);
+        } else if (classType !== instance.constructor) {
+            throw new Error(`${errMsg} Instance is not of the type specified.`);
+        } else if (this.singletonTypeRegistry.indexOf(classType) >= 0) {
+            throw new Error(`The type ${classType} is already a registered singleton.`);
+        }
+
+        this.singletonTypeRegistry.push(classType);
+        this.singletonInstances.push(instance);
+    }
+
     private isConstructorFunction(o: any): o is IResolvableConstructor {
         return !!(o && typeof o === "function" && o["prototype"]);
     }
@@ -74,11 +101,11 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
     }
 
     private isTransient(classType: IResolvableConstructor) {
-        return classType.__lifetime__ && classType.__lifetime__ === "transient";
+        return !classType.__lifetime__ || classType.__lifetime__ === "transient";
     }
 
     private isSingleton(classType: IResolvableConstructor): boolean {
-        return !classType.__lifetime__ || classType.__lifetime__ === "singleton";
+        return classType.__lifetime__ && classType.__lifetime__ === "singleton";
     }
     
     private getDependencyPath(node: IDependencyTreeNode): string {
@@ -92,11 +119,11 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
 
     private resolveRecursive(injectable: IInjectable, parent: IDependencyTreeNode = null): IDependencyTreeNode {
         if (this.isLazyInjection(injectable)) {
-            let lazy = injectable;
+            let lazy: Lazy<any> = injectable;
             let depNode: IDependencyTreeNode = {
                 parent: parent,
                 classType: lazy.constructor as IResolvableConstructor,
-                instance: lazy.resolver,
+                instance: () => lazy.resolver,
                 children: <IDependencyTreeNode[]>[]
             };
             return depNode;
@@ -184,8 +211,6 @@ class DependencyInjectionContainer implements IDependencyInjectionContainer {
     }
 }
 
-export let container: IDependencyInjectionContainer = new DependencyInjectionContainer();
-
 export function inject(...args: Array<IInjectable>) {
     return function (classType: Function) {
         classType["inject"] = () => args;
@@ -203,15 +228,15 @@ export function transient(classType: Function) {
 export class Lazy<T extends IInjectable> {
     
     /** @internal */
-    constructor(classOrObject: IResolvableConstructor | {}, cont: IDependencyInjectionContainer) {
-        this.resolver = () => cont.resolve<T>(classOrObject);
+    constructor(private _injectable: IInjectable) {
     }
+
     static of<T>(injectable: IInjectable): Lazy<T> {
-        return new Lazy<T>(injectable, container);
+        return new Lazy<T>(injectable);
     }
-    
-    /** @internal */
-    resolver: () => T;
-    
+
+    get resolver(): () => IInjectable {
+        return () => this._injectable;
+    }
 }
 

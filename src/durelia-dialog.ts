@@ -1,6 +1,6 @@
 import * as durandalDialog from "plugins/dialog";
 import {IDialogViewModel} from "durelia-viewmodel";
-import {IDependencyInjectionContainer, inject, container, singleton} from "durelia-dependency-injection";
+import {IDependencyInjectionContainer, DependencyInjectionContainer, inject, singleton} from "durelia-dependency-injection";
 
 export interface IDialogOptions<TActivationModel> {
     viewModel: Function | Object;
@@ -22,7 +22,7 @@ export interface IDialogController<TResultOutput> {
 }
 
 @singleton
-@inject(container)
+@inject(DependencyInjectionContainer)
 export class DialogService implements IDialogService {
     
     constructor(container: IDependencyInjectionContainer) {

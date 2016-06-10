@@ -1,5 +1,5 @@
 import {Note} from "services/noterepository";
-import {transient, useView  } from "durelia-framework";
+import {useView} from "durelia-framework";
 import {IViewModel} from "durelia-viewmodel";
 
 export interface INoteViewModel extends IViewModel<INoteViewModelActivationOptions> {
@@ -19,7 +19,6 @@ interface INoteViewModelEventHandlers {
     cancel?: (note: Note) => Promise<any>;
 }
 
-@transient
 @useView("views/_shared/note")
 export default class NoteViewModel implements INoteViewModel {
     note: Note;

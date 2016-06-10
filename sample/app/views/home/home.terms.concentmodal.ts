@@ -1,6 +1,6 @@
+import {inject, observe, useView} from "durelia-framework";
 import {IDialogViewModel} from "durelia-viewmodel";
 import {IDialogController, DialogController} from "durelia-dialog";
-import {transient, inject, observe, useView} from "durelia-framework";
 
 export interface ITermsPartialModalActivationModel { text: string; }
 

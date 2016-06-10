@@ -16,7 +16,7 @@ define(["require", "exports", "plugins/dialog", "durelia-dependency-injection"],
         };
         DialogService = __decorate([
             durelia_dependency_injection_1.singleton,
-            durelia_dependency_injection_1.inject(durelia_dependency_injection_1.container)
+            durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer)
         ], DialogService);
         return DialogService;
     }());

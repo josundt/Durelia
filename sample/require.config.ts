@@ -29,7 +29,6 @@ let require: IRequireJsConfig = {
     paths: {
         
         "durelia-binding":              "../../dist/durelia-binding",
-        "durelia-bootstrapper":         "../../dist/durelia-bootstrapper",
         "durelia-dependency-injection": "../../dist/durelia-dependency-injection",
         "durelia-dialog":               "../../dist/durelia-dialog",
         "durelia-framework":            "../../dist/durelia-framework",

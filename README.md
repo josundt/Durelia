@@ -19,28 +19,28 @@ Promise instead (which is enabled in all current browsers and can also be polyfi
 
 *Example (when targeting only modern modern browers, or when already having a polyfill installed):*
 ```javascript
-import {dureliaBootstrapper} from "durelia-bootstrapper";
+import {durelia} from "durelia-framework";
 
-dureliaBootstrapper
-    .useES2015Promise();
+durelia.use
+    .navivePromise();
 ```
 
 *Example (when you want to install **Q** as ES2015 Promise a polyfill as you enable ES2015 Promise for Durandal):*
 ```javascript
-import {dureliaBootstrapper} from "durelia-bootstrapper";
+import {durelia} from "durelia-framework";
 import * as Bluebird from "bluebird";
 
-dureliaBootstrapper
-    .useES2015Promise(Q.Promise);
+durelia.use
+    .nativePromise(Q.Promise);
 ```
 
 *Example (when you want to install **Bluebird** as ES2015 Promise a polyfill as you enable ES2015 Promise for Durandal):*
 ```javascript
-import {dureliaBootstrapper} from "durelia-bootstrapper";
+import {durelia} from "durelia-framework";
 import * as Bluebird from "bluebird";
 
-dureliaBootstrapper
-    .useES2015Promise(Bluebird);
+durelia.use
+    .nativePromise(Bluebird);
 ```
 *Bluebird will actuall give some warnings in the console, for now
 I recommend using Q^1.4.1*
@@ -59,7 +59,11 @@ interface DurandalPromise<T> extends Promise<T> { }
 ###2. Dependency injection
 Durelia provides a Dependecy Injection (DI)/Inversion of Control (IoC) Container
 and offers ESNEXT decorators to support DI with the exact same signatures as the
-ones in Aurelia.
+ones in Aurelia. The Durelia IoC container implementation is a bit simpler than
+the one in Aurelia; there is only one container (no child containers) and for this
+reason, injections are resolved as transient (as opposed to singleons) by default.
+In practical usage it will still work pretty much the same way. 
+IoC Container with 
 ```javascript
 import {inject, transient, singleton, Lazy} from "durelia-framework";
 
@@ -95,10 +99,10 @@ Durelia can alter/extend the behavior of the Durandal router, making it look for
 prioritize any existing default export of a module when determining what to use as ViewModel
 for the View/ViewModel pair after the module has been loaded.
 ```javascript
-import {dureliaBootstrapper} from "durelia-bootstrapper";
+import {durelia} from "durelia-framework";
 
-dureliaBootstrapper
-    .useViewModelDefaultExports();
+durelia.use
+    .viewModelDefaultExports();
 ```
 
 
@@ -363,7 +367,6 @@ Example (RequireJS):
 let require = {
     paths: {
         "durelia-binding":              "bower_components/dist/durelia-binding",
-        "durelia-bootstrapper":         "bower_components/dist/durelia-bootstrapper",
         "durelia-dependency-injection": "bower_components/dist/durelia-dependency-injection",
         "durelia-dialog":               "bower_components/dist/durelia-dialog",
         "durelia-framework":            "bower_components/dist/durelia-framework",
@@ -378,17 +381,17 @@ let require = {
     }
 };
 ```
-**e)** You have called the durelia-bootstrapper to enable the desired features.
+**e)** You have called the durelia.use.x enabler functions for the the desired features.
 NB! This needs to happen after app.start() has finished asynchronously:
 
 ```javascript
 app.start().then((result) => {
 
-    dureliaBootstrapper
-        .useES2015Promise()          // optional feature
-        .useViewModelDefaultExports() // optional feature
-        .useObserveDecorator()        // optional feature
-        .useRouterModelActivation();  // optional feature
+    durelia.use
+        .nativePromise()           // optional feature
+        .viewModelDefaultExports() // optional feature
+        .observeDecorator()        // optional feature
+        .routerModelActivation();  // optional feature
 
     app.setRoot("views/shell", "entrance");
 });
