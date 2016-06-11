@@ -84,6 +84,32 @@ export class MyService {
 }
 
 ```
+
+In addition to the static injection decorators support, the dynamic instance registration
+API from Aurelia is also supported:
+
+```javascript
+import {Durelia, inject} from "durelia-framework";
+
+@inject(Durelia)
+class A {
+    constructor(durelia) {
+        durelia.use.instance(B, new B());
+    }
+}
+
+class B {
+}
+
+@inject(B)
+class C {
+    constuctor(b) {
+        // The instance registered in A's constructor will be injected here
+        // It requires that the registration happens before C is attempted resolved.
+    }
+}
+```
+
 For more info, check how this works in Aurelia; it works the exact same way here ;-)
 
 ###3. Enabling the Durandal Router to look for the *default export* class/object
