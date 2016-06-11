@@ -149,12 +149,13 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
     exports.FrameworkConfiguration = FrameworkConfiguration;
     var Durelia = (function () {
         /** @internal */
-        function Durelia(frameworkConfig) {
+        function Durelia(container, frameworkConfig) {
+            this.container = container;
             this.use = frameworkConfig;
         }
         Durelia = __decorate([
             durelia_dependency_injection_1.singleton,
-            durelia_dependency_injection_1.inject(FrameworkConfiguration)
+            durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer, FrameworkConfiguration)
         ], Durelia);
         return Durelia;
     }());

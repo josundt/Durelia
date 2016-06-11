@@ -1,7 +1,8 @@
 declare module "durelia-framework" {
-    import { IResolvableConstructor, IResolvableInstance } from "durelia-dependency-injection";
+    import { IDependencyInjectionContainer, IResolvableConstructor, IResolvableInstance } from "durelia-dependency-injection";
     export interface IDurelia {
         use: IFrameworkConfiguration;
+        container: IDependencyInjectionContainer;
     }
     export interface IFrameworkConfiguration {
         /**
@@ -39,6 +40,7 @@ declare module "durelia-framework" {
         instance(type: IResolvableConstructor, instance: IResolvableInstance): this;
     }
     export class Durelia implements IDurelia {
+        container: IDependencyInjectionContainer;
         use: IFrameworkConfiguration;
     }
     export let durelia: IDurelia;

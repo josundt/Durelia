@@ -10,6 +10,7 @@ import {NavigationController} from "durelia-router";
 
 export interface IDurelia {
     use: IFrameworkConfiguration;
+    container: IDependencyInjectionContainer;
 }
 
 export interface IFrameworkConfiguration {
@@ -279,15 +280,17 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
 }
 
 @singleton
-@inject(FrameworkConfiguration)
+@inject(DependencyInjectionContainer, FrameworkConfiguration)
 export class Durelia implements IDurelia {
     /** @internal */
     constructor(
+        container: IDependencyInjectionContainer,
         frameworkConfig: IFrameworkConfiguration
     ) {
+        this.container = container;
         this.use = frameworkConfig;
     }
-
+    container: IDependencyInjectionContainer;
     use: IFrameworkConfiguration;
 }
 
