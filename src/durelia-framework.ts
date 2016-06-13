@@ -3,7 +3,7 @@ import * as durandalApp from "durandal/app";
 import * as durandalBinder from "durandal/binder";
 import * as durandalObservable from "plugins/observable";
 import * as durandalRouter from "plugins/router";
-import {inject, singleton, IDependencyInjectionContainer, DependencyInjectionContainer, IResolvableConstructor, IResolvableInstance} from "durelia-dependency-injection";
+import {inject, singleton, IDependencyInjectionContainer, DependencyInjectionContainer, IResolvableConstructor, IResolvedInstance} from "durelia-dependency-injection";
 import {ILogger, Logger} from "durelia-logger";
 import {observeDecoratorKeyName} from "durelia-binding";
 import {NavigationController} from "durelia-router";
@@ -20,7 +20,7 @@ export interface IFrameworkConfiguration {
      * @param instance The existing instance of the dependency that the framework will inject.
      * @return Returns the current FrameworkConfiguration instance.
      */
-    instance(type: IResolvableConstructor, instance: IResolvableInstance): this;
+    instance(type: IResolvableConstructor, instance: IResolvedInstance): this;
 
     /** Configures Durandal to use ES2015 Promise instead of JQueryDeferred/JQueryPromise.
      * @param {PromiseConstructorLike} promisePolyfill. Optional; if specified the object will used by the browser as global Promise polyfill.
@@ -254,7 +254,7 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
     }
 
 
-    instance(type: IResolvableConstructor, instance: IResolvableInstance): this {
+    instance(type: IResolvableConstructor, instance: IResolvedInstance): this {
         this.container.registerInstance(type, instance);
         return this;
     }

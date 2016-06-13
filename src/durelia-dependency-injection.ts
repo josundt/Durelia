@@ -1,13 +1,13 @@
 import {ILogger, Logger} from "durelia-logger";
-import {Durelia} from "durelia-framework";
+import {Durelia, durelia} from "durelia-framework";
 
 export type IInjectable = IResolvableConstructor | {};
 
-export interface IResolvableInstance {}
+export interface IResolvedInstance {}
 
 export interface IResolvableConstructor {
-    new (...injectables: IInjectable[]): IResolvableInstance;
-    prototype: IResolvableInstance;
+    new (...injectables: IInjectable[]): IResolvedInstance;
+    prototype: IResolvedInstance;
     inject?(): Array<IInjectable>;
     /** @internal */
     __lifetime__?: "singleton" | "transient";
@@ -15,14 +15,14 @@ export interface IResolvableConstructor {
 
 interface IDependencyTreeNode {
     classType: IResolvableConstructor;
-    instance: IResolvableInstance;
+    instance: IResolvedInstance;
     parent: IDependencyTreeNode;
     children: IDependencyTreeNode[];
 }
 
 export interface IDependencyInjectionContainer {
     resolve<T>(injectable: IInjectable): T;
-    registerInstance(classType: IResolvableConstructor, instance: IResolvableInstance);
+    registerInstance(classType: IResolvableConstructor, instance: IResolvedInstance);
 }
 
 const lifetimePropName = "__lifetime__";
@@ -38,7 +38,7 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
     ) {}
     
     singletonTypeRegistry: IResolvableConstructor[] = [];
-    singletonInstances: IResolvableInstance[] = [];
+    singletonInstances: IResolvedInstance[] = [];
     
     debug: boolean = true;
 
@@ -47,7 +47,7 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
     }
     
     /** @internal */
-    registerInstance(classType: IResolvableConstructor, instance: IResolvableInstance) {
+    registerInstance(classType: IResolvableConstructor, instance: IResolvedInstance) {
         let errMsg = "Cannor register instance:";
         if (!instance) {
             throw new Error(`${errMsg} Instance is null or undefined.`);
@@ -137,7 +137,7 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
             let depNode: IDependencyTreeNode = {
                 parent: parent,
                 classType: classType,
-                instance: <IResolvableInstance>null,
+                instance: <IResolvedInstance>null,
                 children: <IDependencyTreeNode[]>[]
             };
             let dependencyPath = this.getDependencyPath(depNode);
@@ -235,8 +235,8 @@ export class Lazy<T extends IInjectable> {
         return new Lazy<T>(injectable);
     }
 
-    get resolver(): () => IInjectable {
-        return () => this._injectable;
+    get resolver(): IResolvedInstance {
+        return durelia.container.resolve(this._injectable);
     }
 }
 

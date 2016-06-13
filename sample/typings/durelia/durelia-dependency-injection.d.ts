@@ -1,15 +1,15 @@
 declare module "durelia-dependency-injection" {
     export type IInjectable = IResolvableConstructor | {};
-    export interface IResolvableInstance {
+    export interface IResolvedInstance {
     }
     export interface IResolvableConstructor {
-        new (...injectables: IInjectable[]): IResolvableInstance;
-        prototype: IResolvableInstance;
+        new (...injectables: IInjectable[]): IResolvedInstance;
+        prototype: IResolvedInstance;
         inject?(): Array<IInjectable>;
     }
     export interface IDependencyInjectionContainer {
         resolve<T>(injectable: IInjectable): T;
-        registerInstance(classType: IResolvableConstructor, instance: IResolvableInstance): any;
+        registerInstance(classType: IResolvableConstructor, instance: IResolvedInstance): any;
     }
     export function inject(...args: Array<IInjectable>): (classType: Function) => void;
     export function singleton(classType: Function): void;
@@ -17,7 +17,7 @@ declare module "durelia-dependency-injection" {
     export class Lazy<T extends IInjectable> {
         private _injectable;
         static of<T>(injectable: IInjectable): Lazy<T>;
-        resolver: () => IInjectable;
+        resolver: IResolvedInstance;
     }
     
 }

@@ -4,7 +4,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-define(["require", "exports", "durelia-logger"], function (require, exports, durelia_logger_1) {
+define(["require", "exports", "durelia-logger", "durelia-framework"], function (require, exports, durelia_logger_1, durelia_framework_1) {
     "use strict";
     var lifetimePropName = "__lifetime__";
     /** @internal */
@@ -202,8 +202,7 @@ define(["require", "exports", "durelia-logger"], function (require, exports, dur
         };
         Object.defineProperty(Lazy.prototype, "resolver", {
             get: function () {
-                var _this = this;
-                return function () { return _this._injectable; };
+                return durelia_framework_1.durelia.container.resolve(this._injectable);
             },
             enumerable: true,
             configurable: true

@@ -1,4 +1,4 @@
-import {inject, observe, useView, computedFrom} from "durelia-framework";
+import {inject, Lazy, observe, useView, computedFrom} from "durelia-framework";
 import {IViewModel} from "durelia-viewmodel";
 import {INoteDetailActivationModel} from "views/notes/notedetail";
 import {INoteRepository, NoteRepository, Note, ISortOrder} from "services/noterepository";
@@ -17,14 +17,18 @@ export interface INoteListActivationModel {
 
 @observe(true)
 @useView("views/notes/notelist.html")
-@inject(NoteRepository, CommonDialogs, NavigationController)
+@inject(Lazy.of(NoteRepository), CommonDialogs, NavigationController)
 export default class NoteList implements IViewModel<INoteListActivationModel> {
     constructor(
-        private noteRepository: INoteRepository,
+        getNoteRepository: () => INoteRepository, 
         private commonDialogs: ICommonDialogs,
         private navigator: INavigationController
-    ) {}
+    ) {
+        this.noteRepository = getNoteRepository();
+
+    }
     
+    private noteRepository: INoteRepository;
     private allowEditing: boolean = false;
 
     hasUnsavedChanges: boolean = false;

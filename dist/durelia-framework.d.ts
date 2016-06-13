@@ -1,5 +1,5 @@
 declare module "durelia-framework" {
-    import { IDependencyInjectionContainer, IResolvableConstructor, IResolvableInstance } from "durelia-dependency-injection";
+    import { IDependencyInjectionContainer, IResolvableConstructor, IResolvedInstance } from "durelia-dependency-injection";
     export interface IDurelia {
         use: IFrameworkConfiguration;
         container: IDependencyInjectionContainer;
@@ -11,7 +11,7 @@ declare module "durelia-framework" {
          * @param instance The existing instance of the dependency that the framework will inject.
          * @return Returns the current FrameworkConfiguration instance.
          */
-        instance(type: IResolvableConstructor, instance: IResolvableInstance): this;
+        instance(type: IResolvableConstructor, instance: IResolvedInstance): this;
         /** Configures Durandal to use ES2015 Promise instead of JQueryDeferred/JQueryPromise.
          * @param {PromiseConstructorLike} promisePolyfill. Optional; if specified the object will used by the browser as global Promise polyfill.
          * @returns {this} Returns this instance to enable chaining.
@@ -37,7 +37,7 @@ declare module "durelia-framework" {
         viewModelDefaultExports(): this;
         observeDecorator(): this;
         routerModelActivation(): this;
-        instance(type: IResolvableConstructor, instance: IResolvableInstance): this;
+        instance(type: IResolvableConstructor, instance: IResolvedInstance): this;
     }
     export class Durelia implements IDurelia {
         container: IDependencyInjectionContainer;
