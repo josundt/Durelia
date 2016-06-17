@@ -4,7 +4,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-define(["require", "exports", "plugins/router", "durelia-dependency-injection"], function (require, exports, durandalRouter, durelia_dependency_injection_1) {
+define(["require", "exports", "plugins/router", "plugins/history", "durelia-dependency-injection"], function (require, exports, durandalRouter, durandalHistory, durelia_dependency_injection_1) {
     "use strict";
     var NavigationController = (function () {
         function NavigationController() {
@@ -133,18 +133,6 @@ define(["require", "exports", "plugins/router", "durelia-dependency-injection"],
             }
         };
         /** @internal */
-        NavigationController.prototype.fragmentToUrl = function (fragment) {
-            var activeInstruction = durandalRouter.activeInstruction();
-            var activeHash = activeInstruction.config.hash;
-            var activeFragment = activeInstruction.fragment;
-            var appRoot = location.href.substring(0, location.href.lastIndexOf(activeFragment));
-            if (activeHash && appRoot.indexOf("#") < 0) {
-                appRoot += "#";
-            }
-            var newUrl = appRoot + fragment;
-            return newUrl;
-        };
-        /** @internal */
         NavigationController.enableRouterModelActivation = function () {
             // Used by Durelia FrameworkConfiguration
             if (NavigationController.routerModelActivationEnabled) {
@@ -184,13 +172,7 @@ define(["require", "exports", "plugins/router", "durelia-dependency-injection"],
             var routeArgs = args || {};
             var route = this.getRoute(routeName, routeArgs);
             var fragment = this.getFragment(route, routeArgs);
-            var url = this.fragmentToUrl(fragment);
-            if (options && options.replace) {
-                location.replace(url);
-            }
-            else {
-                location.assign(url);
-            }
+            durandalHistory.navigate(fragment, options);
         };
         NavigationController.prototype.navigateBack = function () {
             window.history.back();

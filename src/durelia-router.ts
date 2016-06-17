@@ -1,4 +1,6 @@
 import * as durandalRouter from "plugins/router";
+import * as durandalHistory from "plugins/history";
+
 import {singleton} from "durelia-dependency-injection";
 
 export interface IRouteActivationModel {
@@ -144,19 +146,6 @@ export class NavigationController {
     }
 
     /** @internal */
-    private fragmentToUrl(fragment: string): string {
-        let activeInstruction = durandalRouter.activeInstruction();
-        let activeHash = activeInstruction.config.hash;
-        let activeFragment: string = activeInstruction.fragment;
-        let appRoot = location.href.substring(0, location.href.lastIndexOf(activeFragment));
-        if (activeHash && appRoot.indexOf("#") < 0) {
-            appRoot += "#";
-        }
-        let newUrl = appRoot + fragment;
-        return newUrl;
-    }
-    
-    /** @internal */
     private static routerModelActivationEnabled: boolean = false;
     
     /** @internal */
@@ -206,12 +195,7 @@ export class NavigationController {
         let routeArgs: IRouteActivationModel = <any>args || {};
         let route = this.getRoute(routeName, routeArgs);
         let fragment = this.getFragment(route, routeArgs);
-        let url = this.fragmentToUrl(fragment);
-        if (options && options.replace) {
-            location.replace(url); 
-        } else {
-            location.assign(url);
-        }
+        durandalHistory.navigate(fragment, <any>options);
     }
     
     navigateBack(): void {
