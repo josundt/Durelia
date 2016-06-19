@@ -25,6 +25,9 @@ interface IRouteHrefBindingArgs {
 
 @singleton
 export class NavigationController {
+
+    constructor() {}
+
     /** @internal */
     private static routeExpandRegex: RegExp = /\:([^\:\/\(\)\?\=\&]+)/g;
  

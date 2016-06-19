@@ -114,25 +114,20 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
                     this.logger.error(msg);
                     throw new Error(msg);
                 }
-                for (var _i = 0, injectees_1 = injectees; _i < injectees_1.length; _i++) {
-                    var injectee = injectees_1[_i];
-                    var childDep = this.resolveRecursive(injectee, depNode);
-                    depNode.children.push(childDep);
-                }
-                var ctorInjectionArgs = depNode.children.map(function (c) { return c.instance; });
                 if (this.isSingleton(classType)) {
                     var idx = this.singletonTypeRegistry.indexOf(classType);
-                    var lifeTimeSpec = this.hasInjectionInstructions(classType) ? "singleton" : "unspecified -> singleton";
+                    var lifeTimeSpec = "singleton";
                     if (idx >= 0) {
                         depNode.instance = this.singletonInstances[idx];
                         this.logger.debug("Durelia DependencyResolver: " + dependencyPath + " (" + lifeTimeSpec + ") resolved: Returned existing instance.");
                     }
                     else {
-                        for (var _a = 0, injectees_2 = injectees; _a < injectees_2.length; _a++) {
-                            var injectee = injectees_2[_a];
+                        for (var _i = 0, injectees_1 = injectees; _i < injectees_1.length; _i++) {
+                            var injectee = injectees_1[_i];
                             var childDep = this.resolveRecursive(injectee, depNode);
                             depNode.children.push(childDep);
                         }
+                        var ctorInjectionArgs = depNode.children.map(function (c) { return c.instance; });
                         depNode.instance = new (classType.bind.apply(classType, [void 0].concat(ctorInjectionArgs)))();
                         this.singletonTypeRegistry.push(classType);
                         this.singletonInstances.push(depNode.instance);
@@ -140,11 +135,12 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
                     }
                 }
                 else {
-                    for (var _b = 0, injectees_3 = injectees; _b < injectees_3.length; _b++) {
-                        var injectee = injectees_3[_b];
+                    for (var _a = 0, injectees_2 = injectees; _a < injectees_2.length; _a++) {
+                        var injectee = injectees_2[_a];
                         var childDep = this.resolveRecursive(injectee, depNode);
                         depNode.children.push(childDep);
                     }
+                    var ctorInjectionArgs = depNode.children.map(function (c) { return c.instance; });
                     depNode.instance = new (classType.bind.apply(classType, [void 0].concat(ctorInjectionArgs)))();
                     var lifeTimeSpec = this.hasInjectionInstructions(classType) ? "transient" : "unspecified -> transient";
                     this.logger.debug("Durelia DependencyResolver: " + dependencyPath + " (" + lifeTimeSpec + ") resolved: Created new instance.");

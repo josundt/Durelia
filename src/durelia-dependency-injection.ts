@@ -147,17 +147,10 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
                 this.logger.error(msg);
                 throw new Error(msg);            
             }
-            
-            for (let injectee of injectees) {
-                let childDep = this.resolveRecursive(injectee, depNode);
-                depNode.children.push(childDep);
-            }
-
-            let ctorInjectionArgs = depNode.children.map(c => c.instance);
-            
+                        
             if (this.isSingleton(classType)) {
                 let idx = this.singletonTypeRegistry.indexOf(classType);
-                let lifeTimeSpec = this.hasInjectionInstructions(classType) ? "singleton" : "unspecified -> singleton";
+                let lifeTimeSpec = "singleton";
                 if (idx >= 0) {
                     depNode.instance = this.singletonInstances[idx];
                     this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} (${lifeTimeSpec}) resolved: Returned existing instance.`);
@@ -167,6 +160,7 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
                         let childDep = this.resolveRecursive(injectee, depNode);
                         depNode.children.push(childDep);
                     }
+                    let ctorInjectionArgs = depNode.children.map(c => c.instance);
                     depNode.instance = new classType(...ctorInjectionArgs);
                     this.singletonTypeRegistry.push(classType);
                     this.singletonInstances.push(depNode.instance);
@@ -178,6 +172,7 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
                     let childDep = this.resolveRecursive(injectee, depNode);
                     depNode.children.push(childDep);
                 }
+                let ctorInjectionArgs = depNode.children.map(c => c.instance);
                 depNode.instance = new classType(...ctorInjectionArgs);            
                 let lifeTimeSpec = this.hasInjectionInstructions(classType) ? "transient" : "unspecified -> transient";
                 this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} (${lifeTimeSpec}) resolved: Created new instance.`);

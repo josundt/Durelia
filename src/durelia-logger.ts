@@ -18,9 +18,11 @@ enum SeverityLevel {
     error
 }
 
-
 @singleton
 export class Logger implements ILogger {
+
+    constructor() {
+    }
 
     /** @internal */
     private get severityThreshold(): SeverityLevel {

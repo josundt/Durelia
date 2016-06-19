@@ -10,6 +10,7 @@ declare module "durelia-router" {
         navigateBack(): void;
     }
     export class NavigationController {
+        constructor();
         navigateToRoute<TActivationModel>(routeName: string, args?: TActivationModel, options?: INavigationOptions): void;
         navigateBack(): void;
     }
