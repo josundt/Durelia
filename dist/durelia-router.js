@@ -4,13 +4,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-define(["require", "exports", "plugins/router", "plugins/history", "durelia-dependency-injection"], function (require, exports, durandalRouter, durandalHistory, durelia_dependency_injection_1) {
+define(["require", "exports", "plugins/router", "plugins/history", "knockout", "durelia-dependency-injection"], function (require, exports, durandalRouter, durandalHistory, ko, durelia_dependency_injection_1) {
     "use strict";
     var NavigationController = (function () {
         function NavigationController() {
         }
         /** @internal */
-        NavigationController.prototype.getBestMatchedRoute = function (args) {
+        NavigationController.getBestMatchedRoute = function (args) {
             var _this = this;
             var routes = [];
             for (var _i = 1; _i < arguments.length; _i++) {
@@ -33,7 +33,7 @@ define(["require", "exports", "plugins/router", "plugins/history", "durelia-depe
             return bestMatchInfo.route;
         };
         /** @internal */
-        NavigationController.prototype.getRoute = function (name, args) {
+        NavigationController.getRoute = function (name, args) {
             var foundRouteConfigs = durandalRouter.routes.filter(function (r) { return r["name"] === name; });
             var routes = [];
             if (foundRouteConfigs.length < 1) {
@@ -64,7 +64,7 @@ define(["require", "exports", "plugins/router", "plugins/history", "durelia-depe
             return route;
         };
         /** @internal */
-        NavigationController.prototype.getRouteParams = function (route, sort) {
+        NavigationController.getRouteParams = function (route, sort) {
             var match;
             var count = 0;
             var routeParams = [];
@@ -77,7 +77,7 @@ define(["require", "exports", "plugins/router", "plugins/history", "durelia-depe
             return routeParams;
         };
         /** @internal */
-        NavigationController.prototype.getFragment = function (route, args) {
+        NavigationController.getFragment = function (route, args) {
             var url = route.replace(/\(|\)/g, "");
             var queryStringParams = {};
             Object.keys(args).forEach(function (k) { return queryStringParams[k] = args[k]; });
@@ -99,6 +99,7 @@ define(["require", "exports", "plugins/router", "plugins/history", "durelia-depe
             }
             return url;
         };
+        /** @internal */
         NavigationController.urlSerialize = function (value) {
             var result;
             if (value instanceof Date) {
@@ -109,6 +110,7 @@ define(["require", "exports", "plugins/router", "plugins/history", "durelia-depe
             }
             return encodeURIComponent(result);
         };
+        /** @internal */
         NavigationController.urlDeserialize = function (text) {
             var intValue;
             var floatValue;
@@ -133,11 +135,49 @@ define(["require", "exports", "plugins/router", "plugins/history", "durelia-depe
             }
         };
         /** @internal */
+        NavigationController.registerRouteHrefBindingHandler = function () {
+            function onRouteHrefLinkClick(evt) {
+                var elem = evt.currentTarget;
+                var fragment = elem.getAttribute("data-route-href-fragment");
+                var strReplace = elem.getAttribute("data-route-href-replace");
+                var replace = strReplace === "true";
+                evt.preventDefault();
+                durandalRouter.navigate(fragment, { replace: replace, trigger: true });
+            }
+            ko.bindingHandlers["route-href"] = ko.bindingHandlers["route-href"] || {
+                init: function (element, bindingArgsAccessor, allBindingsAccessor, viewModel, bindingContext) {
+                    element.addEventListener("click", onRouteHrefLinkClick);
+                    ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+                        element.removeEventListener("click", onRouteHrefLinkClick);
+                    });
+                },
+                update: function (element, bindingArgsAccessor, allBindingsAccessor, viewModel, bindingContext) {
+                    if (element.tagName.toUpperCase() !== "A") {
+                        throw new Error("knockout binding error: 'routeHref' can only be used with anchor (A) HTML elements.");
+                    }
+                    var bindingArgs = bindingArgsAccessor();
+                    var routeName = bindingArgs && bindingArgs.route ? ko.utils.unwrapObservable(bindingArgs.route) : undefined;
+                    if (!routeName || typeof routeName !== "string") {
+                        throw new Error("knockout binding error: 'routeHref' - invalid args: name property required.");
+                    }
+                    var routeArgs = bindingArgs.params || {};
+                    var navOptions = bindingArgs.options;
+                    var route = NavigationController.getRoute(routeName, routeArgs);
+                    var fragment = NavigationController.getFragment(route, routeArgs);
+                    var url = durandalHistory["root"] + durandalHistory.getFragment(fragment || "", false);
+                    element.setAttribute("data-route-href-fragment", fragment);
+                    element.setAttribute("data-route-href-replace", (navOptions && navOptions.replace) ? "true" : "false");
+                    element.href = url;
+                }
+            };
+        };
+        /** @internal */
         NavigationController.enableRouterModelActivation = function () {
             // Used by Durelia FrameworkConfiguration
             if (NavigationController.routerModelActivationEnabled) {
                 return;
             }
+            this.registerRouteHrefBindingHandler();
             durandalRouter.on("router:route:activating").then(function (viewmodel, instruction, router) {
                 //let routeParamProperties = instruction.config.routePattern.exec(<string>instruction.config.route).splice(1);
                 var routeParamProperties = [];
@@ -170,15 +210,16 @@ define(["require", "exports", "plugins/router", "plugins/history", "durelia-depe
         };
         NavigationController.prototype.navigateToRoute = function (routeName, args, options) {
             var routeArgs = args || {};
-            var route = this.getRoute(routeName, routeArgs);
-            var fragment = this.getFragment(route, routeArgs);
-            durandalHistory.navigate(fragment, options);
+            var route = NavigationController.getRoute(routeName, routeArgs);
+            var fragment = NavigationController.getFragment(route, routeArgs);
+            durandalRouter.navigate(fragment, { replace: options && options.replace, trigger: true });
         };
         NavigationController.prototype.navigateBack = function () {
             window.history.back();
         };
         /** @internal */
         NavigationController.routeExpandRegex = /\:([^\:\/\(\)\?\=\&]+)/g;
+        /** @internal */
         NavigationController.isoDateStringRegex = /^\d{4}\-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?([\+\-]\d{2}:\d{2}|[A-Z])$/i;
         /** @internal */
         NavigationController.routerModelActivationEnabled = false;

@@ -1,10 +1,10 @@
 <div>
 
     <p>
-        <a href="javascript://" data-bind="click: goToNotesSamePageEditMode"><i class="fa fa-arrow-right"></i> Go to notes (in-page edit mode)</a>
+        <a data-bind="route-href: { route: 'Notes', params: { editMode: 'samepage' }, options: { replace: true }}"><i class="fa fa-arrow-right"></i> Go to notes (in-page edit mode)</a>
     </p>
     <p>
-        <a href="javascript://" data-bind="click: goToNotesSeparatePageEditMode"><i class="fa fa-arrow-right"></i> Go to notes (separate-page edit mode)</a>
+        <a data-bind="route-href: { route: 'Notes',  params: { editMode: 'separatepage' }, options: { replace: true }}"><i class="fa fa-arrow-right"></i> Go to notes (separate-page edit mode)</a>
     </p>
 
     <div data-bind="compose: {

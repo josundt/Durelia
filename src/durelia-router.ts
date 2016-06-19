@@ -1,5 +1,6 @@
 import * as durandalRouter from "plugins/router";
 import * as durandalHistory from "plugins/history";
+import * as ko from "knockout";
 
 import {singleton} from "durelia-dependency-injection";
 
@@ -16,13 +17,19 @@ export interface INavigationController {
     navigateBack(): void;
 }
 
+interface IRouteHrefBindingArgs {
+    route: string | KnockoutObservable<string>;
+    params?: any;
+    options?: INavigationOptions;
+}
+
 @singleton
 export class NavigationController {
     /** @internal */
     private static routeExpandRegex: RegExp = /\:([^\:\/\(\)\?\=\&]+)/g;
  
     /** @internal */
-    private getBestMatchedRoute(args: IRouteActivationModel, ...routes: string[]): string {
+    private static getBestMatchedRoute(args: IRouteActivationModel, ...routes: string[]): string {
         let bestMatchInfo = { route: null as string, paramsMatches: -1 };
 
         let argKeys = Object.keys(args).sort();
@@ -42,7 +49,7 @@ export class NavigationController {
     }
  
     /** @internal */
-    private getRoute(name: string, args: IRouteActivationModel): string {
+    private static getRoute(name: string, args: IRouteActivationModel): string {
         let foundRouteConfigs = durandalRouter.routes.filter(r => r["name"] === name);
 
         let routes: string[] = [];
@@ -73,7 +80,7 @@ export class NavigationController {
     }
     
     /** @internal */
-    private getRouteParams(route: string, sort?: boolean): string[] {
+    private static getRouteParams(route: string, sort?: boolean): string[] {
         let match: RegExpExecArray;
         let count = 0;
         let routeParams: string[] = [];
@@ -87,7 +94,7 @@ export class NavigationController {
     }
 
     /** @internal */
-    private getFragment(route: string, args: IRouteActivationModel): string {
+    private static getFragment(route: string, args: IRouteActivationModel): string {
         let url = route.replace(/\(|\)/g, ""); 
         let queryStringParams: IRouteActivationModel = {};
         Object.keys(args).forEach(k => queryStringParams[k] = args[k]);
@@ -112,8 +119,10 @@ export class NavigationController {
         return url;
     }
     
+    /** @internal */
     private static isoDateStringRegex: RegExp = /^\d{4}\-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?([\+\-]\d{2}:\d{2}|[A-Z])$/i;
 
+    /** @internal */
     private static urlSerialize(value: any): string {
         let result: string;
         if (value instanceof Date) {
@@ -124,6 +133,7 @@ export class NavigationController {
         return encodeURIComponent(result);
     }
     
+    /** @internal */
     private static urlDeserialize(text: string): any {
         let intValue: number;
         let floatValue: number;
@@ -146,6 +156,58 @@ export class NavigationController {
     }
 
     /** @internal */
+    private static registerRouteHrefBindingHandler() {
+        
+        function onRouteHrefLinkClick(evt: MouseEvent) {
+            let elem = evt.currentTarget as HTMLAnchorElement; 
+            let fragment = elem.getAttribute("data-route-href-fragment");
+            let strReplace = elem.getAttribute("data-route-href-replace"); 
+            let replace = strReplace === "true";
+            evt.preventDefault();
+            durandalRouter.navigate(fragment, { replace: replace, trigger: true });
+        }
+        
+        ko.bindingHandlers["route-href"] = ko.bindingHandlers["route-href"] || {
+            init(
+                element: HTMLAnchorElement,
+                bindingArgsAccessor: () => IRouteHrefBindingArgs,
+                allBindingsAccessor: KnockoutAllBindingsAccessor,
+                viewModel: any,
+                bindingContext: KnockoutBindingContext
+            ) {
+                element.addEventListener("click", onRouteHrefLinkClick);
+                ko.utils.domNodeDisposal.addDisposeCallback(element, () => {
+                    element.removeEventListener("click", onRouteHrefLinkClick);
+                });
+            },
+            update(
+                element: HTMLAnchorElement,
+                bindingArgsAccessor: () => IRouteHrefBindingArgs,
+                allBindingsAccessor: KnockoutAllBindingsAccessor,
+                viewModel: any,
+                bindingContext: KnockoutBindingContext
+            ) {
+                if (element.tagName.toUpperCase() !== "A") {
+                    throw new Error("knockout binding error: 'routeHref' can only be used with anchor (A) HTML elements.");
+                }
+                let bindingArgs: IRouteHrefBindingArgs = bindingArgsAccessor();
+                let routeName = bindingArgs && bindingArgs.route ? ko.utils.unwrapObservable<string>(bindingArgs.route) : undefined;
+                if (!routeName || typeof routeName !== "string") {
+                    throw new Error("knockout binding error: 'routeHref' - invalid args: name property required.");
+                }
+                let routeArgs: IRouteActivationModel = bindingArgs.params || {};
+                let navOptions: INavigationOptions = bindingArgs.options;
+                let route = NavigationController.getRoute(routeName, routeArgs);
+                let fragment = NavigationController.getFragment(route, routeArgs);
+                let url = durandalHistory["root"] + durandalHistory.getFragment(fragment || "", false);
+                element.setAttribute("data-route-href-fragment", fragment);
+                element.setAttribute("data-route-href-replace", (navOptions && navOptions.replace) ? "true" : "false");
+                element.href = url;
+            }
+        };
+    }
+
+    /** @internal */
     private static routerModelActivationEnabled: boolean = false;
     
     /** @internal */
@@ -156,6 +218,8 @@ export class NavigationController {
         if (NavigationController.routerModelActivationEnabled) {
             return;
         }
+
+        this.registerRouteHrefBindingHandler();
         
         durandalRouter.on("router:route:activating").then((viewmodel: any, instruction: DurandalRouteInstruction, router: DurandalRouter) => {
             //let routeParamProperties = instruction.config.routePattern.exec(<string>instruction.config.route).splice(1);
@@ -187,15 +251,15 @@ export class NavigationController {
             instruction.params.push(routeParams);
             
         });
-        
+
         NavigationController.routerModelActivationEnabled = true;
     }
 
     navigateToRoute<TActivationModel>(routeName: string, args?: TActivationModel, options?: INavigationOptions): void {
         let routeArgs: IRouteActivationModel = <any>args || {};
-        let route = this.getRoute(routeName, routeArgs);
-        let fragment = this.getFragment(route, routeArgs);
-        durandalHistory.navigate(fragment, <any>options);
+        let route = NavigationController.getRoute(routeName, routeArgs);
+        let fragment = NavigationController.getFragment(route, routeArgs);
+        durandalRouter.navigate(fragment, { replace: options && options.replace, trigger: true });
     }
     
     navigateBack(): void {

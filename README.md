@@ -310,7 +310,13 @@ export default class MyPage {
 [...]
 ```
 
-This will make the browser navigate to the following url
+Alternatively, you can perform navigation directly from the view using Durelia's "route-href" 
+knockout binding handler, which emulates the Aurelia route-href custom attribute:
+```html
+<a data-bind="route-href: { route: 'NoteDetail',  params: { id: 5, someExtraProp: 'hello' }}">Go to note detail</a>
+```
+
+Both examples above will trigger a browser navigate to the following url
 
 [...]**notes/5?someExtraProp=hello**
 

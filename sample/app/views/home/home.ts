@@ -5,12 +5,7 @@ import {INoteListActivationModel} from "views/notes/notelist";
 
 @observe(true)
 @useView("views/home/home.html")
-@inject(NavigationController)
 export default class Home implements IViewModel<void> {
-        
-    constructor(
-        private navigator: INavigationController
-    ) {}
 
     activate(): Promise<any> {
         return Promise.resolve();
@@ -18,14 +13,5 @@ export default class Home implements IViewModel<void> {
 
     deactivate(): Promise<any> {
         return Promise.resolve();
-    }
-    
-    goToNotesSamePageEditMode() {
-        this.navigator.navigateToRoute<INoteListActivationModel>("Notes", { editMode: "samepage" });
-    }
-
-    goToNotesSeparatePageEditMode() {
-        this.navigator.navigateToRoute<INoteListActivationModel>("Notes", { editMode: "separatepage" });
-    }
-    
+    }    
 }
