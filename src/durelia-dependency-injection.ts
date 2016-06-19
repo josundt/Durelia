@@ -161,8 +161,12 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
                 if (idx >= 0) {
                     depNode.instance = this.singletonInstances[idx];
                     this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} (${lifeTimeSpec}) resolved: Returned existing instance.`);
-                } 
+                }
                 else {
+                    for (let injectee of injectees) {
+                        let childDep = this.resolveRecursive(injectee, depNode);
+                        depNode.children.push(childDep);
+                    }
                     depNode.instance = new classType(...ctorInjectionArgs);
                     this.singletonTypeRegistry.push(classType);
                     this.singletonInstances.push(depNode.instance);
@@ -170,6 +174,10 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
                 }
             } 
             else {
+                for (let injectee of injectees) {
+                    let childDep = this.resolveRecursive(injectee, depNode);
+                    depNode.children.push(childDep);
+                }
                 depNode.instance = new classType(...ctorInjectionArgs);            
                 let lifeTimeSpec = this.hasInjectionInstructions(classType) ? "transient" : "unspecified -> transient";
                 this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} (${lifeTimeSpec}) resolved: Created new instance.`);
@@ -207,7 +215,6 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
             this.logger.error(msg, neitnerClassNorObject);
             throw new Error(msg);
         }
-
     }
 }
 
