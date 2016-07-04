@@ -28,7 +28,7 @@ durelia.use
 *Example (when you want to install **Q** as ES2015 Promise a polyfill as you enable ES2015 Promise for Durandal):*
 ```javascript
 import {durelia} from "durelia-framework";
-import * as Bluebird from "bluebird";
+import * as Q from "q";
 
 durelia.use
     .nativePromise(Q.Promise);
