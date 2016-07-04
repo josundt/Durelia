@@ -263,12 +263,13 @@ table.grid > tbody > tr:nth-child(odd) {
     margin-top: 20px;
     background-color: transparent;
     border: none;
-    width: 300px;
+    width: 100%;
     height: 185px;
     resize: none;
     outline: none;
     font-size: 12pt;
     font-family: inherit;
+    overflow: auto;
 }
 
 .note:hover .note-timstamp {

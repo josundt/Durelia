@@ -79,8 +79,20 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
         return this.isObjectInstance(o) && o.constructor && this.getClassName(o.constructor) ===  "Lazy";
     }
     
-    private getClassName(classType: IResolvableConstructor) {
-        return classType.prototype.constructor["name"];
+    private getClassName(classType: IResolvableConstructor): string {
+        let result: string;
+        result = classType.prototype.constructor["name"];
+        if (!result) {
+            let regExp = new RegExp("^\s*function ([^\\(]+)\\s*\\(", "m");
+            let matches = regExp.exec(classType.prototype.constructor.toString());
+            if (matches.length === 2) {
+                result = matches[1];
+            }
+        }
+        if (!result) {
+            throw new Error("Unable to resolve class name");
+        }
+        return result;
     }
 
     private hasInjectionInstructions(classType: IResolvableConstructor): boolean {

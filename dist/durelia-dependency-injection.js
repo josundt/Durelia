@@ -55,7 +55,19 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
             return this.isObjectInstance(o) && o.constructor && this.getClassName(o.constructor) === "Lazy";
         };
         DependencyInjectionContainer.prototype.getClassName = function (classType) {
-            return classType.prototype.constructor["name"];
+            var result;
+            result = classType.prototype.constructor["name"];
+            if (!result) {
+                var regExp = new RegExp("^\s*function ([^\\(]+)\\s*\\(", "m");
+                var matches = regExp.exec(classType.prototype.constructor.toString());
+                if (matches.length === 2) {
+                    result = matches[1];
+                }
+            }
+            if (!result) {
+                throw new Error("Unable to resolve class name");
+            }
+            return result;
         };
         DependencyInjectionContainer.prototype.hasInjectionInstructions = function (classType) {
             return !!(classType.inject && typeof classType.inject === "function");
