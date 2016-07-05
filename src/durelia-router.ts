@@ -17,6 +17,11 @@ export interface INavigationController {
     navigateBack(): void;
 }
 
+interface IOptionalRouteParamInfo {
+    name: string;
+    hasValue: boolean;
+}
+
 interface IRouteHrefBindingArgs {
     route: string | KnockoutObservable<string>;
     params?: any;
@@ -30,6 +35,8 @@ export class NavigationController {
 
     /** @internal */
     private static routeExpandRegex: RegExp = /\:([^\:\/\(\)\?\=\&]+)/g;
+    /** @internal */
+    private static optionalParamFragmentRegExp: RegExp = /(\([^\)]+\))/g;
  
     /** @internal */
     private static getBestMatchedRoute(args: IRouteActivationModel, ...routes: string[]): string {
@@ -97,19 +104,63 @@ export class NavigationController {
     }
 
     /** @internal */
+    private static getOptionalRouteParamSegments(route: string): Array<IOptionalRouteParamInfo[]> {
+        let optionalParamSegments: Array<IOptionalRouteParamInfo[]> = [];
+
+        let optionalParamFragmentMatch: RegExpExecArray;
+        let optionalParamFragments: string[] = [];
+        while (optionalParamFragmentMatch = this.optionalParamFragmentRegExp.exec(route)) {
+            optionalParamFragments.push(optionalParamFragmentMatch[1]);
+        }
+
+        for (let optionalParamFragment of optionalParamFragments) {
+            let optionalParamMatch: RegExpExecArray;
+            let optionalParams: { name: string; hasValue: boolean; }[] = [];
+            while (optionalParamMatch = NavigationController.routeExpandRegex.exec(optionalParamFragment)) {
+                optionalParams.push({ name: optionalParamMatch[1], hasValue: false });
+            }
+            optionalParamSegments.push(optionalParams);
+        }
+
+        return optionalParamSegments;
+    }
+
+    /** @internal */
     private static getFragment(route: string, args: IRouteActivationModel): string {
-        let url = route.replace(/\(|\)/g, ""); 
         let queryStringParams: IRouteActivationModel = {};
+        
+        // Adding all args into queryString map 
         Object.keys(args).forEach(k => queryStringParams[k] = args[k]);
 
-        url = url.replace(NavigationController.routeExpandRegex, (substring, group1) => {
+        // Getting descriptor of optional route param segments
+        let optionalParamSegments: Array<IOptionalRouteParamInfo[]> = this.getOptionalRouteParamSegments(route);
+
+        // Merging param values with param placeholders
+        let url = route.replace(NavigationController.routeExpandRegex, (substring, group1) => {
             let replacement;
+            // If route param was matched 
             if (Object.keys(args).indexOf(group1) >= 0) {
+                // Remove from queryString map
                 delete queryStringParams[group1];
+                // Replace param placeholder with value
                 replacement = NavigationController.urlSerialize(args[group1]);
+                // Updating descriptor for optional route descriptor if value was matched
+                optionalParamSegments.forEach(ops => ops.filter(op => op.name === group1).forEach(op => op.hasValue = true));
             }
             return replacement;
         });
+
+        // Removing optional segments if values were provided for none of the params in the segment
+        let optionalParamSegmentIndex = 0;
+        url = url.replace(this.optionalParamFragmentRegExp, (substring, group1) => {
+            let replacement = optionalParamSegments[optionalParamSegmentIndex].some(ops => ops.hasValue) ? substring : "";
+            return replacement;
+        });
+
+        // Removing optional segment indicator parenthesises from route  
+        url = url.replace(/\(|\)/g, "");
+
+        // Putting arg props not matched with route param placeholders into queryString 
         if (Object.keys(queryStringParams).length) {
             let queryStringParts = Object.keys(queryStringParams).map(k => {
                 let key = NavigationController.urlSerialize(k);

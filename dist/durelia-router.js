@@ -77,18 +77,54 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
             return routeParams;
         };
         /** @internal */
+        NavigationController.getOptionalRouteParamSegments = function (route) {
+            var optionalParamSegments = [];
+            var optionalParamFragmentMatch;
+            var optionalParamFragments = [];
+            while (optionalParamFragmentMatch = this.optionalParamFragmentRegExp.exec(route)) {
+                optionalParamFragments.push(optionalParamFragmentMatch[1]);
+            }
+            for (var _i = 0, optionalParamFragments_1 = optionalParamFragments; _i < optionalParamFragments_1.length; _i++) {
+                var optionalParamFragment = optionalParamFragments_1[_i];
+                var optionalParamMatch = void 0;
+                var optionalParams = [];
+                while (optionalParamMatch = NavigationController.routeExpandRegex.exec(optionalParamFragment)) {
+                    optionalParams.push({ name: optionalParamMatch[1], hasValue: false });
+                }
+                optionalParamSegments.push(optionalParams);
+            }
+            return optionalParamSegments;
+        };
+        /** @internal */
         NavigationController.getFragment = function (route, args) {
-            var url = route.replace(/\(|\)/g, "");
             var queryStringParams = {};
+            // Adding all args into queryString map 
             Object.keys(args).forEach(function (k) { return queryStringParams[k] = args[k]; });
-            url = url.replace(NavigationController.routeExpandRegex, function (substring, group1) {
+            // Getting descriptor of optional route param segments
+            var optionalParamSegments = this.getOptionalRouteParamSegments(route);
+            // Merging param values with param placeholders
+            var url = route.replace(NavigationController.routeExpandRegex, function (substring, group1) {
                 var replacement;
+                // If route param was matched 
                 if (Object.keys(args).indexOf(group1) >= 0) {
+                    // Remove from queryString map
                     delete queryStringParams[group1];
+                    // Replace param placeholder with value
                     replacement = NavigationController.urlSerialize(args[group1]);
+                    // Updating descriptor for optional route descriptor if value was matched
+                    optionalParamSegments.forEach(function (ops) { return ops.filter(function (op) { return op.name === group1; }).forEach(function (op) { return op.hasValue = true; }); });
                 }
                 return replacement;
             });
+            // Removing optional segments if values were provided for none of the params in the segment
+            var optionalParamSegmentIndex = 0;
+            url = url.replace(this.optionalParamFragmentRegExp, function (substring, group1) {
+                var replacement = optionalParamSegments[optionalParamSegmentIndex].some(function (ops) { return ops.hasValue; }) ? substring : "";
+                return replacement;
+            });
+            // Removing optional segment indicator parenthesises from route  
+            url = url.replace(/\(|\)/g, "");
+            // Putting arg props not matched with route param placeholders into queryString 
             if (Object.keys(queryStringParams).length) {
                 var queryStringParts = Object.keys(queryStringParams).map(function (k) {
                     var key = NavigationController.urlSerialize(k);
@@ -225,6 +261,8 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
         };
         /** @internal */
         NavigationController.routeExpandRegex = /\:([^\:\/\(\)\?\=\&]+)/g;
+        /** @internal */
+        NavigationController.optionalParamFragmentRegExp = /(\([^\)]+\))/g;
         /** @internal */
         NavigationController.isoDateStringRegex = /^\d{4}\-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?([\+\-]\d{2}:\d{2}|[A-Z])$/i;
         /** @internal */
