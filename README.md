@@ -63,7 +63,7 @@ ones in Aurelia. The Durelia IoC container implementation is a bit simpler than
 the one in Aurelia; there is only one container (no child containers) and for this
 reason, injections are resolved as transient (as opposed to singleons) by default.
 In practical usage it will still work pretty much the same way. 
-IoC Container with 
+
 ```javascript
 import {inject, transient, singleton, Lazy} from "durelia-framework";
 
