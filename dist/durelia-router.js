@@ -115,7 +115,13 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
             var intValue;
             var floatValue;
             text = decodeURIComponent(text);
-            if (text === "false") {
+            if (text === "undefined") {
+                return undefined;
+            }
+            else if (text === "null") {
+                return null;
+            }
+            else if (text === "false") {
                 return false;
             }
             else if (text === "true") {
