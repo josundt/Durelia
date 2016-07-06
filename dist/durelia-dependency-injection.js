@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define(["require", "exports", "durelia-logger", "durelia-framework"], function (require, exports, durelia_logger_1, durelia_framework_1) {
     "use strict";
     var lifetimePropName = "__lifetime__";
+    var isLazyInjectionPropName = "__isLazyInjection__";
     /** @internal */
     var DependencyInjectionContainer = (function () {
         function DependencyInjectionContainer(
@@ -52,7 +53,7 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
             return typeof o !== "function" && Object(o) === o; //&& Object.getPrototypeOf(o) === Object.prototype;
         };
         DependencyInjectionContainer.prototype.isLazyInjection = function (o) {
-            return this.isObjectInstance(o) && o.constructor && this.getClassName(o.constructor) === "Lazy";
+            return this.isObjectInstance(o) && o.constructor && o.constructor[isLazyInjectionPropName];
         };
         DependencyInjectionContainer.prototype.getClassName = function (classType) {
             var result;
@@ -210,6 +211,10 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
         classType.__lifetime__ = "transient";
     }
     exports.transient = transient;
+    /** @internal */
+    function isLazyInjection(classType) {
+        classType[isLazyInjectionPropName] = true;
+    }
     var Lazy = (function () {
         /** @internal */
         function Lazy(_injectable) {
@@ -225,6 +230,9 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
             enumerable: true,
             configurable: true
         });
+        Lazy = __decorate([
+            isLazyInjection
+        ], Lazy);
         return Lazy;
     }());
     exports.Lazy = Lazy;

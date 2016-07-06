@@ -26,6 +26,7 @@ export interface IDependencyInjectionContainer {
 }
 
 const lifetimePropName = "__lifetime__";
+const isLazyInjectionPropName = "__isLazyInjection__";
 
 /** @internal */
 @inject(Logger)
@@ -76,7 +77,7 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
     }
     
     private isLazyInjection(o: any): o is Lazy<any> {
-        return this.isObjectInstance(o) && o.constructor && this.getClassName(o.constructor) ===  "Lazy";
+        return this.isObjectInstance(o) && o.constructor && o.constructor[isLazyInjectionPropName];
     }
     
     private getClassName(classType: IResolvableConstructor): string {
@@ -239,6 +240,12 @@ export function transient(classType: Function) {
     (classType as IResolvableConstructor).__lifetime__ = "transient";
 }
 
+/** @internal */
+function isLazyInjection(classType: Function) {
+    classType[isLazyInjectionPropName] = true;
+}
+
+@isLazyInjection
 export class Lazy<T extends IInjectable> {
     
     /** @internal */
