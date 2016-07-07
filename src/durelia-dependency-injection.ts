@@ -174,7 +174,13 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
                         depNode.children.push(childDep);
                     }
                     let ctorInjectionArgs = depNode.children.map(c => c.instance);
-                    depNode.instance = new classType(...ctorInjectionArgs);
+                    try {
+                        depNode.instance = new classType(...ctorInjectionArgs);
+                    } catch (error) {
+                        let msg = "Durelia DependencyResolver: Unable to create new instance of class.";
+                        this.logger.error(msg, classType, error);
+                        throw error;
+                    }
                     this.singletonTypeRegistry.push(classType);
                     this.singletonInstances.push(depNode.instance);
                     this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} (${lifeTimeSpec}) resolved: Created new instance.`);
@@ -186,7 +192,13 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
                     depNode.children.push(childDep);
                 }
                 let ctorInjectionArgs = depNode.children.map(c => c.instance);
-                depNode.instance = new classType(...ctorInjectionArgs);            
+                try {
+                    depNode.instance = new classType(...ctorInjectionArgs);
+                } catch (error) {
+                    let msg = "Durelia DependencyResolver: Unable to create new instance of class.";
+                    this.logger.error(msg, classType, error);
+                    throw error;
+                }       
                 let lifeTimeSpec = this.hasInjectionInstructions(classType) ? "transient" : "unspecified -> transient";
                 this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} (${lifeTimeSpec}) resolved: Created new instance.`);
             }

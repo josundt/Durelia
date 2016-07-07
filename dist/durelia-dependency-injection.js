@@ -141,7 +141,14 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
                             depNode.children.push(childDep);
                         }
                         var ctorInjectionArgs = depNode.children.map(function (c) { return c.instance; });
-                        depNode.instance = new (classType.bind.apply(classType, [void 0].concat(ctorInjectionArgs)))();
+                        try {
+                            depNode.instance = new (classType.bind.apply(classType, [void 0].concat(ctorInjectionArgs)))();
+                        }
+                        catch (error) {
+                            var msg = "Durelia DependencyResolver: Unable to create new instance of class.";
+                            this.logger.error(msg, classType, error);
+                            throw error;
+                        }
                         this.singletonTypeRegistry.push(classType);
                         this.singletonInstances.push(depNode.instance);
                         this.logger.debug("Durelia DependencyResolver: " + dependencyPath + " (" + lifeTimeSpec + ") resolved: Created new instance.");
@@ -154,7 +161,14 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
                         depNode.children.push(childDep);
                     }
                     var ctorInjectionArgs = depNode.children.map(function (c) { return c.instance; });
-                    depNode.instance = new (classType.bind.apply(classType, [void 0].concat(ctorInjectionArgs)))();
+                    try {
+                        depNode.instance = new (classType.bind.apply(classType, [void 0].concat(ctorInjectionArgs)))();
+                    }
+                    catch (error) {
+                        var msg = "Durelia DependencyResolver: Unable to create new instance of class.";
+                        this.logger.error(msg, classType, error);
+                        throw error;
+                    }
                     var lifeTimeSpec = this.hasInjectionInstructions(classType) ? "transient" : "unspecified -> transient";
                     this.logger.debug("Durelia DependencyResolver: " + dependencyPath + " (" + lifeTimeSpec + ") resolved: Created new instance.");
                 }
