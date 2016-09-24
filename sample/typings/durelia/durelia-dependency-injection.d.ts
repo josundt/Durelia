@@ -16,8 +16,8 @@ declare module "durelia-dependency-injection" {
     export function transient(classType: Function): void;
     export class Lazy<T extends IInjectable> {
         private _injectable;
-        static of<T>(injectable: IInjectable): Lazy<T>;
-        resolver: IResolvedInstance;
+        static of<T extends IInjectable>(injectable: T): Lazy<T>;
+        readonly resolver: IResolvedInstance;
     }
     
 }

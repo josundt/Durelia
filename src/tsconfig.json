@@ -15,7 +15,7 @@
         "noImplicitReturns": true,
         "noImplicitThis": true,
         "noImplicitUseStrict": false,
-        "noUnusedLocals": true,
+        "noUnusedLocals": false,
         "noUnusedParameters": false,
         "outDir": "../dist",
         "preserveConstEnums": true,

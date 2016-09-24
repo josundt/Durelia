@@ -1,3 +1,6 @@
-export declare const observeDecoratorKeyName: string;
-export declare function computedFrom(...dependentProps: string[]): (viewmodel: any, key: string, descriptor: PropertyDescriptor) => void;
-export declare function observe(enabled?: boolean): (viewmodel: Function) => void;
+declare module "durelia-binding" {
+    export const observeDecoratorKeyName: string;
+    export function computedFrom(...dependentProps: string[]): (viewmodel: any, key: string, descriptor: PropertyDescriptor) => void;
+    export function observe(enabled?: boolean): (viewmodel: Function) => void;
+    
+}
