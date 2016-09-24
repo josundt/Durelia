@@ -1,8 +1,6 @@
 import * as durandalSystem from "durandal/system";
-import * as durandalApp from "durandal/app";
 import * as durandalBinder from "durandal/binder";
 import * as durandalObservable from "plugins/observable";
-import * as durandalRouter from "plugins/router";
 import {inject, singleton, IDependencyInjectionContainer, DependencyInjectionContainer, IResolvableConstructor, IResolvedInstance} from "durelia-dependency-injection";
 import {ILogger, Logger} from "durelia-logger";
 import {observeDecoratorKeyName} from "durelia-binding";
@@ -84,7 +82,6 @@ interface Deferred<T> {
 }
 
 let originalBinderBindingMethod = durandalBinder.binding;
-let originalRouterActivateRouteMethod = durandalRouter["activateRoute"];
 
 @singleton
 @inject(DependencyInjectionContainer, Logger)
@@ -116,7 +113,7 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
 
     /** @internal */
     private enableDependencyInjection() {
-        durandalSystem["resolveObject"] = (module) => {
+        (<any>durandalSystem)["resolveObject"] = (module) => {
             if (durandalSystem.isFunction(module)) {
                 return this.container.resolve(module);
             } else if (module && durandalSystem.isFunction(module.default)) {
@@ -140,7 +137,7 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
     nativePromise(promisePolyfill?: PromiseConstructorLike): this {
         
         if (this.config.usesES2015Promise) {
-            return;
+            return this;
         }
         this.config.usesES2015Promise = true;
         
@@ -160,7 +157,7 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
             Promise.prototype["fail"] = Promise.prototype.catch;
         }
         
-        durandalSystem.defer = function(action?: Function) {
+        (<any>durandalSystem).defer = function(action?: Function) {
 
             let deferred: any =
                 FrameworkConfiguration.defer();
@@ -181,13 +178,13 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
     viewModelDefaultExports(): this {
         
         if (this.config.usesViewModelDefaultExports) {
-            return;
+            return this;
         }
         this.config.usesViewModelDefaultExports = true;
         
         this.logger.debug("Durelia: Enabling default export for viewmodel modules.");
         
-        durandalSystem["resolveObject"] = (module) => {
+        (<any>durandalSystem)["resolveObject"] = (module) => {
             if (module && module.default && durandalSystem.isFunction(module.default)) {
                 let vm = this.container.resolve(module.default);
                 return vm;
@@ -208,7 +205,7 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
         
     observeDecorator(): this {
         if (this.config.usesObserveDecorator) {
-            return;
+            return this;
         }
         this.config.usesObserveDecorator = true;
         
@@ -217,7 +214,7 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
         } else {
             this.logger.debug("Durelia: Enabling observe decorator to use the Durandal observable plugin on a per-viewmodel basis.");
             
-            durandalBinder.binding = function(obj, view, instruction) {
+            (<any>durandalBinder).binding = function(obj, view, instruction) {
                 
                 let hasObserveDecorator = !!(obj && obj.constructor && obj.constructor[observeDecoratorKeyName]);
                 
@@ -225,7 +222,7 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
                     durandalObservable.convertObject(obj);
                 }
 
-                originalBinderBindingMethod(obj, view, undefined);
+                originalBinderBindingMethod(obj, view, undefined!);
             };
 
             // durandalObservable["logConversion"] = options.logConversion;
@@ -242,7 +239,7 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
     
     routerModelActivation(): this {
         if (this.config.usesRouterModelActivation) {
-            return;
+            return this;
         }
         this.config.usesRouterModelActivation = true;
         
@@ -295,7 +292,7 @@ export class Durelia implements IDurelia {
 }
 
 let container = new DependencyInjectionContainer();
-container.registerInstance(DependencyInjectionContainer, container);
+container.registerInstance(DependencyInjectionContainer as IResolvableConstructor, container);
 export let durelia: IDurelia = container.resolve<IDurelia>(Durelia);
 
 export {inject, singleton, transient, Lazy} from "durelia-dependency-injection";

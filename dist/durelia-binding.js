@@ -1,7 +1,6 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
     exports.observeDecoratorKeyName = "__observeDecorated__";
-    var appliedComputedsKeyName = "__observeApplied__";
     function computedFrom() {
         var dependentProps = [];
         for (var _i = 0; _i < arguments.length; _i++) {

@@ -1,6 +1,6 @@
 import {inject, computedFrom, observe, useView} from "durelia-framework";
 import {IViewModel} from "durelia-viewmodel";
-import {ITermsPartialModal, TermsPartialModal, ITermsPartialModalActivationModel, ITermsPartialModalOutput} from "views/home/home.terms.concentmodal";
+import {TermsPartialModal, ITermsPartialModalActivationModel, ITermsPartialModalOutput} from "views/home/home.terms.concentmodal";
 import {IDialogService, DialogService} from "durelia-dialog";
 
 export interface ITermsPartial extends IViewModel<void> {}
@@ -32,7 +32,7 @@ export default class TermsPartial implements ITermsPartial {
         let observables: {} = <any>this["__observables__"];
         if (observables) {
             for (let key of Object.keys(observables)) {
-                let o = observables["key"];
+                let o = observables[key];
                 if (o["dispose"] && typeof o["dispose"] === "function") {
                     o["dispose"]();
                 }

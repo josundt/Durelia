@@ -1,7 +1,7 @@
 /* tslint:disable:class-name */
 
 import * as Q from "q";
-import * as Bluebird from "bluebird";
+//import * as Bluebird from "bluebird";
 
 import * as app from "durandal/app";
 import * as viewLocator from "durandal/viewLocator";
@@ -10,11 +10,11 @@ import * as system from "durandal/system";
 import {durelia} from "durelia-framework";
 
 
-app.title = "Durelia sample";
+(<any>app).title = "Durelia sample";
 
 //>>excludeStart("build", true);
 system.debug(true);
-binder.throwOnErrors = true;
+(<any>binder).throwOnErrors = true;
 //>>excludeEnd("build");
 
 app.configurePlugins({

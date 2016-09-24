@@ -16,7 +16,7 @@
     "express": "^4.13.4",
     "openurl": "^1.1.1",
     "rimraf": "^2.5.2",
-    "typescript": "^1.8.10"
+    "typescript": "^2.0.3"
   },
   "engines": {
      "node": ">=5.0.0"

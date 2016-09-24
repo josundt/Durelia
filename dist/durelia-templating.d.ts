@@ -1,4 +1,1 @@
-declare module "durelia-templating" {
-    export function useView(viewPath: string): (classType: Function) => void;
-    
-}
+export declare function useView(viewPath: string): (classType: Function) => void;

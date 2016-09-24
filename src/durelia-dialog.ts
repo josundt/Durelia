@@ -49,9 +49,9 @@ export class DialogController<TResultOutput> implements IDialogController<TResul
 
     cancel(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>) {
         let dialogResult: IDialogResult<TResultOutput> = { 
-            wasCancelled: false,
+            wasCancelled: true,
             output: result 
         };
-        return durandalDialog.close(viewModel, { wasCancelled: true, output: result });
+        return durandalDialog.close(viewModel, dialogResult);
     }
 }

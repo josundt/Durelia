@@ -17,7 +17,7 @@ export class MessageBox implements IDialogViewModel<IMessageBoxModel, string> {
     ) {}
 
     message: string;
-    title: string;
+    title: string | undefined;
     options: string[];
     private cancelOptionIndex: number;
 

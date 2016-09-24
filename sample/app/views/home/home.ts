@@ -1,7 +1,5 @@
-import {inject, observe, useView} from "durelia-framework";
+import {observe, useView} from "durelia-framework";
 import {IViewModel} from "durelia-viewmodel";
-import {INavigationController, NavigationController} from "durelia-router";
-import {INoteListActivationModel} from "views/notes/notelist";
 
 @observe(true)
 @useView("views/home/home.html")

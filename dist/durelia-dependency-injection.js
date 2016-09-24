@@ -6,7 +6,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 define(["require", "exports", "durelia-logger", "durelia-framework"], function (require, exports, durelia_logger_1, durelia_framework_1) {
     "use strict";
-    var lifetimePropName = "__lifetime__";
     var isLazyInjectionPropName = "__isLazyInjection__";
     /** @internal */
     var DependencyInjectionContainer = (function () {
@@ -61,7 +60,7 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
             if (!result) {
                 var regExp = new RegExp("^\s*function ([^\\(]+)\\s*\\(", "m");
                 var matches = regExp.exec(classType.prototype.constructor.toString());
-                if (matches.length === 2) {
+                if (matches && matches.length === 2) {
                     result = matches[1];
                 }
             }
@@ -75,20 +74,14 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
         };
         DependencyInjectionContainer.prototype.getInjectees = function (classType) {
             if (this.isConstructorFunction(classType)) {
-                if (this.hasInjectionInstructions(classType)) {
+                if (this.hasInjectionInstructions(classType) && classType.inject) {
                     return classType.inject();
                 }
             }
             return [];
         };
-        DependencyInjectionContainer.prototype.hasLifetimeDecorator = function (classType) {
-            return !!classType.__lifetime__;
-        };
-        DependencyInjectionContainer.prototype.isTransient = function (classType) {
-            return !classType.__lifetime__ || classType.__lifetime__ === "transient";
-        };
         DependencyInjectionContainer.prototype.isSingleton = function (classType) {
-            return classType.__lifetime__ && classType.__lifetime__ === "singleton";
+            return !!(classType.__lifetime__ && classType.__lifetime__ === "singleton");
         };
         DependencyInjectionContainer.prototype.getDependencyPath = function (node) {
             var parts = [];
@@ -114,7 +107,6 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
                 var classType = injectable;
                 var injectees = this.getInjectees(classType);
                 var ctorArgsCount = classType.length;
-                var className = this.getClassName(classType);
                 var depNode = {
                     parent: parent,
                     classType: classType,
@@ -150,7 +142,9 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
                             throw error;
                         }
                         this.singletonTypeRegistry.push(classType);
-                        this.singletonInstances.push(depNode.instance);
+                        if (depNode.instance) {
+                            this.singletonInstances.push(depNode.instance);
+                        }
                         this.logger.debug("Durelia DependencyResolver: " + dependencyPath + " (" + lifeTimeSpec + ") resolved: Created new instance.");
                     }
                 }
@@ -187,6 +181,7 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
                 return depNode;
             }
             else {
+                // This last else code path may happen at run time even if the TypeScript types indicates that it never can.
                 var neitnerClassNorObject = injectable;
                 var depNode = {
                     classType: neitnerClassNorObject.constructor ? neitnerClassNorObject.constructor : Object,

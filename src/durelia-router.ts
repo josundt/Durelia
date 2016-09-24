@@ -39,8 +39,8 @@ export class NavigationController {
     private static optionalParamFragmentRegExp: RegExp = /(\([^\)]+\))/g;
  
     /** @internal */
-    private static getBestMatchedRoute(args: IRouteActivationModel, ...routes: string[]): string {
-        let bestMatchInfo = { route: null as string, paramsMatches: -1 };
+    private static getBestMatchedRoute(args: IRouteActivationModel, ...routes: string[]): string | undefined {
+        let bestMatchInfo = { route: <string | undefined>undefined, paramsMatches: -1 };
 
         let argKeys = Object.keys(args).sort();
         routes.forEach((r, idx) => {
@@ -55,11 +55,11 @@ export class NavigationController {
                 bestMatchInfo = matchInfo;
             }
         });
-        return bestMatchInfo.route; 
+        return bestMatchInfo.route;
     }
  
     /** @internal */
-    private static getRoute(name: string, args: IRouteActivationModel): string {
+    private static getRoute(name: string, args: IRouteActivationModel): string  | undefined {
         let foundRouteConfigs = durandalRouter.routes.filter(r => r["name"] === name);
 
         let routes: string[] = [];
@@ -71,7 +71,7 @@ export class NavigationController {
                 let rOrRs = routeConfig.route;
                 if (typeof rOrRs === "string") {
                     routes.push(rOrRs);
-                } else {
+                } else if (rOrRs instanceof Array) {
                     routes.concat(rOrRs);
                 }
             }
@@ -79,20 +79,19 @@ export class NavigationController {
             let rOrRs = foundRouteConfigs[0].route;
             if (typeof rOrRs === "string") {
                 routes.push(rOrRs);
-            } else {
+            } else if (rOrRs instanceof Array) {
                 routes.concat(rOrRs);
             }
         }
 
-        let route: string = this.getBestMatchedRoute(args, ...routes);
+        let route: string | undefined = this.getBestMatchedRoute(args, ...routes);
             
         return route;
     }
     
     /** @internal */
     private static getRouteParams(route: string, sort?: boolean): string[] {
-        let match: RegExpExecArray;
-        let count = 0;
+        let match: RegExpExecArray | null;
         let routeParams: string[] = [];
         while (match = NavigationController.routeExpandRegex.exec(route)) {
             routeParams.push(match[1]);
@@ -107,14 +106,14 @@ export class NavigationController {
     private static getOptionalRouteParamSegments(route: string): Array<IOptionalRouteParamInfo[]> {
         let optionalParamSegments: Array<IOptionalRouteParamInfo[]> = [];
 
-        let optionalParamFragmentMatch: RegExpExecArray;
+        let optionalParamFragmentMatch: RegExpExecArray | null;
         let optionalParamFragments: string[] = [];
         while (optionalParamFragmentMatch = this.optionalParamFragmentRegExp.exec(route)) {
             optionalParamFragments.push(optionalParamFragmentMatch[1]);
         }
 
         for (let optionalParamFragment of optionalParamFragments) {
-            let optionalParamMatch: RegExpExecArray;
+            let optionalParamMatch: RegExpExecArray | null;
             let optionalParams: { name: string; hasValue: boolean; }[] = [];
             while (optionalParamMatch = NavigationController.routeExpandRegex.exec(optionalParamFragment)) {
                 optionalParams.push({ name: optionalParamMatch[1], hasValue: false });
@@ -220,7 +219,7 @@ export class NavigationController {
         
         function onRouteHrefLinkClick(evt: MouseEvent) {
             let elem = evt.currentTarget as HTMLAnchorElement; 
-            let fragment = elem.getAttribute("data-route-href-fragment");
+            let fragment = elem.getAttribute("data-route-href-fragment")!;
             let strReplace = elem.getAttribute("data-route-href-replace"); 
             let replace = strReplace === "true";
             evt.preventDefault();
@@ -256,8 +255,11 @@ export class NavigationController {
                     throw new Error("knockout binding error: 'routeHref' - invalid args: name property required.");
                 }
                 let routeArgs: IRouteActivationModel = bindingArgs.params || {};
-                let navOptions: INavigationOptions = bindingArgs.options;
+                let navOptions: INavigationOptions | undefined = bindingArgs.options;
                 let route = NavigationController.getRoute(routeName, routeArgs);
+                if (route === undefined) {
+                    throw new Error(`Unable to navigate: Route "${routeName}" was not found`);
+                }
                 let fragment = NavigationController.getFragment(route, routeArgs);
                 let url = durandalHistory["root"] + durandalHistory.getFragment(fragment || "", false);
                 element.setAttribute("data-route-href-fragment", fragment);
@@ -284,13 +286,14 @@ export class NavigationController {
         durandalRouter.on("router:route:activating").then((viewmodel: any, instruction: DurandalRouteInstruction, router: DurandalRouter) => {
             //let routeParamProperties = instruction.config.routePattern.exec(<string>instruction.config.route).splice(1);
             let routeParamProperties: string[] = [];
-            let match: RegExpExecArray;
+            let match: RegExpExecArray | null;
             while (match = NavigationController.routeExpandRegex.exec(<string>instruction.config.route)) {
                 routeParamProperties.push(match[1]);
             }
             
-            let routeParamValues = instruction.config.routePattern.exec(instruction.fragment).splice(1);
-            let routeParams: { [routeParam: string]: string | number } = undefined;
+            let routeParamMatches = instruction.config.routePattern ? instruction.config.routePattern.exec(instruction.fragment) : null;
+            let routeParamValues = routeParamMatches ? routeParamMatches.splice(1) : [];
+            let routeParams: { [routeParam: string]: string | number } | undefined = undefined;
             if (routeParamProperties.length && routeParamValues.length) {
                 if (routeParamProperties.length === routeParamValues.length) {
                     routeParams = routeParams || {};
@@ -305,7 +308,7 @@ export class NavigationController {
             }
             if (instruction.queryParams) {
                 routeParams = routeParams || {};
-                Object.keys(instruction.queryParams).forEach(key => routeParams[key] = instruction.queryParams[key]);
+                Object.keys(instruction.queryParams).forEach(key => routeParams![key] = instruction.queryParams[key]);
             }
             instruction.params.splice(0);
             instruction.params.push(routeParams);
@@ -318,8 +321,11 @@ export class NavigationController {
     navigateToRoute<TActivationModel>(routeName: string, args?: TActivationModel, options?: INavigationOptions): void {
         let routeArgs: IRouteActivationModel = <any>args || {};
         let route = NavigationController.getRoute(routeName, routeArgs);
+        if (route === undefined) {
+            throw new Error(`Unable to navigate: Route "${routeName}" was not found`);
+        }
         let fragment = NavigationController.getFragment(route, routeArgs);
-        durandalRouter.navigate(fragment, { replace: options && options.replace, trigger: true });
+        durandalRouter.navigate(fragment, { replace: !!(options && options.replace), trigger: true });
     }
     
     navigateBack(): void {

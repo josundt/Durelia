@@ -1,5 +1,5 @@
 import {ILogger, Logger} from "durelia-logger";
-import {Durelia, durelia} from "durelia-framework";
+import {durelia} from "durelia-framework";
 
 export type IInjectable = IResolvableConstructor | {};
 
@@ -16,7 +16,7 @@ export interface IResolvableConstructor {
 interface IDependencyTreeNode {
     classType: IResolvableConstructor;
     instance: IResolvedInstance;
-    parent: IDependencyTreeNode;
+    parent: IDependencyTreeNode | null;
     children: IDependencyTreeNode[];
 }
 
@@ -25,7 +25,6 @@ export interface IDependencyInjectionContainer {
     registerInstance(classType: IResolvableConstructor, instance: IResolvedInstance);
 }
 
-const lifetimePropName = "__lifetime__";
 const isLazyInjectionPropName = "__isLazyInjection__";
 
 /** @internal */
@@ -86,7 +85,7 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
         if (!result) {
             let regExp = new RegExp("^\s*function ([^\\(]+)\\s*\\(", "m");
             let matches = regExp.exec(classType.prototype.constructor.toString());
-            if (matches.length === 2) {
+            if (matches && matches.length === 2) {
                 result = matches[1];
             }
         }
@@ -102,26 +101,18 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
     
     private getInjectees(classType: IInjectable): IInjectable[] {
         if (this.isConstructorFunction(classType)) {
-            if (this.hasInjectionInstructions(classType)) {
+            if (this.hasInjectionInstructions(classType) && classType.inject) {
                 return classType.inject();
             }
         }
         return [];
     }
 
-    private hasLifetimeDecorator(classType: IResolvableConstructor) {
-        return !!classType.__lifetime__;
-    }
-
-    private isTransient(classType: IResolvableConstructor) {
-        return !classType.__lifetime__ || classType.__lifetime__ === "transient";
-    }
-
     private isSingleton(classType: IResolvableConstructor): boolean {
-        return classType.__lifetime__ && classType.__lifetime__ === "singleton";
+        return !!(classType.__lifetime__ && classType.__lifetime__ === "singleton");
     }
     
-    private getDependencyPath(node: IDependencyTreeNode): string {
+    private getDependencyPath(node: IDependencyTreeNode | null): string {
         let parts: string[] = [];
         while (node) {
             parts.unshift(this.getClassName(node.classType));
@@ -130,7 +121,7 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
         return parts.join("/");
     }
 
-    private resolveRecursive(injectable: IInjectable, parent: IDependencyTreeNode = null): IDependencyTreeNode {
+    private resolveRecursive(injectable: IInjectable, parent: IDependencyTreeNode | null = null): IDependencyTreeNode {
         if (this.isLazyInjection(injectable)) {
             let lazy: Lazy<any> = injectable;
             let depNode: IDependencyTreeNode = {
@@ -146,11 +137,10 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
             
             let injectees: IInjectable[] = this.getInjectees(classType);
             let ctorArgsCount: number = classType.length;
-            let className: string = this.getClassName(classType);
             let depNode: IDependencyTreeNode = {
                 parent: parent,
                 classType: classType,
-                instance: <IResolvedInstance>null,
+                instance: null!,
                 children: <IDependencyTreeNode[]>[]
             };
             let dependencyPath = this.getDependencyPath(depNode);
@@ -182,7 +172,9 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
                         throw error;
                     }
                     this.singletonTypeRegistry.push(classType);
-                    this.singletonInstances.push(depNode.instance);
+                    if (depNode.instance) {
+                        this.singletonInstances.push(depNode.instance);
+                    }
                     this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} (${lifeTimeSpec}) resolved: Created new instance.`);
                 }
             } 
@@ -222,7 +214,8 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
             return depNode;
         } 
         else {
-            let neitnerClassNorObject = injectable;
+            // This last else code path may happen at run time even if the TypeScript types indicates that it never can.
+            let neitnerClassNorObject: any = injectable;  
             
             let depNode: IDependencyTreeNode = {
                 classType: neitnerClassNorObject.constructor ? neitnerClassNorObject.constructor as IResolvableConstructor : Object,
@@ -261,10 +254,10 @@ function isLazyInjection(classType: Function) {
 export class Lazy<T extends IInjectable> {
     
     /** @internal */
-    constructor(private _injectable: IInjectable) {
+    constructor(private _injectable: T) {
     }
 
-    static of<T>(injectable: IInjectable): Lazy<T> {
+    static of<T extends IInjectable>(injectable: T): Lazy<T> {
         return new Lazy<T>(injectable);
     }
 

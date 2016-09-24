@@ -1,5 +1,5 @@
 import * as durandalSystem from "durandal/system";
-import {singleton, inject} from "durelia-dependency-injection";
+import {singleton} from "durelia-dependency-injection";
 
 export type LogAppender = (message: string, ...properties: any[]) => void;
 

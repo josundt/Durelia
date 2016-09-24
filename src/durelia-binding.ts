@@ -1,7 +1,4 @@
-import * as durandalObservable from "plugins/observable";
-
 export const observeDecoratorKeyName: string = "__observeDecorated__";
-const appliedComputedsKeyName = "__observeApplied__";
 
 export function computedFrom(...dependentProps: string[]) {
     return function(viewmodel: any, key: string, descriptor: PropertyDescriptor) {

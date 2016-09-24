@@ -16,7 +16,7 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
             for (var _i = 1; _i < arguments.length; _i++) {
                 routes[_i - 1] = arguments[_i];
             }
-            var bestMatchInfo = { route: null, paramsMatches: -1 };
+            var bestMatchInfo = { route: undefined, paramsMatches: -1 };
             var argKeys = Object.keys(args).sort();
             routes.forEach(function (r, idx) {
                 var paramKeys = _this.getRouteParams(r, true);
@@ -46,7 +46,7 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
                     if (typeof rOrRs === "string") {
                         routes.push(rOrRs);
                     }
-                    else {
+                    else if (rOrRs instanceof Array) {
                         routes.concat(rOrRs);
                     }
                 }
@@ -56,7 +56,7 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
                 if (typeof rOrRs === "string") {
                     routes.push(rOrRs);
                 }
-                else {
+                else if (rOrRs instanceof Array) {
                     routes.concat(rOrRs);
                 }
             }
@@ -66,7 +66,6 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
         /** @internal */
         NavigationController.getRouteParams = function (route, sort) {
             var match;
-            var count = 0;
             var routeParams = [];
             while (match = NavigationController.routeExpandRegex.exec(route)) {
                 routeParams.push(match[1]);
@@ -205,6 +204,9 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
                     var routeArgs = bindingArgs.params || {};
                     var navOptions = bindingArgs.options;
                     var route = NavigationController.getRoute(routeName, routeArgs);
+                    if (route === undefined) {
+                        throw new Error("Unable to navigate: Route \"" + routeName + "\" was not found");
+                    }
                     var fragment = NavigationController.getFragment(route, routeArgs);
                     var url = durandalHistory["root"] + durandalHistory.getFragment(fragment || "", false);
                     element.setAttribute("data-route-href-fragment", fragment);
@@ -227,7 +229,8 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
                 while (match = NavigationController.routeExpandRegex.exec(instruction.config.route)) {
                     routeParamProperties.push(match[1]);
                 }
-                var routeParamValues = instruction.config.routePattern.exec(instruction.fragment).splice(1);
+                var routeParamMatches = instruction.config.routePattern ? instruction.config.routePattern.exec(instruction.fragment) : null;
+                var routeParamValues = routeParamMatches ? routeParamMatches.splice(1) : [];
                 var routeParams = undefined;
                 if (routeParamProperties.length && routeParamValues.length) {
                     if (routeParamProperties.length === routeParamValues.length) {
@@ -253,8 +256,11 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
         NavigationController.prototype.navigateToRoute = function (routeName, args, options) {
             var routeArgs = args || {};
             var route = NavigationController.getRoute(routeName, routeArgs);
+            if (route === undefined) {
+                throw new Error("Unable to navigate: Route \"" + routeName + "\" was not found");
+            }
             var fragment = NavigationController.getFragment(route, routeArgs);
-            durandalRouter.navigate(fragment, { replace: options && options.replace, trigger: true });
+            durandalRouter.navigate(fragment, { replace: !!(options && options.replace), trigger: true });
         };
         NavigationController.prototype.navigateBack = function () {
             window.history.back();

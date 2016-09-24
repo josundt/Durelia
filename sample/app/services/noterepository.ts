@@ -3,7 +3,7 @@ import {ISerializer, JsonSerializer} from "services/serializer";
 
 export interface Note {
     id: number;
-    content: string;
+    content: string | null;
     modified: Date;
 }
 
@@ -62,8 +62,6 @@ This is some sample text.
     }
     
     private clone(item: Note): Note {
-        let ser = this.serializer.serialize(item);
-        let clone = this.serializer.deserialize<Note>(ser);
         return this.serializer.deserialize<Note>(this.serializer.serialize(item));
     }
     
@@ -144,8 +142,8 @@ This is some sample text.
         });
     }
     
-    private searchArray<T>(array: Array<T>, predicate: (item: T) => boolean, reverse?: boolean, throwOnMultiple?: boolean): { index: number, item: T } {
-        let result = { index: -1, item: <T>undefined };
+    private searchArray<T>(array: Array<T>, predicate: (item: T) => boolean, reverse?: boolean, throwOnMultiple?: boolean): { index: number, item: T | undefined } {
+        let result = { index: -1, item: <T | undefined>undefined };
         for (let i = (reverse ? array.length - 1 : 0); reverse ? i >= 0 : i < array.length; reverse ? i-- : i++) {
             if (predicate(array[i])) {
                 if (throwOnMultiple && result.item) {

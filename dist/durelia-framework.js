@@ -4,10 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-define(["require", "exports", "durandal/system", "durandal/binder", "plugins/observable", "plugins/router", "durelia-dependency-injection", "durelia-logger", "durelia-binding", "durelia-router", "durelia-dependency-injection", "durelia-binding", "durelia-templating"], function (require, exports, durandalSystem, durandalBinder, durandalObservable, durandalRouter, durelia_dependency_injection_1, durelia_logger_1, durelia_binding_1, durelia_router_1, durelia_dependency_injection_2, durelia_binding_2, durelia_templating_1) {
+define(["require", "exports", "durandal/system", "durandal/binder", "plugins/observable", "durelia-dependency-injection", "durelia-logger", "durelia-binding", "durelia-router", "durelia-dependency-injection", "durelia-binding", "durelia-templating"], function (require, exports, durandalSystem, durandalBinder, durandalObservable, durelia_dependency_injection_1, durelia_logger_1, durelia_binding_1, durelia_router_1, durelia_dependency_injection_2, durelia_binding_2, durelia_templating_1) {
     "use strict";
     var originalBinderBindingMethod = durandalBinder.binding;
-    var originalRouterActivateRouteMethod = durandalRouter["activateRoute"];
     var FrameworkConfiguration = (function () {
         /** @internal */
         function FrameworkConfiguration(container, logger) {
@@ -47,7 +46,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
         };
         FrameworkConfiguration.prototype.nativePromise = function (promisePolyfill) {
             if (this.config.usesES2015Promise) {
-                return;
+                return this;
             }
             this.config.usesES2015Promise = true;
             var logMsg = "Durelia Boostrapper: Enabling ES2015 Promise for Durandal";
@@ -81,7 +80,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
         FrameworkConfiguration.prototype.viewModelDefaultExports = function () {
             var _this = this;
             if (this.config.usesViewModelDefaultExports) {
-                return;
+                return this;
             }
             this.config.usesViewModelDefaultExports = true;
             this.logger.debug("Durelia: Enabling default export for viewmodel modules.");
@@ -109,7 +108,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
         });
         FrameworkConfiguration.prototype.observeDecorator = function () {
             if (this.config.usesObserveDecorator) {
-                return;
+                return this;
             }
             this.config.usesObserveDecorator = true;
             if (!this.isObservablePluginInstalled) {
@@ -129,7 +128,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
         };
         FrameworkConfiguration.prototype.routerModelActivation = function () {
             if (this.config.usesRouterModelActivation) {
-                return;
+                return this;
             }
             this.config.usesRouterModelActivation = true;
             this.logger.debug("Durelia: Enabling router model activation (invoking viewmodel activate methods with a single object literal arg instead of multiple string args).");

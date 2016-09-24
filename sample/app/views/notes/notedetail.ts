@@ -1,7 +1,7 @@
 import {inject, Lazy, observe, useView} from "durelia-framework";
 import {IViewModel} from "durelia-viewmodel";
 import {INoteRepository, NoteRepository, Note} from "services/noterepository";
-import {INoteViewModel, INoteViewModelActivationOptions} from "views/_shared/note";
+import {INoteViewModelActivationOptions} from "views/_shared/note";
 import {ICommonDialogs, CommonDialogs} from "services/common-dialogs";
 import {INavigationController, NavigationController} from "durelia-router";
 
@@ -116,10 +116,5 @@ export default class NoteDetail implements IViewModel<INoteDetailActivationModel
                 cancel: n => this.cancel()
             }
         };
-    }
-
-    private onNoteContentChange() {
-        this.hasUnsavedChanges = true;
-    }
-    
+    }    
 }

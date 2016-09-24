@@ -14,7 +14,7 @@ export interface ITermsPartialModal extends IDialogViewModel<ITermsPartialModalA
 export class TermsPartialModal implements IDialogViewModel<ITermsPartialModalActivationModel, ITermsPartialModalOutput> {
     
     constructor(
-        private controller: IDialogController<ITermsPartialModalOutput>
+        private controller: IDialogController<ITermsPartialModalOutput | null>
     ) {}
     
     heading: string;

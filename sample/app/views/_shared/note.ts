@@ -32,31 +32,31 @@ export default class NoteViewModel implements INoteViewModel {
     }
 
     deactivate(): Promise<any> {
-        this.handlers = null;
+        this.handlers = undefined;
         return Promise.resolve();
     }
 
     edit(): Promise<any> {
-        return this.invokeEvent(this.handlers.edit);
+        return this.invokeEvent(this.handlers ? this.handlers.edit : undefined);
     }
 
     save(): Promise<any> {
-        return this.invokeEvent(this.handlers.save);
+        return this.invokeEvent(this.handlers ? this.handlers.save : undefined);
     }
 
     remove(): Promise<any> {
-        return this.invokeEvent(this.handlers.remove);
+        return this.invokeEvent(this.handlers ? this.handlers.remove : undefined);
     }
 
     cancel(): Promise<any> {
-        return this.invokeEvent(this.handlers.cancel);
+        return this.invokeEvent(this.handlers ? this.handlers.cancel : undefined);
     }
 
-    private invokeEvent(handler: (note: Note) => Promise<any>) {
+    private invokeEvent(handler: ((note: Note) => Promise<any>) | undefined) {
         return handler
             ? handler(this.note)
             : Promise.resolve();
     }
 
-    private handlers: INoteViewModelEventHandlers = {};
+    private handlers: INoteViewModelEventHandlers | undefined = {};
 }

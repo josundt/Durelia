@@ -1,7 +1,7 @@
 import {inject, Lazy, observe, useView, computedFrom} from "durelia-framework";
 import {IViewModel} from "durelia-viewmodel";
 import {INoteDetailActivationModel} from "views/notes/notedetail";
-import {INoteRepository, NoteRepository, Note, ISortOrder} from "services/noterepository";
+import {INoteRepository, NoteRepository, Note} from "services/noterepository";
 import {INoteViewModelActivationOptions} from "views/_shared/note";
 import {ICommonDialogs, CommonDialogs} from "services/common-dialogs";
 import {INavigationController, NavigationController} from "durelia-router";

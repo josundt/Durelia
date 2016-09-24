@@ -1,22 +1,29 @@
 {
     "compileOnSave": true,
     "compilerOptions": {
-        "target": "es5",
-        "module": "amd",
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "declaration": true,
         "experimentalDecorators": true,
         "forceConsistentCasingInFileNames": true,
+        "lib": ["dom", "es5", "es2015.promise"],
+        "listFiles": false,
+        "module": "amd",
         "moduleResolution": "classic",
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": false,
         "noImplicitReturns": true,
+        "noImplicitThis": true,
         "noImplicitUseStrict": false,
+        "noUnusedLocals": true,
+        "noUnusedParameters": false,
+        "outDir": "../dist",
         "preserveConstEnums": true,
         "sourceMap": true,
+        "strictNullChecks": false,
         "stripInternal": true,
         "suppressExcessPropertyErrors": false,
         "suppressImplicitAnyIndexErrors": true,
-        "listFiles": false,
-        "outDir": "../dist",
-        "declaration": true
+        "target": "es5"
     }
 }
