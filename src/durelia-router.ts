@@ -31,13 +31,75 @@ interface IRouteHrefBindingArgs {
 @singleton
 export class NavigationController {
 
-    constructor() {}
+    /** @internal */
+    private static readonly routeExpandRegex: RegExp = /\:([^\:\/\(\)\?\=\&]+)/g;
+    /** @internal */
+    private static readonly optionalParamFragmentRegExp: RegExp = /(\([^\)]+\))/g;
+     /** @internal */
+    private static readonly isoDateStringRegex: RegExp = /^\d{4}\-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?([\+\-]\d{2}:\d{2}|[A-Z])$/i;
+    /** @internal */
+    private static routerModelActivationEnabled: boolean = false;
+
+    navigateToRoute<TActivationModel>(routeName: string, args?: TActivationModel, options?: INavigationOptions): void {
+        let routeArgs: IRouteActivationModel = <any>args || {};
+        let route = NavigationController.getRoute(routeName, routeArgs);
+        if (route === undefined) {
+            throw new Error(`Unable to navigate: Route "${routeName}" was not found`);
+        }
+        let fragment = NavigationController.getFragment(route, routeArgs);
+        durandalRouter.navigate(fragment, { replace: !!(options && options.replace), trigger: true });
+    }
+    
+    navigateBack(): void {
+        window.history.back();
+    }
 
     /** @internal */
-    private static routeExpandRegex: RegExp = /\:([^\:\/\(\)\?\=\&]+)/g;
-    /** @internal */
-    private static optionalParamFragmentRegExp: RegExp = /(\([^\)]+\))/g;
- 
+    static enableRouterModelActivation(): void {
+
+        // Used by Durelia FrameworkConfiguration
+
+        if (NavigationController.routerModelActivationEnabled) {
+            return;
+        }
+
+        this.registerRouteHrefBindingHandler();
+        
+        durandalRouter.on("router:route:activating").then((viewmodel: any, instruction: DurandalRouteInstruction, router: DurandalRouter) => {
+            //let routeParamProperties = instruction.config.routePattern.exec(<string>instruction.config.route).splice(1);
+            let routeParamProperties: string[] = [];
+            let match: RegExpExecArray | null;
+            while (match = NavigationController.routeExpandRegex.exec(<string>instruction.config.route)) {
+                routeParamProperties.push(match[1]);
+            }
+            
+            let routeParamMatches = instruction.config.routePattern ? instruction.config.routePattern.exec(instruction.fragment) : null;
+            let routeParamValues = routeParamMatches ? routeParamMatches.splice(1) : [];
+            let routeParams: { [routeParam: string]: string | number } | undefined = undefined;
+            if (routeParamProperties.length && routeParamValues.length) {
+                if (routeParamProperties.length === routeParamValues.length) {
+                    routeParams = routeParams || {};
+                    for (let i = 0; i < routeParamProperties.length; i++) {
+                        let prop = routeParamProperties[i].replace(/[\(\)\:]/g, "");
+                        let value = NavigationController.urlDeserialize(routeParamValues[i]);
+                        routeParams[prop] = value;
+                    }
+                } else {
+                    //log warning
+                }
+            }
+            if (instruction.queryParams) {
+                routeParams = routeParams || {};
+                Object.keys(instruction.queryParams).forEach(key => routeParams![key] = instruction.queryParams[key]);
+            }
+            instruction.params.splice(0);
+            instruction.params.push(routeParams);
+            
+        });
+
+        NavigationController.routerModelActivationEnabled = true;
+    }
+
     /** @internal */
     private static getBestMatchedRoute(args: IRouteActivationModel, ...routes: string[]): string | undefined {
         let bestMatchInfo = { route: <string | undefined>undefined, paramsMatches: -1 };
@@ -173,9 +235,6 @@ export class NavigationController {
     }
     
     /** @internal */
-    private static isoDateStringRegex: RegExp = /^\d{4}\-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?([\+\-]\d{2}:\d{2}|[A-Z])$/i;
-
-    /** @internal */
     private static urlSerialize(value: any): string {
         let result: string;
         if (value instanceof Date) {
@@ -267,68 +326,5 @@ export class NavigationController {
                 element.href = url;
             }
         };
-    }
-
-    /** @internal */
-    private static routerModelActivationEnabled: boolean = false;
-    
-    /** @internal */
-    static enableRouterModelActivation(): void {
-
-        // Used by Durelia FrameworkConfiguration
-
-        if (NavigationController.routerModelActivationEnabled) {
-            return;
-        }
-
-        this.registerRouteHrefBindingHandler();
-        
-        durandalRouter.on("router:route:activating").then((viewmodel: any, instruction: DurandalRouteInstruction, router: DurandalRouter) => {
-            //let routeParamProperties = instruction.config.routePattern.exec(<string>instruction.config.route).splice(1);
-            let routeParamProperties: string[] = [];
-            let match: RegExpExecArray | null;
-            while (match = NavigationController.routeExpandRegex.exec(<string>instruction.config.route)) {
-                routeParamProperties.push(match[1]);
-            }
-            
-            let routeParamMatches = instruction.config.routePattern ? instruction.config.routePattern.exec(instruction.fragment) : null;
-            let routeParamValues = routeParamMatches ? routeParamMatches.splice(1) : [];
-            let routeParams: { [routeParam: string]: string | number } | undefined = undefined;
-            if (routeParamProperties.length && routeParamValues.length) {
-                if (routeParamProperties.length === routeParamValues.length) {
-                    routeParams = routeParams || {};
-                    for (let i = 0; i < routeParamProperties.length; i++) {
-                        let prop = routeParamProperties[i].replace(/[\(\)\:]/g, "");
-                        let value = NavigationController.urlDeserialize(routeParamValues[i]);
-                        routeParams[prop] = value;
-                    }
-                } else {
-                    //log warning
-                }
-            }
-            if (instruction.queryParams) {
-                routeParams = routeParams || {};
-                Object.keys(instruction.queryParams).forEach(key => routeParams![key] = instruction.queryParams[key]);
-            }
-            instruction.params.splice(0);
-            instruction.params.push(routeParams);
-            
-        });
-
-        NavigationController.routerModelActivationEnabled = true;
-    }
-
-    navigateToRoute<TActivationModel>(routeName: string, args?: TActivationModel, options?: INavigationOptions): void {
-        let routeArgs: IRouteActivationModel = <any>args || {};
-        let route = NavigationController.getRoute(routeName, routeArgs);
-        if (route === undefined) {
-            throw new Error(`Unable to navigate: Route "${routeName}" was not found`);
-        }
-        let fragment = NavigationController.getFragment(route, routeArgs);
-        durandalRouter.navigate(fragment, { replace: !!(options && options.replace), trigger: true });
-    }
-    
-    navigateBack(): void {
-        window.history.back();
     }
 }

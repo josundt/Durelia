@@ -91,7 +91,8 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
         container: IDependencyInjectionContainer,
         logger: ILogger
     ) {
-        this.container = container;        
+        this.container = container;
+                
         this.logger = logger;        
 
         this.config = {
@@ -105,34 +106,11 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
     }
 
     /** @internal */
-    private container: IDependencyInjectionContainer;
+    private readonly container: IDependencyInjectionContainer;
     /** @internal */
-    private logger: ILogger;
+    private readonly logger: ILogger;
     /** @internal */
-    config: IDureliaConfiguration;
-
-    /** @internal */
-    private enableDependencyInjection() {
-        (<any>durandalSystem)["resolveObject"] = (module) => {
-            if (durandalSystem.isFunction(module)) {
-                return this.container.resolve(module);
-            } else if (module && durandalSystem.isFunction(module.default)) {
-                return this.container.resolve(module.default);
-            } else {
-                return module;
-            }
-        };
-    }
-    
-    /** @internal */
-    private static defer<T>(): Deferred<T> {
-        let result = <Deferred<T>>{};
-        result.promise = new Promise(function (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) {
-            result.resolve = <any>resolve;
-            result.reject = <any>reject;
-        });
-        return result;
-    }
+    private readonly config: IDureliaConfiguration;
 
     nativePromise(promisePolyfill?: PromiseConstructorLike): this {
         
@@ -197,12 +175,7 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
         
         return this;
     }
-    
-    /** @internal */ 
-    private get isObservablePluginInstalled() {
-        return durandalBinder.binding.toString().indexOf("convertObject") >= 0;
-    }
-        
+            
     observeDecorator(): this {
         if (this.config.usesObserveDecorator) {
             return this;
@@ -256,24 +229,33 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
         return this;
     }
 
-    // /**
-    //    * Adds a singleton to the framework's dependency injection container.
-    //    * @param type The object type of the dependency that the framework will inject.
-    //    * @param implementation The constructor function of the dependency that the framework will inject.
-    //    * @return Returns the current FrameworkConfiguration instance.
-    //    */
-    // singleton(type: any, implementation?: Function): FrameworkConfiguration;
+        /** @internal */
+    private enableDependencyInjection() {
+        (<any>durandalSystem)["resolveObject"] = (module) => {
+            if (durandalSystem.isFunction(module)) {
+                return this.container.resolve(module);
+            } else if (module && durandalSystem.isFunction(module.default)) {
+                return this.container.resolve(module.default);
+            } else {
+                return module;
+            }
+        };
+    }
+    
+    /** @internal */
+    private static defer<T>(): Deferred<T> {
+        let result = <Deferred<T>>{};
+        result.promise = new Promise(function (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) {
+            result.resolve = <any>resolve;
+            result.reject = <any>reject;
+        });
+        return result;
+    }
 
-    // /**
-    //    * Adds a transient to the framework's dependency injection container.
-    //    * @param type The object type of the dependency that the framework will inject.
-    //    * @param implementation The constructor function of the dependency that the framework will inject.
-    //    * @return Returns the current FrameworkConfiguration instance.
-    //    */
-    // transient(type: any, implementation?: Function): FrameworkConfiguration;
-
-
-
+    /** @internal */ 
+    private get isObservablePluginInstalled() {
+        return durandalBinder.binding.toString().indexOf("convertObject") >= 0;
+    }
 }
 
 @singleton

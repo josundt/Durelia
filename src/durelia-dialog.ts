@@ -30,7 +30,7 @@ export class DialogService implements IDialogService {
     }
 
     /** @internal */    
-    private container: IDependencyInjectionContainer;
+    private readonly container: IDependencyInjectionContainer;
     
     open<TActivationModel, TResult>(options: IDialogOptions<TActivationModel>): Promise<IDialogResult<TResult>> {
         let vm = this.container.resolve<IDialogViewModel<TActivationModel, TResult>>(options.viewModel);

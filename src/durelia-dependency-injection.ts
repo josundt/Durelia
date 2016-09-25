@@ -37,10 +37,10 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
         private logger: ILogger = new Logger()
     ) {}
     
-    singletonTypeRegistry: IResolvableConstructor[] = [];
-    singletonInstances: IResolvedInstance[] = [];
+    private readonly singletonTypeRegistry: Array<IResolvableConstructor> = [];
+    private readonly singletonInstances: Array<IResolvedInstance> = [];
     
-    debug: boolean = true;
+    private debug: boolean = true;
 
     resolve<T>(injectable: IInjectable): T {
         return this.resolveRecursive(injectable).instance as T;
@@ -254,7 +254,7 @@ function isLazyInjection(classType: Function) {
 export class Lazy<T extends IInjectable> {
     
     /** @internal */
-    constructor(private _injectable: T) {
+    private constructor(private _injectable: T) {
     }
 
     static of<T extends IInjectable>(injectable: T): Lazy<T> {

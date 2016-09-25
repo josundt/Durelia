@@ -20,10 +20,6 @@ enum SeverityLevel {
 
 @singleton
 export class Logger implements ILogger {
-
-    constructor() {
-    }
-
     /** @internal */
     private get severityThreshold(): SeverityLevel {
         return durandalSystem.debug() ? SeverityLevel.debug : SeverityLevel.warn;

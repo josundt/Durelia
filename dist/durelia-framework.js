@@ -20,30 +20,6 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             };
             this.enableDependencyInjection();
         }
-        /** @internal */
-        FrameworkConfiguration.prototype.enableDependencyInjection = function () {
-            var _this = this;
-            durandalSystem["resolveObject"] = function (module) {
-                if (durandalSystem.isFunction(module)) {
-                    return _this.container.resolve(module);
-                }
-                else if (module && durandalSystem.isFunction(module.default)) {
-                    return _this.container.resolve(module.default);
-                }
-                else {
-                    return module;
-                }
-            };
-        };
-        /** @internal */
-        FrameworkConfiguration.defer = function () {
-            var result = {};
-            result.promise = new Promise(function (resolve, reject) {
-                result.resolve = resolve;
-                result.reject = reject;
-            });
-            return result;
-        };
         FrameworkConfiguration.prototype.nativePromise = function (promisePolyfill) {
             if (this.config.usesES2015Promise) {
                 return this;
@@ -98,14 +74,6 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             };
             return this;
         };
-        Object.defineProperty(FrameworkConfiguration.prototype, "isObservablePluginInstalled", {
-            /** @internal */
-            get: function () {
-                return durandalBinder.binding.toString().indexOf("convertObject") >= 0;
-            },
-            enumerable: true,
-            configurable: true
-        });
         FrameworkConfiguration.prototype.observeDecorator = function () {
             if (this.config.usesObserveDecorator) {
                 return this;
@@ -139,6 +107,38 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             this.container.registerInstance(type, instance);
             return this;
         };
+        /** @internal */
+        FrameworkConfiguration.prototype.enableDependencyInjection = function () {
+            var _this = this;
+            durandalSystem["resolveObject"] = function (module) {
+                if (durandalSystem.isFunction(module)) {
+                    return _this.container.resolve(module);
+                }
+                else if (module && durandalSystem.isFunction(module.default)) {
+                    return _this.container.resolve(module.default);
+                }
+                else {
+                    return module;
+                }
+            };
+        };
+        /** @internal */
+        FrameworkConfiguration.defer = function () {
+            var result = {};
+            result.promise = new Promise(function (resolve, reject) {
+                result.resolve = resolve;
+                result.reject = reject;
+            });
+            return result;
+        };
+        Object.defineProperty(FrameworkConfiguration.prototype, "isObservablePluginInstalled", {
+            /** @internal */
+            get: function () {
+                return durandalBinder.binding.toString().indexOf("convertObject") >= 0;
+            },
+            enumerable: true,
+            configurable: true
+        });
         FrameworkConfiguration = __decorate([
             durelia_dependency_injection_1.singleton,
             durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer, durelia_logger_1.Logger)
