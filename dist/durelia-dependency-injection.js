@@ -21,7 +21,14 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
         DependencyInjectionContainer.prototype.resolve = function (injectable) {
             return this.resolveRecursive(injectable).instance;
         };
-        /** @internal */
+        /**
+         * Registers an instance in the IoC container
+         * @internal
+         * @param {IResolvableConstructor} classType The class
+         * @param {IResolvedInstance} instance The instance
+         * @returns {void}
+         * @memberOf DependencyInjectionContainer
+         */
         DependencyInjectionContainer.prototype.registerInstance = function (classType, instance) {
             var errMsg = "Cannor register instance:";
             if (!instance) {
@@ -202,6 +209,12 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
         return DependencyInjectionContainer;
     }());
     exports.DependencyInjectionContainer = DependencyInjectionContainer;
+    /**
+     * Decorates a class to specify constructor injection arguments
+     * @export
+     * @param {...Array<IInjectable>} args The types to inject
+     * @returns {Function} The internal decorator function
+     */
     function inject() {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
@@ -212,23 +225,49 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
         };
     }
     exports.inject = inject;
+    /**
+     * Decorates a class to specify singleton IoC container lifetime
+     * @export
+     * @param {class} classType The class
+     * @returns {void}
+     */
     function singleton(classType) {
         classType.__lifetime__ = "singleton";
     }
     exports.singleton = singleton;
+    /**
+     * Decorates a class to specify singleton IoC container lifetime
+     * @export
+     * @param {class} classType The class
+     * @returns {void}
+     */
     function transient(classType) {
         classType.__lifetime__ = "transient";
     }
     exports.transient = transient;
-    /** @internal */
     function isLazyInjection(classType) {
         classType[isLazyInjectionPropName] = true;
     }
     var Lazy = (function () {
-        /** @internal */
+        /**
+         * Creates an instance of Lazy.
+         * @internal
+         * @private
+         * @constructor
+         * @param {T} _injectable The injectable
+         * @memberOf Lazy
+         */
         function Lazy(_injectable) {
             this._injectable = _injectable;
         }
+        /**
+         * Use with the inject decorator to inject lazy factory function instead of instance.
+         * @static
+         * @template T
+         * @param {T} injectable The injectable
+         * @returns {Lazy<T>} The lazy instances
+         * @memberOf Lazy
+         */
         Lazy.of = function (injectable) {
             return new Lazy(injectable);
         };

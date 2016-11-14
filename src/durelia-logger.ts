@@ -25,8 +25,19 @@ export class Logger implements ILogger {
         return durandalSystem.debug() ? SeverityLevel.debug : SeverityLevel.warn;
     }
     
-    /** @internal */
-    private log(severityLevel: SeverityLevel = SeverityLevel.debug, appender: ILogger, appenderFn: LogAppender, message: string,  ...properties: any[]) {
+    /**
+     * Internal log method
+     * @internal
+     * @private
+     * @param {SeverityLevel} [severityLevel=SeverityLevel.debug] The severity level
+     * @param {ILogger} appender Appender
+     * @param {LogAppender} appenderFn Appender function
+     * @param {string} message Message
+     * @param {...any[]} properties Additional properties
+     * @returns {void}
+     * @memberOf Logger
+     */
+    private log(severityLevel: SeverityLevel = SeverityLevel.debug, appender: ILogger, appenderFn: LogAppender, message: string,  ...properties: any[]): void {
         if (severityLevel >= this.severityThreshold) {
             /* tslint:disable:no-console */
             appenderFn.call(appender, message, ...properties);
@@ -34,8 +45,8 @@ export class Logger implements ILogger {
         }
     }
     
-    debug(message: string, ...properties: any[]) { this.log(SeverityLevel.debug, console, console.debug, message, ...properties); }
-    info(message: string, ...properties: any[])  { this.log(SeverityLevel.info,  console, console.info, message, ...properties); }
-    warn(message: string, ...properties: any[])  { this.log(SeverityLevel.warn,  console, console.warn, message, ...properties); }
-    error(message: string, ...properties: any[]) { this.log(SeverityLevel.error, console, console.error, message, ...properties); }
+    debug(message: string, ...properties: any[]): void { this.log(SeverityLevel.debug, console, console.debug, message, ...properties); }
+    info(message: string, ...properties: any[]): void  { this.log(SeverityLevel.info,  console, console.info, message, ...properties); }
+    warn(message: string, ...properties: any[]): void  { this.log(SeverityLevel.warn,  console, console.warn, message, ...properties); }
+    error(message: string, ...properties: any[]): void { this.log(SeverityLevel.error, console, console.error, message, ...properties); }
 }

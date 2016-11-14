@@ -7,7 +7,6 @@ declare module "durelia-logger" {
         error: LogAppender;
     }
     export class Logger implements ILogger {
-        constructor();
         debug(message: string, ...properties: any[]): void;
         info(message: string, ...properties: any[]): void;
         warn(message: string, ...properties: any[]): void;

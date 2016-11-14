@@ -1,6 +1,5 @@
-export function useView(viewPath: string) {
-    return function (classType: Function) {
+export function useView(viewPath: string): (classType: Function) => void {
+    return (classType: Function): void => {
         classType.prototype.getView = () => viewPath;
     };
 }
-

@@ -1,52 +1,94 @@
 {
+  "rulesDirectory": [
+    "node_modules/tslint-eslint-rules/dist/rules",
+    "node_modules/tslint-microsoft-contrib"
+  ],
   "rules": {
-    "align": [ false, "parameters", "arguments", "statements" ],
-    "ban": [ false ],
+    "adjacent-overload-signatures": true,
+    "align": [false, "parameters", "arguments", "statements"],
+    //"arrow-parens": true,
+    "ban": [true, "self", "that"],
     "class-name": true,
+    //"comment-format": [true, "check-space", "check-lowercase"],
     "curly": true,
     "eofline": false,
+    //"file-header": ["true", "Copyright \\d{4}"],
     "forin": true,
-    "indent": [ true, 4 ],
-    "interface-name": false,
-    "jsdoc-format": false,
+    "indent": [true, "spaces"],
+    //"interface-name": [true, "always-prefix"],
+    "jsdoc-format": true,
     "label-position": true,
     "label-undefined": true,
-    "max-line-length": [ false, 300 ],
+    "linebreak-style": [true, "CRLF"],
+    "max-file-line-count": [true, 4500],
+    "max-line-length": [false, 300],
     "member-access": false,
-    "member-ordering": [ false, "public-before-private", "static-before-instance", "variables-before-functions" ],
-    "no-any": false,
+    "member-ordering": [false, { 
+      "order":  [
+        "constructor", 
+        "public-static-field", 
+        "protected-static-field",
+        "private-static-field",
+        "public-instance-field",
+        "protected-instance-field",
+        "private-instance-field",
+        "public-static-method",
+        "protected-static-method",
+        "private-static-method",
+        "public-instance-method",
+        "protected-instance-method",
+        "private-instance-method"
+      ]}
+    ],
+    "new-parens": true,
+    //"no-any": true,
     "no-arg": true,
+    //"no-angle-bracket-type-assertion": true,
     "no-bitwise": true,
-    "no-conditional-assignment": false,
-    "no-consecutive-blank-lines": false,
-    "no-console": [ true, "debug", "dir", "error", "exception", "group", "groupCollapsed", "groupEnd", "info", "log", "profile", "profileEnd", "time", "timeEnd", "trace", "warn" ],
+    "no-conditional-assignment": true,
+    //"no-consecutive-blank-lines": true,
+    "no-console": [ true, "debug", "dir", "error", "group", "groupCollapsed", "groupEnd", "info", "log", "profile", "profileEnd", "time", "timeEnd", "trace", "warn" ],
     "no-construct": true,
-    "no-constructor-vars": false,
+    //"no-constructor-vars": true,
     "no-debugger": true,
+    //"no-default-export": true, /* We need default exports for Durandal router to find Page viewmodel classes */
     "no-duplicate-key": true,
     "no-duplicate-variable": true,
-    "no-empty": false,
+    //"no-empty": true,
     "no-eval": true,
-    "no-inferrable-types": false,
+    //"no-for-in-array": true,
+    "no-invalid-this": true,
+    //"no-inferrable-types": true,
     "no-internal-module": true,
+    //"no-mergeable-namespace": true,
+    //"no-parameter-properties": true,
     "no-require-imports": true,
+    "no-reference": true,
     "no-shadowed-variable": true,
-    "no-string-literal": false,
+    //"no-string-literal": true,
     "no-switch-case-fall-through": true,
-    "no-trailing-whitespace": false,
+    //"no-trailing-whitespace": true,
     "no-unreachable": true,
     "no-unused-expression": true,
-    "no-unused-variable": false,
+    "no-unused-new": true,
+    //"no-unused-variable": true, /* Compiler options take care of this now */
     "no-use-before-declare": true,
     "no-var-keyword": true,
     "no-var-requires": true,
-    "one-line": [ true, "check-catch", "check-open-brace", "check-whitespace" ],
+    //"object-literal-sort-keys": true,
+    "object-literal-key-quotes": [true, "as-needed"],
+    //"object-literal-shorthand": true,
+    //"only-arrow-functions": true,
+    "one-line": [true, "check-open-brace", "check-catch", "check-whitespace" /*, "check-else" */],
+    //"ordered-imports": true, /* we prefer ordering imports logically over alphabetically */
     "quotemark": [ true, "double" ],
     "radix": true,
-    "semicolon": true,
-    "switch-default": false,
-    "triple-equals": [ true ],
-    "typedef": [ true, "property-declaration", "member-variable-declaration" ],
+    //"restrict-plus-operands": true, /* THIS RULE WORKS WITH THE GRUNT TASK BUT MAKES VSCODE TSLINT INTEGRATION FAIL. CAN BE SWITCHED ON AND TESTED THROUGH GRUNT TASK FROM TIME TO TIME */ 
+    "semicolon": [true, "always"],
+    //"switch-default": true,
+    //"trailing-comma": [true, {"singleline": "never", "multiline": "never"}]
+    "triple-equals": [ true ], 
+    "typedef": [ true, "call-signature", /*"arrow-call-signature",*/ "parameter", /*"arrow-parameter",*/ "property-declaration", /*"variable-declaration",*/ "member-variable-declaration"],
     "typedef-whitespace": [
       true,
       {
@@ -57,9 +99,130 @@
         "variable-declaration": "nospace"
       }
     ],
-    "use-strict": [ false, "check-module", "check-function" ],
-    "variable-name": [ true, "allow-leading-underscore" ],
-    "whitespace": [ true, "check-branch", "check-decl", "check-operator", "check-separator", "check-type" ]
+    "use-isnan": true,
+    //"use-strict": [ true, "check-module", "check-function" ],
+    "variable-name": [true, "allow-leading-underscore"],
+    "whitespace": [true, "check-branch", "check-decl", "check-operator", "check-module", "check-separator", "check-type"/*, "check-typecast"*/],
+
+
+
+
+
+    /* TSLINT-ESLINT-RULES rules */ 
+    "no-constant-condition": true,  
+    "no-control-regex": true,
+    "no-duplicate-case": true,
+    "no-empty-character-class": true,
+    //"no-ex-assign": true,
+    "no-extra-boolean-cast": true,
+    "no-extra-semi": true,
+    "no-inner-declarations": true,
+    "no-invalid-regexp": true,
+    "no-irregular-whitespace": true,
+    //"no-null-keyword": true,
+    "no-regex-spaces": true,
+    "no-sparse-arrays": true,
+    //"no-unexpected-multiline": true,
+    "no-unsafe-finally": true,
+    "valid-jsdoc": true,
+    "valid-typeof": true,
+    "handle-callback-err": true,
+
+
+
+
+
+    /* TSLINT-MICROSOFT-CONTRIB [SECURITY] rules */
+    "no-var-self": true,
+    "insecure-random": true,
+    "no-banned-terms": true,
+    "no-cookies": true,
+    "no-delete-expression": true,
+    "no-disable-auto-sanitization": true,
+    "no-document-domain": true,
+    "no-document-write": true,
+    "no-exec-script": true,
+    "no-function-constructor-with-string-args": true,
+    "no-http-string": [true, "http://www.example.com/?.*", "http://www.examples.com/?.*"],
+    "no-inner-html": true,
+    "no-octal-literal": true,
+    //"no-reserved-keywords": true, /* FAULTY (does not work with the new TS 2.0 "this" arg in functions */
+    "no-string-based-set-immediate": true,
+    "no-string-based-set-interval": true,
+    "no-string-based-set-timeout": true,
+    //"non-literal-require": true /* FAILS */
+    "possible-timing-attack": true,
+    //"react-anchor-blank-noopener": true, /* N/A */
+    //"react-iframe-missing-sandbox": true, /* N/A */
+    //"react-no-dangerous-html": true /* N/A */
+
+
+
+
+
+    /* TSLINT-MICROSOFT-CONTRIB [BUGS AND CORRECTNESS] rules */
+    "jquery-deferred-must-complete": true,
+    "mocha-avoid-only": true,
+    "mocha-no-side-effect-code": true,
+    //"no-backbone-get-set-outside-model": true, /* N/A */
+    // "no-for-in-array": true, /* FAULTY */
+    // "no-increment-decrement": true,
+    "no-jquery-raw-elements": true,
+    "no-stateless-class": true,
+    "no-unnecessary-bind": true,
+    //"no-unnecessary-override": true, /* DISABLED: Sometimes the overridden method has more specific param types or return types than the base method */
+    "no-with-statement": true,
+    "promise-must-complete": true,
+    //"react-this-binding-issue": true, /* N/A */
+    //"react-unused-props-and-state": true,  /* N/A */
+    //"restrict-plus-operands": true, /* FAULTY */ // the plus operand should really only be used for strings and numbers
+    "use-named-parameter": true,
+
+
+
+
+
+    /* TSLINT-MICROSOFT-CONTRIB [CODE CLARITY] rules */
+    //"arrow-parens": false, // for simple functions the parens on arrow functions are not needed
+    //"chai-prefer-contains-to-index-of": true, // N/A
+    //"chai-vague-errors": true, // N/A
+    //"export-name": true, // False; we found this to be to strict
+    "function-name": [
+      true,
+      {
+        "method-regex": "^[a-z][\\w\\d]+$",
+        "private-method-regex": "^[_a-z][\\w\\d]+$", // changed from default: "^[a-z][\\w\\d]+$"
+        "protected-method-regex": "^[a-z][\\w\\d]+$",
+        "static-method-regex": "^[a-z][\\w\\d]+$", // changed from default: "^[A-Z_\\d]+$"
+        "function-regex": "^[a-z][\\w\\d]+$"
+      }
+    ],
+    //"import-name": true,
+    "max-func-body-length": [true, 1000, {"ignore-parameters-to-function-regex": "describe"}],
+    //"missing-jsdoc": true, // do not require jsdoc for everything
+    "mocha-unneeded-done": true,
+    //"no-empty-interfaces": true, // We found this to be too strict
+    "no-for-in": true,
+    "no-function-expression": true,
+    "no-multiline-string": true, 
+    //"no-relative-imports": true, // False; we use relative imports
+    //"no-suspicious-comment": true, // Temporarily switched off
+    "no-typeof-undefined": true,
+    "no-unnecessary-field-initialization": true,
+    //"no-unnecessary-local-variable": true, // False: We prefer to sometimes assign the result of a function to a variable before returning it for debugging
+    "no-unsupported-browser-code": true,
+    //"prefer-array-literal": true, // False: We prefer the generic Array<>; especiall when using union types 
+    "prefer-const": true,
+    "underscore-consistent-invocation": true,
+
+
+
+
+
+    /* TSLINT-MICROSOFT-CONTRIB [WHITESPACE] rules */
+    //"no-empty-line-after-opening-brace": true,
+    //"no-single-line-block-comment": true, 
+    "no-unnecessary-semicolons": true
   }
 }
 

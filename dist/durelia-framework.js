@@ -8,7 +8,14 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
     "use strict";
     var originalBinderBindingMethod = durandalBinder.binding;
     var FrameworkConfiguration = (function () {
-        /** @internal */
+        /**
+         * Creates an instance of FrameworkConfiguration.
+         * @internal
+         * @constructor
+         * @param {IDependencyInjectionContainer} container The IoC container
+         * @param {ILogger} logger The logger
+         * @memberOf FrameworkConfiguration
+         */
         function FrameworkConfiguration(container, logger) {
             this.container = container;
             this.logger = logger;
@@ -39,6 +46,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             if (!Promise.prototype["fail"]) {
                 Promise.prototype["fail"] = Promise.prototype.catch;
             }
+            /* tslint:disable:no-function-expression */
             durandalSystem.defer = function (action) {
                 var deferred = FrameworkConfiguration.defer();
                 // Promise["defer"] && typeof Promise["defer"] === "function"
@@ -51,6 +59,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
                 deferred["promise"] = function () { return prom; };
                 return deferred;
             };
+            /* tslint:enable:no-function-expression */
             return this;
         };
         FrameworkConfiguration.prototype.viewModelDefaultExports = function () {
@@ -107,7 +116,13 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             this.container.registerInstance(type, instance);
             return this;
         };
-        /** @internal */
+        /**
+         * Enables dependency injection
+         * @internal
+         * @private
+         * @returns void
+         * @memberOf FrameworkConfiguration
+         */
         FrameworkConfiguration.prototype.enableDependencyInjection = function () {
             var _this = this;
             durandalSystem["resolveObject"] = function (module) {
@@ -122,7 +137,14 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
                 }
             };
         };
-        /** @internal */
+        /**
+         * Creates a deferred
+         * @internal
+         * @private
+         * @static
+         * @template T
+         * @returns {Deferred<T>}
+         */
         FrameworkConfiguration.defer = function () {
             var result = {};
             result.promise = new Promise(function (resolve, reject) {
@@ -132,7 +154,11 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             return result;
         };
         Object.defineProperty(FrameworkConfiguration.prototype, "isObservablePluginInstalled", {
-            /** @internal */
+            /**
+             * Checks whether observable plugin is installed
+             * @internal
+             * @private
+             */
             get: function () {
                 return durandalBinder.binding.toString().indexOf("convertObject") >= 0;
             },
@@ -146,6 +172,12 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
         return FrameworkConfiguration;
     }());
     exports.FrameworkConfiguration = FrameworkConfiguration;
+    /**
+     * The main Durelia module
+     * @export
+     * @class Durelia
+     * @implements {IDurelia}
+     */
     var Durelia = (function () {
         /** @internal */
         function Durelia(container, frameworkConfig) {

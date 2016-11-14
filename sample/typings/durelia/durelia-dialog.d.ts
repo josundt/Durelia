@@ -13,8 +13,8 @@ declare module "durelia-dialog" {
         output: TResultOutput;
     }
     export interface IDialogController<TResultOutput> {
-        ok(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>): any;
-        cancel(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>): any;
+        ok(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>): void;
+        cancel(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>): void;
     }
     export class DialogService implements IDialogService {
         constructor(container: IDependencyInjectionContainer);

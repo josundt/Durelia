@@ -17,8 +17,8 @@ export interface IDialogResult<TResultOutput> {
 }
 
 export interface IDialogController<TResultOutput> {
-    ok(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>);
-    cancel(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>);
+    ok(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>): void;
+    cancel(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>): void;
 }
 
 @singleton
@@ -29,26 +29,26 @@ export class DialogService implements IDialogService {
         this.container = container;
     }
 
-    /** @internal */    
+    /** @internal */
     private readonly container: IDependencyInjectionContainer;
     
     open<TActivationModel, TResult>(options: IDialogOptions<TActivationModel>): Promise<IDialogResult<TResult>> {
-        let vm = this.container.resolve<IDialogViewModel<TActivationModel, TResult>>(options.viewModel);
+        const vm = this.container.resolve<IDialogViewModel<TActivationModel, TResult>>(options.viewModel);
         return durandalDialog.show(vm, options.model) as any;
     }
 }
 
 export class DialogController<TResultOutput> implements IDialogController<TResultOutput> {
-    ok(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>) {
-        let dialogResult: IDialogResult<TResultOutput> = { 
+    ok(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>): void {
+        const dialogResult: IDialogResult<TResultOutput> = { 
             wasCancelled: false,
             output: result 
         };
         return durandalDialog.close(viewModel, dialogResult);
     }
 
-    cancel(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>) {
-        let dialogResult: IDialogResult<TResultOutput> = { 
+    cancel(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>): void {
+        const dialogResult: IDialogResult<TResultOutput> = { 
             wasCancelled: true,
             output: result 
         };

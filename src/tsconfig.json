@@ -20,7 +20,7 @@
         "outDir": "../dist",
         "preserveConstEnums": true,
         "sourceMap": true,
-        "strictNullChecks": false,
+        "strictNullChecks": true,
         "stripInternal": true,
         "suppressExcessPropertyErrors": false,
         "suppressImplicitAnyIndexErrors": true,

@@ -25,7 +25,18 @@ define(["require", "exports", "durandal/system", "durelia-dependency-injection"]
             enumerable: true,
             configurable: true
         });
-        /** @internal */
+        /**
+         * Internal log method
+         * @internal
+         * @private
+         * @param {SeverityLevel} [severityLevel=SeverityLevel.debug] The severity level
+         * @param {ILogger} appender Appender
+         * @param {LogAppender} appenderFn Appender function
+         * @param {string} message Message
+         * @param {...any[]} properties Additional properties
+         * @returns {void}
+         * @memberOf Logger
+         */
         Logger.prototype.log = function (severityLevel, appender, appenderFn, message) {
             if (severityLevel === void 0) { severityLevel = SeverityLevel.debug; }
             var properties = [];

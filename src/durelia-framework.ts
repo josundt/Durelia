@@ -11,38 +11,62 @@ export interface IDurelia {
     container: IDependencyInjectionContainer;
 }
 
+/**
+ * The Durela Framework configuration
+ * @export
+ * @interface IFrameworkConfiguration
+ */
 export interface IFrameworkConfiguration {
+    
     /**
      * Adds an existing object to the framework's dependency injection container.
-     * @param type The object type of the dependency that the framework will inject.
-     * @param instance The existing instance of the dependency that the framework will inject.
-     * @return Returns the current FrameworkConfiguration instance.
+     * @param {IResolvableConstructor} type The type (class)
+     * @param {IResolvedInstance} instance The instance to register
+     * @returns {this} Resturns this (FrameworkConfiguration) to enable chaining.
+     * @memberOf FrameworkConfiguration
      */
     instance(type: IResolvableConstructor, instance: IResolvedInstance): this;
 
-    /** Configures Durandal to use ES2015 Promise instead of JQueryDeferred/JQueryPromise.
-     * @param {PromiseConstructorLike} promisePolyfill. Optional; if specified the object will used by the browser as global Promise polyfill.
-     * @returns {this} Returns this instance to enable chaining. 
-    */
+    /** 
+     * Configures Durandal to use ES2015 Promise instead of JQueryDeferred/JQueryPromise.
+     * Make Durandal use native Promise instead of JQuery Promise/Deferred, and optionally register Promise polyfill
+     * @param {PromiseConstructorLike} promisePolyfill Optional promise implementation to register as global Promise variable
+     * @returns {this} Returns this (FrameworkConfiguration) to enable chaining.
+     * @memberOf IFrameworkConfiguration
+     */
     nativePromise(promisePolyfill?: PromiseConstructorLike): this;
-    /** Configures Durandal to use the observable plugin, but only for viewmodel classes decorated with the @observe decorator.  
-     * @returns {this} Returns this instance to enable chaining. 
-    */
+    
+    /** 
+     * Configures Durandal to use the observable plugin, but only for viewmodel classes decorated with the @observe decorator.  
+     * @returns {this} Returns this (FrameworkConfiguration) to enable chaining.
+     * @memberOf IFrameworkConfiguration
+     */
     observeDecorator(): this;
-    /** Configures Durandal to support viewmodel modules with multiple exports. If it finds a default export it will use this as the viewmodel class.  
-     * @returns {this} Returns this instance to enable chaining. 
-    */
+    
+    /** 
+     * Configures Durandal to support viewmodel modules with multiple exports. If it finds a default export it will use this as the viewmodel class.  
+     * @returns {this} Returns this (FrameworkConfiguration) to enable chaining.
+     * @memberOf IFrameworkConfiguration
+     */
     viewModelDefaultExports(): this;
-    /** Configures the router to activate viewmodels using a single activation object instead of an array of strings
+    
+    /** 
+     * Configures the router to activate viewmodels using a single activation object instead of an array of strings
      * The route /items/:categoryId/:itemId using url /items/1/2 would normally call activate like this: activate("1", "2").
      * With model activation enabled it will call activate like this: activate({ categoryId: 1, itemId: 2 }).
-     * @returns {this} Returns this instance to enable chaining. 
-    */
+     * @returns {this} Returns this (FrameworkConfiguration) to enable chaining.
+     * @memberOf FrameworkConfiguration
+     */
     routerModelActivation(): this;
 
 }
 
-/** @internal */
+/**
+ * Interface for the Durelia configuration state
+ * @internal
+ * @export
+ * @interface IDureliaConfiguration
+ */
 export interface IDureliaConfiguration {
     usesES2015Promise: boolean;
     usesObserveDecorator: boolean;
@@ -50,43 +74,63 @@ export interface IDureliaConfiguration {
     usesRouterModelActivation: boolean;
 }
 
-/** @internal */
+/**
+ * Deferred interface
+ * @internal
+ * @interface Deferred
+ * @template T
+ */
 interface Deferred<T> {
     promise: Promise<T>;
+
     /**
      * Creates a new rejected promise for the provided reason.
-     * @param reason The reason the promise was rejected.
-     * @returns A new rejected Promise.
+     * @param {*} reason The reason the promise was rejected
+     * @returns {Promise<void>} A new rejected Promise
+     * @memberOf Deferred
      */
     reject(reason: any): Promise<void>;
 
     /**
      * Creates a new rejected promise for the provided reason.
-     * @param reason The reason the promise was rejected.
-     * @returns A new rejected Promise.
+     * @template T
+     * @param {*} reason The reason the promise was rejected.
+     * @returns {Promise<T>} A new rejected Promise.
+     * @memberOf Deferred
      */
     reject<T>(reason: any): Promise<T>;
 
     /**
-      * Creates a new resolved promise for the provided value.
-      * @param value A promise.
-      * @returns A promise whose internal state matches the provided promise.
-      */
+     * Creates a new resolved promise for the provided value.
+     * @template T
+     * @param {(T|Promise<T>)} value A promise.
+     * @returns {Promise<T>} A promise whose internal state matches the provided promise.
+     * @memberOf Deferred
+     */
     resolve<T>(value: T | PromiseLike<T>): Promise<T>;
 
     /**
      * Creates a new resolved promise .
-     * @returns A resolved promise.
+     * @returns {Promise<void>} A resolved promise.
+     * @memberOf Deferred
      */
     resolve(): Promise<void>;
 }
 
-let originalBinderBindingMethod = durandalBinder.binding;
+const originalBinderBindingMethod = durandalBinder.binding;
 
 @singleton
 @inject(DependencyInjectionContainer, Logger)
 export class FrameworkConfiguration implements IFrameworkConfiguration {
-    /** @internal */
+
+    /**
+     * Creates an instance of FrameworkConfiguration.
+     * @internal
+     * @constructor
+     * @param {IDependencyInjectionContainer} container The IoC container
+     * @param {ILogger} logger The logger
+     * @memberOf FrameworkConfiguration
+     */
     constructor(
         container: IDependencyInjectionContainer,
         logger: ILogger
@@ -135,20 +179,22 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
             Promise.prototype["fail"] = Promise.prototype.catch;
         }
         
-        (<any>durandalSystem).defer = function(action?: Function) {
+        /* tslint:disable:no-function-expression */
+        (<any>durandalSystem).defer = function<T>(this: any, action?: Function): Deferred<any> {
 
-            let deferred: any =
+            const deferred: Deferred<T> =
                 FrameworkConfiguration.defer();
                 // Promise["defer"] && typeof Promise["defer"] === "function"
                 //     ? Promise["defer"]()
                 //     : FrameworkConfiguration.defer();
 
             if (action) { action.call(deferred, deferred); }
-            let prom = deferred.promise;
-            deferred["promise"] = () => prom;
+            const prom = deferred.promise;
+            (<any>deferred)["promise"] = () => prom;
             return deferred;
 
         };
+        /* tslint:enable:no-function-expression */
         
         return this;
     }
@@ -210,6 +256,7 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
         return this;
     }
     
+    
     routerModelActivation(): this {
         if (this.config.usesRouterModelActivation) {
             return this;
@@ -229,8 +276,15 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
         return this;
     }
 
-        /** @internal */
-    private enableDependencyInjection() {
+
+    /**
+     * Enables dependency injection
+     * @internal
+     * @private
+     * @returns void
+     * @memberOf FrameworkConfiguration
+     */
+    private enableDependencyInjection(): void {
         (<any>durandalSystem)["resolveObject"] = (module) => {
             if (durandalSystem.isFunction(module)) {
                 return this.container.resolve(module);
@@ -242,7 +296,14 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
         };
     }
     
-    /** @internal */
+    /**
+     * Creates a deferred
+     * @internal
+     * @private
+     * @static
+     * @template T
+     * @returns {Deferred<T>}
+     */
     private static defer<T>(): Deferred<T> {
         let result = <Deferred<T>>{};
         result.promise = new Promise(function (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) {
@@ -251,13 +312,23 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
         });
         return result;
     }
-
-    /** @internal */ 
+    
+    /**
+     * Checks whether observable plugin is installed
+     * @internal
+     * @private
+     */
     private get isObservablePluginInstalled() {
         return durandalBinder.binding.toString().indexOf("convertObject") >= 0;
     }
 }
 
+/**
+ * The main Durelia module
+ * @export
+ * @class Durelia
+ * @implements {IDurelia}
+ */
 @singleton
 @inject(DependencyInjectionContainer, FrameworkConfiguration)
 export class Durelia implements IDurelia {

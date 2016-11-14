@@ -9,7 +9,74 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
     var NavigationController = (function () {
         function NavigationController() {
         }
-        /** @internal */
+        NavigationController.prototype.navigateToRoute = function (routeName, args, options) {
+            var routeArgs = args || {};
+            var route = NavigationController.getRoute(routeName, routeArgs);
+            if (route === undefined) {
+                throw new Error("Unable to navigate: Route \"" + routeName + "\" was not found");
+            }
+            var fragment = NavigationController.getFragment(route, routeArgs);
+            durandalRouter.navigate(fragment, { replace: !!(options && options.replace), trigger: true });
+        };
+        NavigationController.prototype.navigateBack = function () {
+            window.history.back();
+        };
+        /**
+         * Enables router model activation
+         * @internal
+         * @static
+         * @returns {void}
+         * @memberOf NavigationController
+         */
+        NavigationController.enableRouterModelActivation = function () {
+            // Used by Durelia FrameworkConfiguration
+            if (NavigationController.routerModelActivationEnabled) {
+                return;
+            }
+            this.registerRouteHrefBindingHandler();
+            durandalRouter.on("router:route:activating").then(function (viewmodel, instruction, router) {
+                //const routeParamProperties = instruction.config.routePattern.exec(<string>instruction.config.route).splice(1);
+                var routeParamProperties = [];
+                var match;
+                /* tslint:disable:no-conditional-assignment */
+                while (match = NavigationController.routeExpandRegex.exec(instruction.config.route)) {
+                    routeParamProperties.push(match[1]);
+                }
+                /* tslint:enable:no-conditional-assignment */
+                var routeParamMatches = instruction.config.routePattern ? instruction.config.routePattern.exec(instruction.fragment) : null;
+                var routeParamValues = routeParamMatches ? routeParamMatches.splice(1) : [];
+                var routeParams = undefined;
+                if (routeParamProperties.length && routeParamValues.length) {
+                    if (routeParamProperties.length === routeParamValues.length) {
+                        routeParams = routeParams || {};
+                        for (var i = 0; i < routeParamProperties.length; i++) {
+                            var prop = routeParamProperties[i].replace(/[\(\)\:]/g, "");
+                            var value = NavigationController.urlDeserialize(routeParamValues[i]);
+                            routeParams[prop] = value;
+                        }
+                    }
+                    else {
+                    }
+                }
+                if (instruction.queryParams) {
+                    routeParams = routeParams || {};
+                    Object.keys(instruction.queryParams).forEach(function (key) { return routeParams[key] = instruction.queryParams[key]; });
+                }
+                instruction.params.splice(0);
+                instruction.params.push(routeParams);
+            });
+            NavigationController.routerModelActivationEnabled = true;
+        };
+        /**
+         * Gets the best matched route from route activation args
+         * @internal
+         * @private
+         * @static
+         * @param {IRouteActivationModel} args The route activation model
+         * @param {...string[]} routes The routes
+         * @returns {(string | undefined)} The match if found, otherwise undefined
+         * @memberOf NavigationController
+         */
         NavigationController.getBestMatchedRoute = function (args) {
             var _this = this;
             var routes = [];
@@ -32,7 +99,16 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
             });
             return bestMatchInfo.route;
         };
-        /** @internal */
+        /**
+         * Gets a route by name and route activation model
+         * @internal
+         * @private
+         * @static
+         * @param {string} name The route name
+         * @param {IRouteActivationModel} args The route activation model
+         * @returns {(string  | undefined)} The matched route if found, otherwise undefined
+         * @memberOf NavigationController
+         */
         NavigationController.getRoute = function (name, args) {
             var foundRouteConfigs = durandalRouter.routes.filter(function (r) { return r["name"] === name; });
             var routes = [];
@@ -63,38 +139,70 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
             var route = this.getBestMatchedRoute.apply(this, [args].concat(routes));
             return route;
         };
-        /** @internal */
+        /**
+         * Gets route parameters from route
+         * @internal
+         * @private
+         * @static
+         * @param {string} route The route
+         * @param {boolean} [sort] Sort or not
+         * @returns {string[]} The route params
+         * @memberOf NavigationController
+         */
         NavigationController.getRouteParams = function (route, sort) {
             var match;
             var routeParams = [];
+            /* tslint:disable:no-conditional-assignment */
             while (match = NavigationController.routeExpandRegex.exec(route)) {
                 routeParams.push(match[1]);
             }
+            /* tslint:enable:no-conditional-assignment */
             if (sort) {
                 routeParams.sort();
             }
             return routeParams;
         };
-        /** @internal */
+        /**
+         * Gets the optional route parameters from a route
+         * @internal
+         * @private
+         * @static
+         * @param {string} route The route
+         * @returns {Array<IOptionalRouteParamInfo[]>} The optional route parameter info
+         * @memberOf NavigationController
+         */
         NavigationController.getOptionalRouteParamSegments = function (route) {
             var optionalParamSegments = [];
             var optionalParamFragmentMatch;
             var optionalParamFragments = [];
+            /* tslint:disable:no-conditional-assignment */
             while (optionalParamFragmentMatch = this.optionalParamFragmentRegExp.exec(route)) {
                 optionalParamFragments.push(optionalParamFragmentMatch[1]);
             }
+            /* tslint:enable:no-conditional-assignment */
             for (var _i = 0, optionalParamFragments_1 = optionalParamFragments; _i < optionalParamFragments_1.length; _i++) {
                 var optionalParamFragment = optionalParamFragments_1[_i];
                 var optionalParamMatch = void 0;
                 var optionalParams = [];
+                /* tslint:disable:no-conditional-assignment */
                 while (optionalParamMatch = NavigationController.routeExpandRegex.exec(optionalParamFragment)) {
                     optionalParams.push({ name: optionalParamMatch[1], hasValue: false });
                 }
+                /* tslint:enable:no-conditional-assignment */
                 optionalParamSegments.push(optionalParams);
             }
             return optionalParamSegments;
         };
-        /** @internal */
+        /**
+         * Gets a route fragment from a route by route activation model
+         * @internal
+         * @private
+         * @static
+         * @param {string} route The route
+         * @param {IRouteActivationModel} args The route activation model
+         * @returns {string} The fragment
+         * @memberOf NavigationController
+         */
         NavigationController.getFragment = function (route, args) {
             var queryStringParams = {};
             // Adding all args into queryString map 
@@ -134,7 +242,15 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
             }
             return url;
         };
-        /** @internal */
+        /**
+         * Serializes simple values for URLs
+         * @internal
+         * @private
+         * @static
+         * @param {*} value The value to serialize
+         * @returns {string} The serialized value
+         * @memberOf NavigationController
+         */
         NavigationController.urlSerialize = function (value) {
             var result;
             if (value instanceof Date) {
@@ -145,7 +261,15 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
             }
             return encodeURIComponent(result);
         };
-        /** @internal */
+        /**
+         * Deerializes simple values from URLs
+         * @internal
+         * @private
+         * @static
+         * @param {*} text The string to deserialize
+         * @returns {string} The deserialized string
+         * @memberOf NavigationController
+         */
         NavigationController.urlDeserialize = function (text) {
             var intValue;
             var floatValue;
@@ -175,7 +299,14 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
                 return text;
             }
         };
-        /** @internal */
+        /**
+         * Registers the routeHref knockout binding handler
+         * @internal
+         * @private
+         * @static
+         * @returns void
+         * @memberOf NavigationController
+         */
         NavigationController.registerRouteHrefBindingHandler = function () {
             function onRouteHrefLinkClick(evt) {
                 var elem = evt.currentTarget;
@@ -214,56 +345,6 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
                     element.href = url;
                 }
             };
-        };
-        /** @internal */
-        NavigationController.enableRouterModelActivation = function () {
-            // Used by Durelia FrameworkConfiguration
-            if (NavigationController.routerModelActivationEnabled) {
-                return;
-            }
-            this.registerRouteHrefBindingHandler();
-            durandalRouter.on("router:route:activating").then(function (viewmodel, instruction, router) {
-                //let routeParamProperties = instruction.config.routePattern.exec(<string>instruction.config.route).splice(1);
-                var routeParamProperties = [];
-                var match;
-                while (match = NavigationController.routeExpandRegex.exec(instruction.config.route)) {
-                    routeParamProperties.push(match[1]);
-                }
-                var routeParamMatches = instruction.config.routePattern ? instruction.config.routePattern.exec(instruction.fragment) : null;
-                var routeParamValues = routeParamMatches ? routeParamMatches.splice(1) : [];
-                var routeParams = undefined;
-                if (routeParamProperties.length && routeParamValues.length) {
-                    if (routeParamProperties.length === routeParamValues.length) {
-                        routeParams = routeParams || {};
-                        for (var i = 0; i < routeParamProperties.length; i++) {
-                            var prop = routeParamProperties[i].replace(/[\(\)\:]/g, "");
-                            var value = NavigationController.urlDeserialize(routeParamValues[i]);
-                            routeParams[prop] = value;
-                        }
-                    }
-                    else {
-                    }
-                }
-                if (instruction.queryParams) {
-                    routeParams = routeParams || {};
-                    Object.keys(instruction.queryParams).forEach(function (key) { return routeParams[key] = instruction.queryParams[key]; });
-                }
-                instruction.params.splice(0);
-                instruction.params.push(routeParams);
-            });
-            NavigationController.routerModelActivationEnabled = true;
-        };
-        NavigationController.prototype.navigateToRoute = function (routeName, args, options) {
-            var routeArgs = args || {};
-            var route = NavigationController.getRoute(routeName, routeArgs);
-            if (route === undefined) {
-                throw new Error("Unable to navigate: Route \"" + routeName + "\" was not found");
-            }
-            var fragment = NavigationController.getFragment(route, routeArgs);
-            durandalRouter.navigate(fragment, { replace: !!(options && options.replace), trigger: true });
-        };
-        NavigationController.prototype.navigateBack = function () {
-            window.history.back();
         };
         /** @internal */
         NavigationController.routeExpandRegex = /\:([^\:\/\(\)\?\=\&]+)/g;
