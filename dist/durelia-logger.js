@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 define(["require", "exports", "durandal/system", "durelia-dependency-injection"], function (require, exports, durandalSystem, durelia_dependency_injection_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var SeverityLevel;
     (function (SeverityLevel) {
         SeverityLevel[SeverityLevel["none"] = 0] = "none";
@@ -46,6 +47,7 @@ define(["require", "exports", "durandal/system", "durelia-dependency-injection"]
             if (severityLevel >= this.severityThreshold) {
                 /* tslint:disable:no-console */
                 appenderFn.call.apply(appenderFn, [appender, message].concat(properties));
+                /* tslint:enable:no-console */
             }
         };
         Logger.prototype.debug = function (message) {
@@ -76,11 +78,11 @@ define(["require", "exports", "durandal/system", "durelia-dependency-injection"]
             }
             this.log.apply(this, [SeverityLevel.error, console, console.error, message].concat(properties));
         };
-        Logger = __decorate([
-            durelia_dependency_injection_1.singleton
-        ], Logger);
         return Logger;
     }());
+    Logger = __decorate([
+        durelia_dependency_injection_1.singleton
+    ], Logger);
     exports.Logger = Logger;
 });
 //# sourceMappingURL=durelia-logger.js.map

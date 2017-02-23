@@ -12,13 +12,14 @@
   "author": "Jørn Andre Sundt",
   "license": "ISC",
   "devDependencies": {
-    "bower": "^1.7.9",
-    "express": "^4.13.4",
-    "openurl": "^1.1.1",
-    "rimraf": "^2.5.2",
-    "tslint-eslint-rules": "^2.1.0",
-    "tslint-microsoft-contrib": "^2.0.13",
-    "typescript": "^2.0.3"
+    "@types/durandal": "2.1.35",
+    "bower": "1.8.0",
+    "express": "4.14.1",
+    "openurl": "1.1.1",
+    "rimraf": "2.6.0",
+    "tslint-eslint-rules": "3.4.0",
+    "tslint-microsoft-contrib": "4.0.0",
+    "typescript": "2.2.1"
   },
   "engines": {
     "node": ">=5.0.0"

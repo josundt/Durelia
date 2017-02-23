@@ -6,20 +6,28 @@
   "rules": {
     "adjacent-overload-signatures": true,
     "align": [false, "parameters", "arguments", "statements"],
-    //"arrow-parens": true,
-    "ban": [true, "self", "that"],
+    "arrow-parens": [true, "ban-single-arg-parens"],
+    "arrow-return-shorthand": [true /*, "multiline"*/],
+    // "await-promise": true,
+    "ban": [true, 
+      ["JSON", "parse", "Use our own custom json serializer from core/utils instead"],
+      ["JSON", "stringify", "Use our own custom json serializer from core/utils instead"]
+    ],
+    //"callable-types": true,
     "class-name": true,
-    //"comment-format": [true, "check-space", "check-lowercase"],
+    //"comment-format": [true, "check-space", "check-lowercase", { "ignore-words": ["TODO", "HACK"] }]],
     "curly": true,
     "eofline": false,
     //"file-header": ["true", "Copyright \\d{4}"],
     "forin": true,
+    "import-blacklist": [true, "q", "globalize", "adra-jsutils", "jquery", "jquery-ui", "pikaday", "toastr"],
+    "import-spacing": true, 
     "indent": [true, "spaces"],
     //"interface-name": [true, "always-prefix"],
+    //"interface-over-type-literal": true, // CAUSES CRASH
     "jsdoc-format": true,
     "label-position": true,
-    "label-undefined": true,
-    "linebreak-style": [true, "CRLF"],
+    //"linebreak-style": [true, "CRLF"],
     "max-file-line-count": [true, 4500],
     "max-line-length": [false, 300],
     "member-access": false,
@@ -45,46 +53,63 @@
     "no-arg": true,
     //"no-angle-bracket-type-assertion": true,
     "no-bitwise": true,
+    // "no-boolean-literal-compare": true, // CAUSES CRASH
     "no-conditional-assignment": true,
-    //"no-consecutive-blank-lines": true,
+    //"no-consecutive-blank-lines": true, 
     "no-console": [ true, "debug", "dir", "error", "group", "groupCollapsed", "groupEnd", "info", "log", "profile", "profileEnd", "time", "timeEnd", "trace", "warn" ],
     "no-construct": true,
     //"no-constructor-vars": true,
     "no-debugger": true,
     //"no-default-export": true, /* We need default exports for Durandal router to find Page viewmodel classes */
-    "no-duplicate-key": true,
     "no-duplicate-variable": true,
     //"no-empty": true,
+    //"no-empty-interface": true,
     "no-eval": true,
+    //"no-floating-promises": true, // CAUSES CRASH
     //"no-for-in-array": true,
     "no-invalid-this": true,
+    //"no-inferred-empty-object-type": true, // CAUSES CRASH
     //"no-inferrable-types": true,
     "no-internal-module": true,
+    //"no-magic-numbers": true, 
+    "no-misused-new": true,
     //"no-mergeable-namespace": true,
     //"no-parameter-properties": true,
     "no-require-imports": true,
     "no-reference": true,
     "no-shadowed-variable": true,
     //"no-string-literal": true,
+    "no-string-throw": true,
     "no-switch-case-fall-through": true,
     //"no-trailing-whitespace": true,
-    "no-unreachable": true,
-    "no-unused-expression": true,
+    //"no-unbound-method": true, // CAUSES CRASH
+    "no-unnecessary-initializer": true,
+    //"no-unnecessary-qualifier": true, // CAUSES CRASH
+    //"no-unsafe-any": true, // CAUSES CRASH
+    "no-unused-expression": [true /*,"allow-fast-null-checks"*/],
     "no-unused-new": true,
     //"no-unused-variable": true, /* Compiler options take care of this now */
-    "no-use-before-declare": true,
+    //"no-use-before-declare": true, // CAUSES CRASH
     "no-var-keyword": true,
+    //"no-void-expression": true, // CAUSES CRASH
     "no-var-requires": true,
     //"object-literal-sort-keys": true,
     "object-literal-key-quotes": [true, "as-needed"],
     //"object-literal-shorthand": true,
-    //"only-arrow-functions": true,
+    "only-arrow-functions": [true, "allow-declarations", "allow-named-functions"],
     "one-line": [true, "check-open-brace", "check-catch", "check-whitespace" /*, "check-else" */],
     //"ordered-imports": true, /* we prefer ordering imports logically over alphabetically */
+    "prefer-const": true,
+    //"promise-function-async": true,
+    //"prefer-function-over-method": true,
+    "prefer-method-signature": true,
     "quotemark": [ true, "double" ],
     "radix": true,
     //"restrict-plus-operands": true, /* THIS RULE WORKS WITH THE GRUNT TASK BUT MAKES VSCODE TSLINT INTEGRATION FAIL. CAN BE SWITCHED ON AND TESTED THROUGH GRUNT TASK FROM TIME TO TIME */ 
     "semicolon": [true, "always"],
+    //"strict-boolean-expressions": [true, "allow-null-union", "allow-undefined-union", "allow-string" /*, allow-number */],  // CAUSES CRASH
+    "space-before-function-paren": [true, {"anonymous": "always", "named": "never", "asyncArrow": "always"}],
+    //"strict-type-predicates": true, // CAUSES CRASH
     //"switch-default": true,
     //"trailing-comma": [true, {"singleline": "never", "multiline": "never"}]
     "triple-equals": [ true ], 
@@ -99,10 +124,12 @@
         "variable-declaration": "nospace"
       }
     ],
+    "typeof-compare": true,
+    "unified-signatures": true,
     "use-isnan": true,
     //"use-strict": [ true, "check-module", "check-function" ],
     "variable-name": [true, "allow-leading-underscore"],
-    "whitespace": [true, "check-branch", "check-decl", "check-operator", "check-module", "check-separator", "check-type"/*, "check-typecast"*/],
+    "whitespace": [true, "check-branch", "check-decl", "check-operator", "check-module", "check-separator", "check-type", "check-preblock" /*, "check-typecast"*/],
 
 
 
@@ -203,7 +230,7 @@
     "mocha-unneeded-done": true,
     //"no-empty-interfaces": true, // We found this to be too strict
     "no-for-in": true,
-    "no-function-expression": true,
+    //"no-function-expression": true, // Same as built-in only-arrow-functions
     "no-multiline-string": true, 
     //"no-relative-imports": true, // False; we use relative imports
     //"no-suspicious-comment": true, // Temporarily switched off
@@ -212,7 +239,6 @@
     //"no-unnecessary-local-variable": true, // False: We prefer to sometimes assign the result of a function to a variable before returning it for debugging
     "no-unsupported-browser-code": true,
     //"prefer-array-literal": true, // False: We prefer the generic Array<>; especiall when using union types 
-    "prefer-const": true,
     "underscore-consistent-invocation": true,
 
 

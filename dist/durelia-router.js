@@ -6,16 +6,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 define(["require", "exports", "plugins/router", "plugins/history", "knockout", "durelia-dependency-injection"], function (require, exports, durandalRouter, durandalHistory, ko, durelia_dependency_injection_1) {
     "use strict";
-    var NavigationController = (function () {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var NavigationController = NavigationController_1 = (function () {
         function NavigationController() {
         }
         NavigationController.prototype.navigateToRoute = function (routeName, args, options) {
             var routeArgs = args || {};
-            var route = NavigationController.getRoute(routeName, routeArgs);
+            var route = NavigationController_1.getRoute(routeName, routeArgs);
             if (route === undefined) {
                 throw new Error("Unable to navigate: Route \"" + routeName + "\" was not found");
             }
-            var fragment = NavigationController.getFragment(route, routeArgs);
+            var fragment = NavigationController_1.getFragment(route, routeArgs);
             durandalRouter.navigate(fragment, { replace: !!(options && options.replace), trigger: true });
         };
         NavigationController.prototype.navigateBack = function () {
@@ -30,7 +31,7 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
          */
         NavigationController.enableRouterModelActivation = function () {
             // Used by Durelia FrameworkConfiguration
-            if (NavigationController.routerModelActivationEnabled) {
+            if (NavigationController_1.routerModelActivationEnabled) {
                 return;
             }
             this.registerRouteHrefBindingHandler();
@@ -39,7 +40,7 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
                 var routeParamProperties = [];
                 var match;
                 /* tslint:disable:no-conditional-assignment */
-                while (match = NavigationController.routeExpandRegex.exec(instruction.config.route)) {
+                while (match = NavigationController_1.routeExpandRegex.exec(instruction.config.route)) {
                     routeParamProperties.push(match[1]);
                 }
                 /* tslint:enable:no-conditional-assignment */
@@ -51,11 +52,12 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
                         routeParams = routeParams || {};
                         for (var i = 0; i < routeParamProperties.length; i++) {
                             var prop = routeParamProperties[i].replace(/[\(\)\:]/g, "");
-                            var value = NavigationController.urlDeserialize(routeParamValues[i]);
+                            var value = NavigationController_1.urlDeserialize(routeParamValues[i]);
                             routeParams[prop] = value;
                         }
                     }
                     else {
+                        //log warning
                     }
                 }
                 if (instruction.queryParams) {
@@ -65,7 +67,7 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
                 instruction.params.splice(0);
                 instruction.params.push(routeParams);
             });
-            NavigationController.routerModelActivationEnabled = true;
+            NavigationController_1.routerModelActivationEnabled = true;
         };
         /**
          * Gets the best matched route from route activation args
@@ -153,7 +155,7 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
             var match;
             var routeParams = [];
             /* tslint:disable:no-conditional-assignment */
-            while (match = NavigationController.routeExpandRegex.exec(route)) {
+            while (match = NavigationController_1.routeExpandRegex.exec(route)) {
                 routeParams.push(match[1]);
             }
             /* tslint:enable:no-conditional-assignment */
@@ -185,7 +187,7 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
                 var optionalParamMatch = void 0;
                 var optionalParams = [];
                 /* tslint:disable:no-conditional-assignment */
-                while (optionalParamMatch = NavigationController.routeExpandRegex.exec(optionalParamFragment)) {
+                while (optionalParamMatch = NavigationController_1.routeExpandRegex.exec(optionalParamFragment)) {
                     optionalParams.push({ name: optionalParamMatch[1], hasValue: false });
                 }
                 /* tslint:enable:no-conditional-assignment */
@@ -210,14 +212,14 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
             // Getting descriptor of optional route param segments
             var optionalParamSegments = this.getOptionalRouteParamSegments(route);
             // Merging param values with param placeholders
-            var url = route.replace(NavigationController.routeExpandRegex, function (substring, group1) {
+            var url = route.replace(NavigationController_1.routeExpandRegex, function (substring, group1) {
                 var replacement;
                 // If route param was matched 
                 if (Object.keys(args).indexOf(group1) >= 0) {
                     // Remove from queryString map
                     delete queryStringParams[group1];
                     // Replace param placeholder with value
-                    replacement = NavigationController.urlSerialize(args[group1]);
+                    replacement = NavigationController_1.urlSerialize(args[group1]);
                     // Updating descriptor for optional route descriptor if value was matched
                     optionalParamSegments.forEach(function (ops) { return ops.filter(function (op) { return op.name === group1; }).forEach(function (op) { return op.hasValue = true; }); });
                 }
@@ -234,8 +236,8 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
             // Putting arg props not matched with route param placeholders into queryString 
             if (Object.keys(queryStringParams).length) {
                 var queryStringParts = Object.keys(queryStringParams).map(function (k) {
-                    var key = NavigationController.urlSerialize(k);
-                    var value = NavigationController.urlSerialize(queryStringParams[k]);
+                    var key = NavigationController_1.urlSerialize(k);
+                    var value = NavigationController_1.urlSerialize(queryStringParams[k]);
                     return key + "=" + value;
                 });
                 url = url + "?" + queryStringParts.join("&");
@@ -292,7 +294,7 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
             else if (!isNaN(floatValue = parseFloat(text))) {
                 return floatValue;
             }
-            else if (NavigationController.isoDateStringRegex.test(text)) {
+            else if (NavigationController_1.isoDateStringRegex.test(text)) {
                 return new Date(text);
             }
             else {
@@ -334,11 +336,11 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
                     }
                     var routeArgs = bindingArgs.params || {};
                     var navOptions = bindingArgs.options;
-                    var route = NavigationController.getRoute(routeName, routeArgs);
+                    var route = NavigationController_1.getRoute(routeName, routeArgs);
                     if (route === undefined) {
                         throw new Error("Unable to navigate: Route \"" + routeName + "\" was not found");
                     }
-                    var fragment = NavigationController.getFragment(route, routeArgs);
+                    var fragment = NavigationController_1.getFragment(route, routeArgs);
                     var url = durandalHistory["root"] + durandalHistory.getFragment(fragment || "", false);
                     element.setAttribute("data-route-href-fragment", fragment);
                     element.setAttribute("data-route-href-replace", (navOptions && navOptions.replace) ? "true" : "false");
@@ -346,19 +348,20 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
                 }
             };
         };
-        /** @internal */
-        NavigationController.routeExpandRegex = /\:([^\:\/\(\)\?\=\&]+)/g;
-        /** @internal */
-        NavigationController.optionalParamFragmentRegExp = /(\([^\)]+\))/g;
-        /** @internal */
-        NavigationController.isoDateStringRegex = /^\d{4}\-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?([\+\-]\d{2}:\d{2}|[A-Z])$/i;
-        /** @internal */
-        NavigationController.routerModelActivationEnabled = false;
-        NavigationController = __decorate([
-            durelia_dependency_injection_1.singleton
-        ], NavigationController);
         return NavigationController;
     }());
+    /** @internal */
+    NavigationController.routeExpandRegex = /\:([^\:\/\(\)\?\=\&]+)/g;
+    /** @internal */
+    NavigationController.optionalParamFragmentRegExp = /(\([^\)]+\))/g;
+    /** @internal */
+    NavigationController.isoDateStringRegex = /^\d{4}\-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?([\+\-]\d{2}:\d{2}|[A-Z])$/i;
+    /** @internal */
+    NavigationController.routerModelActivationEnabled = false;
+    NavigationController = NavigationController_1 = __decorate([
+        durelia_dependency_injection_1.singleton
+    ], NavigationController);
     exports.NavigationController = NavigationController;
+    var NavigationController_1;
 });
 //# sourceMappingURL=durelia-router.js.map

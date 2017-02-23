@@ -1,4 +1,9 @@
-/// <reference path="custom/index.d.ts" />
-/// <reference path="globals/durandal/index.d.ts" />
-/// <reference path="globals/jquery/index.d.ts" />
-/// <reference path="globals/knockout/index.d.ts" />
+
+declare module "bluebird" {
+    let promise: PromiseConstructorLike;
+    export = promise;
+}
+declare module "q" {
+    let Q: { Promise: PromiseConstructorLike; };
+    export = Q;
+}

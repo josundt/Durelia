@@ -78,7 +78,7 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
         return !!(o && typeof o === "function" && o["prototype"]);
     }
     
-    private isObjectInstance(o: any): o is Object {
+    private isObjectInstance(o: any): o is object {
         return typeof o !== "function" && Object(o) === o; //&& Object.getPrototypeOf(o) === Object.prototype;
     }
     

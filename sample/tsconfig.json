@@ -22,7 +22,14 @@
         "stripInternal": true,
         "suppressExcessPropertyErrors": false,
         "suppressImplicitAnyIndexErrors": true,
-        "target": "es5"
+        "target": "es5",
+        "typeRoots": [
+            "../node_modules/@types",
+            "../node_modules"
+        ],
+        "types": [
+            "durandal"
+        ]
     },
     "exclude": [
         "bower_components/adra-jsutils/dist/typings/index.d.ts",

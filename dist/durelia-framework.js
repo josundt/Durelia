@@ -6,8 +6,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 define(["require", "exports", "durandal/system", "durandal/binder", "plugins/observable", "durelia-dependency-injection", "durelia-logger", "durelia-binding", "durelia-router", "durelia-dependency-injection", "durelia-binding", "durelia-templating"], function (require, exports, durandalSystem, durandalBinder, durandalObservable, durelia_dependency_injection_1, durelia_logger_1, durelia_binding_1, durelia_router_1, durelia_dependency_injection_2, durelia_binding_2, durelia_templating_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var originalBinderBindingMethod = durandalBinder.binding;
-    var FrameworkConfiguration = (function () {
+    var FrameworkConfiguration = FrameworkConfiguration_1 = (function () {
         /**
          * Creates an instance of FrameworkConfiguration.
          * @internal
@@ -48,7 +49,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             }
             /* tslint:disable:no-function-expression */
             durandalSystem.defer = function (action) {
-                var deferred = FrameworkConfiguration.defer();
+                var deferred = FrameworkConfiguration_1.defer();
                 // Promise["defer"] && typeof Promise["defer"] === "function"
                 //     ? Promise["defer"]()
                 //     : FrameworkConfiguration.defer();
@@ -100,6 +101,12 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
                     }
                     originalBinderBindingMethod(obj, view, undefined);
                 };
+                // durandalObservable["logConversion"] = options.logConversion;
+                // if (options.changeDetection) {
+                //     changeDetectionMethod = options.changeDetection;
+                // }
+                // skipPromises = options.skipPromises;
+                // shouldIgnorePropertyName = options.shouldIgnorePropertyName || defaultShouldIgnorePropertyName;
             }
             return this;
         };
@@ -165,12 +172,12 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             enumerable: true,
             configurable: true
         });
-        FrameworkConfiguration = __decorate([
-            durelia_dependency_injection_1.singleton,
-            durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer, durelia_logger_1.Logger)
-        ], FrameworkConfiguration);
         return FrameworkConfiguration;
     }());
+    FrameworkConfiguration = FrameworkConfiguration_1 = __decorate([
+        durelia_dependency_injection_1.singleton,
+        durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer, durelia_logger_1.Logger)
+    ], FrameworkConfiguration);
     exports.FrameworkConfiguration = FrameworkConfiguration;
     /**
      * The main Durelia module
@@ -184,12 +191,12 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             this.container = container;
             this.use = frameworkConfig;
         }
-        Durelia = __decorate([
-            durelia_dependency_injection_1.singleton,
-            durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer, FrameworkConfiguration)
-        ], Durelia);
         return Durelia;
     }());
+    Durelia = __decorate([
+        durelia_dependency_injection_1.singleton,
+        durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer, FrameworkConfiguration)
+    ], Durelia);
     exports.Durelia = Durelia;
     var container = new durelia_dependency_injection_1.DependencyInjectionContainer();
     container.registerInstance(durelia_dependency_injection_1.DependencyInjectionContainer, container);
@@ -201,5 +208,6 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
     exports.observe = durelia_binding_2.observe;
     exports.computedFrom = durelia_binding_2.computedFrom;
     exports.useView = durelia_templating_1.useView;
+    var FrameworkConfiguration_1;
 });
 //# sourceMappingURL=durelia-framework.js.map

@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 define(["require", "exports", "plugins/dialog", "durelia-dependency-injection"], function (require, exports, durandalDialog, durelia_dependency_injection_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var DialogService = (function () {
         function DialogService(container) {
             this.container = container;
@@ -14,12 +15,12 @@ define(["require", "exports", "plugins/dialog", "durelia-dependency-injection"],
             var vm = this.container.resolve(options.viewModel);
             return durandalDialog.show(vm, options.model);
         };
-        DialogService = __decorate([
-            durelia_dependency_injection_1.singleton,
-            durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer)
-        ], DialogService);
         return DialogService;
     }());
+    DialogService = __decorate([
+        durelia_dependency_injection_1.singleton,
+        durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer)
+    ], DialogService);
     exports.DialogService = DialogService;
     var DialogController = (function () {
         function DialogController() {

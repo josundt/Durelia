@@ -1,9 +1,0 @@
-{
-  "name": "durandalTest",
-  "dependencies": {},
-  "globalDependencies": {
-    "durandal": "registry:dt/durandal#0.0.0+20160316155526",
-    "jquery": "registry:dt/jquery#1.10.0+20160417213236",
-    "knockout": "registry:dt/knockout#0.0.0+20161110124041"
-  }
-}

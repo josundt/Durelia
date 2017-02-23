@@ -47,9 +47,9 @@ export default class NoteDetail implements IViewModel<INoteDetailActivationModel
             return this.commonDialogs.messageBox("Do you want to save the note before leaving?", "Save changes", buttonTexts, 2)
                 .then(result => {
                     if (result.wasCancelled) {
-                        return Promise.resolve(false);
+                        return false;
                     } else if (result.output === buttonTexts[1]) {
-                        return Promise.resolve(true);
+                        return true;
                     } else {
                         return this.save(this.note, true).then(() => true); 
                     }

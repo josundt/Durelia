@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 define(["require", "exports", "durelia-logger", "durelia-framework"], function (require, exports, durelia_logger_1, durelia_framework_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var isLazyInjectionPropName = "__isLazyInjection__";
     /** @internal */
     var DependencyInjectionContainer = (function () {
@@ -202,12 +203,12 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
                 throw new Error(msg);
             }
         };
-        DependencyInjectionContainer = __decorate([
-            inject(durelia_logger_1.Logger),
-            singleton
-        ], DependencyInjectionContainer);
         return DependencyInjectionContainer;
     }());
+    DependencyInjectionContainer = __decorate([
+        inject(durelia_logger_1.Logger),
+        singleton
+    ], DependencyInjectionContainer);
     exports.DependencyInjectionContainer = DependencyInjectionContainer;
     /**
      * Decorates a class to specify constructor injection arguments
@@ -218,7 +219,7 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
     function inject() {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i - 0] = arguments[_i];
+            args[_i] = arguments[_i];
         }
         return function (classType) {
             classType["inject"] = function () { return args; };
@@ -248,7 +249,7 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
     function isLazyInjection(classType) {
         classType[isLazyInjectionPropName] = true;
     }
-    var Lazy = (function () {
+    var Lazy = Lazy_1 = (function () {
         /**
          * Creates an instance of Lazy.
          * @internal
@@ -269,7 +270,7 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
          * @memberOf Lazy
          */
         Lazy.of = function (injectable) {
-            return new Lazy(injectable);
+            return new Lazy_1(injectable);
         };
         Object.defineProperty(Lazy.prototype, "resolver", {
             get: function () {
@@ -278,11 +279,12 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
             enumerable: true,
             configurable: true
         });
-        Lazy = __decorate([
-            isLazyInjection
-        ], Lazy);
         return Lazy;
     }());
+    Lazy = Lazy_1 = __decorate([
+        isLazyInjection
+    ], Lazy);
     exports.Lazy = Lazy;
+    var Lazy_1;
 });
 //# sourceMappingURL=durelia-dependency-injection.js.map
