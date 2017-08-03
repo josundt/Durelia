@@ -12,6 +12,8 @@ over time without breaking existing application functionality.
 ##Durelia helps you with the following:
 
 ###1. ES2015 Promises instead of jQuery Deferred/Promise
+
+
 Durandal uses the jQuery Deferred/Promise implementation for async operations.
 This Promise implementation deviates from the ES2015 Promise specification.
 Durelia is able to alter Durandals behavior to make it use the native ES2015
@@ -39,11 +41,15 @@ durelia.use
 import {durelia} from "durelia-framework";
 import * as Bluebird from "bluebird";
 
+Bluebird.config({ 
+    warnings: { wForgottenReturn: false } 
+});
+
 durelia.use
     .nativePromise(Bluebird);
 ```
-*Bluebird will actuall give some warnings in the console, for now
-I recommend using Q^1.4.1*
+*Durandal will cause Bluebird to show some unwanted warnings in the console, you 
+should therefore configure Bluebird as described above.
 
 If you are using TypeScript typings e.g. from definitelyTyped for intellisense
 support, you may want to include a es6-promise typings file, and change the
