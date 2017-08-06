@@ -1,6 +1,6 @@
-#Durelia
-##Durandal extension
-###-enabling a step-by-step transition from Durandal towards Aurelia
+# Durelia
+## Durandal extension
+### Enabling a step-by-step transition from Durandal towards Aurelia
 
 **Durelia** extends the *Durandal* Single Page Application framework by replicating
 a subset of the Aurelia features.
@@ -9,9 +9,9 @@ The goal of Durelia is to simplify the migration of existing applications from D
 to Aurelia, and to enable a step by step refactoring path that can be perforrmed gradually
 over time without breaking existing application functionality.
 
-##Durelia helps you with the following:
+## Durelia helps you with the following:
 
-###1. ES2015 Promises instead of jQuery Deferred/Promise
+### 1. ES2015 Promises instead of jQuery Deferred/Promise
 
 
 Durandal uses the jQuery Deferred/Promise implementation for async operations.
@@ -49,7 +49,7 @@ durelia.use
     .nativePromise(Bluebird);
 ```
 *Durandal will cause Bluebird to show some unwanted warnings in the console, you 
-should therefore configure Bluebird as described above.
+should therefore configure Bluebird as described above.*
 
 If you are using TypeScript typings e.g. from definitelyTyped for intellisense
 support, you may want to include a es6-promise typings file, and change the
@@ -62,7 +62,7 @@ Change one of the first lines in the Durandal .d.ts file as follows.
 interface DurandalPromise<T> extends Promise<T> { }
 ```
 
-###2. Dependency injection
+### 2. Dependency injection
 Durelia provides a Dependecy Injection (DI)/Inversion of Control (IoC) Container
 and offers ESNEXT decorators to support DI with the exact same signatures as the
 ones in Aurelia. The Durelia IoC container implementation is a bit simpler than
@@ -118,7 +118,7 @@ class C {
 
 For more info, check how this works in Aurelia; it works the exact same way here ;-)
 
-###3. Enabling the Durandal Router to look for the *default export* class/object
+### 3. Enabling the Durandal Router to look for the *default export* class/object
 Durandal dependes on a 3rd party module loader like RequireJS.
 Most Durandal applications use RequireJS as a module loader.
 The RequireJS AMD module loader implementation had some limitations and devations
@@ -143,7 +143,7 @@ export default class MyPage { // Notice the "default" keyword; this class will b
 }
 ```
 
-####Limitations
+#### Limitations
 When using classes as ViewModels, Durandal has no way to figure out from where it
 should load the HTML View for the ViewModel.
 Durelia provides a decorator (with the exact same signature as the one in Aurelia).
@@ -161,7 +161,7 @@ export default class MyPage {
 this a temporary necessary evil. If you still follow the conventional view/viewmodel naming
 convention these attributes can be removed once migration to Aurelia is complete.*
 
-###4. Disconnecting from KnockoutJS: Enabling the Durandal Observable plugin on a per-viewmodel basis
+### 4. Disconnecting from KnockoutJS: Enabling the Durandal Observable plugin on a per-viewmodel basis
 KnockoutJS is the Durandal dependency causing the biggest footprints in Durandal applications.
 
 Durandal provides a plugin called "observable" that leverages automatic creation of
@@ -177,8 +177,8 @@ Durelia also allows you to create computed properties using the *computedFrom* d
 
 In the bootstrapper of the application:
 ```javascript
-durelia
-    useObserveDecorator();
+durelia.use
+    .observeDecorator();
 ```
 
 In a ViewModel class:
@@ -275,8 +275,8 @@ Durelia to the rescue!
 By enabling this feature you will alter the Durandal behavior and make the behavior identical
 to Aurelia (with respect to the two differences stated above):
 ```javascript
-durelia
-    useRouterModelActivation();
+durelia.use
+    .routerModelActivation();
 ```
 Example:
 
@@ -357,7 +357,7 @@ invokes it with a single object instead (if enabled).
 You may have noticed that the object sent as argument consists of the exact same properties
 and values as was sent in the ***navigateToRoute*** call earlier (see example above).
 
-###Great intellisense and TypeScript interfaces
+### Great intellisense and TypeScript interfaces
 Durelia is implemented in typescript, and TypeScript typings are generated when building.
 These are included along with the JavaScript files. This provides great intellisense
 both for Durandal JavaScript or TypeScript projects if you use an editor that supports it.
@@ -370,7 +370,7 @@ implementations through the inject decorator.
 Some functions and classes have generic type arguments, that helps you create even more type-safe
 code.
 
-##Sample Application
+## Sample Application
 The repository contains a sample application that covers the most common Durandal
 usage and how to do it with Durelia. The sample application is written using
 TypeScript. Please disregard the bad UI design and lack of creativity in
@@ -383,9 +383,9 @@ npm install
 npm start
 ```
 
-##Getting started
+## Getting started
 
-###Prerequisites
+### Prerequisites
 **a)** You have already; or you are ready to change your javascript/typescript
 code base into ES2015 class style implementations.
 
