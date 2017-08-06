@@ -1,5 +1,5 @@
-import {singleton, inject} from "durelia-framework";
-import {ISerializer, JsonSerializer} from "services/serializer";
+import { singleton, inject } from "durelia-framework";
+import { ISerializer, JsonSerializer } from "services/serializer";
 
 export interface Note {
     id: number;
@@ -8,8 +8,8 @@ export interface Note {
 }
 
 export interface ISortOrder {
-    prop: string; 
-    desc?: boolean; 
+    prop: string;
+    desc?: boolean;
 }
 
 export interface IQuery {
@@ -35,36 +35,37 @@ export class NoteRepository implements INoteRepository {
     ) {
         this.tryLoadFromBackingStore();
     }
-    
+
     private static backingStoreKey: string = "NoteRepositoryStore";
-    
+
     private static store: Note[] = [
-        { 
+        {
             id: 1,
             modified: new Date(2016, 4, 17, 12, 2, 57),
+            // tslint:disable-next-line:no-multiline-string
             content: `
 This is a sample note.
 This is some sample text.
 `.trim()
         }
     ];
-    
-    private tryLoadFromBackingStore() {
-        let backedStore = localStorage[NoteRepository.backingStoreKey] 
-            ? this.serializer.deserialize<Note[]>(localStorage[NoteRepository.backingStoreKey]) 
+
+    private tryLoadFromBackingStore(): void {
+        const backedStore = localStorage[NoteRepository.backingStoreKey]
+            ? this.serializer.deserialize<Note[]>(localStorage[NoteRepository.backingStoreKey])
             : null;
-        
+
         NoteRepository.store = backedStore ? backedStore : NoteRepository.store;
     }
-    
-    private dumpToBackingStore() {
+
+    private dumpToBackingStore(): void {
         localStorage[NoteRepository.backingStoreKey] = this.serializer.serialize(NoteRepository.store);
     }
-    
+
     private clone(item: Note): Note {
         return this.serializer.deserialize<Note>(this.serializer.serialize(item));
     }
-    
+
     createNew(): Note {
         return {
             id: -1,
@@ -72,10 +73,10 @@ This is some sample text.
             modified: new Date()
         };
     }
-    
+
     get(query: IQuery = {}): Promise<Note[]> {
         query.skip = query.skip || 0;
-        function filter (item: Note, index: number, array: Note[]): boolean {
+        function filter(item: Note, index: number, array: Note[]): boolean {
             let result = true;
             if (index < query.skip) {
                 result = false;
@@ -85,12 +86,12 @@ This is some sample text.
             }
             return result;
         }
-        
-        function sort (itemA: Note, itemB: Note): number {
+
+        function sort(itemA: Note, itemB: Note): number {
             let result = 0;
             if (query.orderBy) {
-                result = itemA[query.orderBy.prop] < itemB[query.orderBy.prop] 
-                    ? (query.orderBy.desc ? 1 : -1) 
+                result = itemA[query.orderBy.prop] < itemB[query.orderBy.prop]
+                    ? (query.orderBy.desc ? 1 : -1)
                     : (query.orderBy.desc ? -1 : 1);
             }
             return result;
@@ -98,19 +99,19 @@ This is some sample text.
         return new Promise((resolve, reject) => {
             resolve(NoteRepository.store.sort(sort).filter(filter).map(this.clone.bind(this)));
         });
-        
+
     }
-    
-    getById(id: number): Promise<Note> {
+
+    getById(id: number): Promise<Note | undefined> {
         return new Promise((resolve, reject) => {
-            let matches = NoteRepository.store.filter(n => n.id === id).map(this.clone.bind(this));
+            const matches: Note[] = NoteRepository.store.filter(n => n.id === id).map(this.clone.bind(this));
             resolve(!matches.length ? undefined : matches[0]);
         });
     }
-    
+
     deleteById(id: number): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            let searchResult = this.searchArray(NoteRepository.store, (n => n.id === id));
+            const searchResult = this.searchArray(NoteRepository.store, (n => n.id === id));
             if (searchResult.index >= 0) {
                 NoteRepository.store.splice(searchResult.index);
                 this.dumpToBackingStore();
@@ -118,20 +119,20 @@ This is some sample text.
             resolve(searchResult.index >= 1);
         });
     }
-    
+
     update(note: Note): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            let index = this.searchArray(NoteRepository.store, n => n.id === note.id).index;
+            const index = this.searchArray(NoteRepository.store, n => n.id === note.id).index;
             if (index < 0) {
                 throw new Error("Cannot update an item that does not exist.");
             }
             note.modified = new Date();
-            NoteRepository.store[index] = this.clone(note); 
+            NoteRepository.store[index] = this.clone(note);
             this.dumpToBackingStore();
             resolve();
         });
     }
-    
+
     add(note: Note): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             note.id = this.newId();
@@ -141,9 +142,9 @@ This is some sample text.
             resolve();
         });
     }
-    
-    private searchArray<T>(array: Array<T>, predicate: (item: T) => boolean, reverse?: boolean, throwOnMultiple?: boolean): { index: number, item: T | undefined } {
-        let result = { index: -1, item: <T | undefined>undefined };
+
+    private searchArray<T>(array: T[], predicate: (item: T) => boolean, reverse?: boolean, throwOnMultiple?: boolean): { index: number, item: T | undefined } {
+        const result = { index: -1, item: <T | undefined>undefined };
         for (let i = (reverse ? array.length - 1 : 0); reverse ? i >= 0 : i < array.length; reverse ? i-- : i++) {
             if (predicate(array[i])) {
                 if (throwOnMultiple && result.item) {
@@ -157,10 +158,10 @@ This is some sample text.
             }
         }
         return result;
-    } 
-    
+    }
+
     private newId(): number {
-        let result: number = NoteRepository.store.reduce((prev: number, curr: Note) => curr.id > prev ? curr.id : prev, 0);
+        const result: number = NoteRepository.store.reduce((prev: number, curr: Note) => curr.id > prev ? curr.id : prev, 0);
         return result + 1;
     }
 

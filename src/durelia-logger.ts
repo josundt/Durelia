@@ -1,17 +1,17 @@
 import * as durandalSystem from "durandal/system";
-import {singleton} from "durelia-dependency-injection";
+import { singleton } from "durelia-dependency-injection";
 
 export type LogAppender = (message: string, ...properties: any[]) => void;
 
 export interface ILogger {
-    debug: LogAppender; 
+    debug: LogAppender;
     info: LogAppender;
     warn: LogAppender;
     error: LogAppender;
-} 
+}
 
 enum SeverityLevel {
-    none, 
+    none,
     debug,
     info,
     warn,
@@ -24,7 +24,7 @@ export class Logger implements ILogger {
     private get severityThreshold(): SeverityLevel {
         return durandalSystem.debug() ? SeverityLevel.debug : SeverityLevel.warn;
     }
-    
+
     /**
      * Internal log method
      * @internal
@@ -44,7 +44,7 @@ export class Logger implements ILogger {
             /* tslint:enable:no-console */
         }
     }
-    
+
     debug(message: string, ...properties: any[]): void { this.log(SeverityLevel.debug, console, console.debug, message, ...properties); }
     info(message: string, ...properties: any[]): void  { this.log(SeverityLevel.info,  console, console.info, message, ...properties); }
     warn(message: string, ...properties: any[]): void  { this.log(SeverityLevel.warn,  console, console.warn, message, ...properties); }

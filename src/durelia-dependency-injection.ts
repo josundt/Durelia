@@ -1,5 +1,5 @@
-import {ILogger, Logger} from "durelia-logger";
-import {durelia} from "durelia-framework";
+import { ILogger, Logger } from "durelia-logger";
+import { durelia } from "durelia-framework";
 
 export type IInjectable = IResolvableConstructor | {};
 
@@ -8,7 +8,7 @@ export interface IResolvedInstance {}
 export interface IResolvableConstructor {
     new (...injectables: IInjectable[]): IResolvedInstance;
     prototype: IResolvedInstance;
-    inject?(): Array<IInjectable>;
+    inject?(): IInjectable[];
     /** @internal */
     __lifetime__?: "singleton" | "transient";
 }
@@ -31,21 +31,21 @@ const isLazyInjectionPropName = "__isLazyInjection__";
 @inject(Logger)
 @singleton
 export class DependencyInjectionContainer implements IDependencyInjectionContainer {
-    
+
     constructor(
         /** @internal */
         private logger: ILogger = new Logger()
     ) {}
-    
-    private readonly singletonTypeRegistry: Array<IResolvableConstructor> = [];
-    private readonly singletonInstances: Array<IResolvedInstance> = [];
-    
+
+    private readonly singletonTypeRegistry: IResolvableConstructor[] = [];
+    private readonly singletonInstances: IResolvedInstance[] = [];
+
     private debug: boolean = true;
 
     resolve<T>(injectable: IInjectable): T {
         return this.resolveRecursive(injectable).instance as T;
     }
-    
+
     /**
      * Registers an instance in the IoC container
      * @internal
@@ -77,15 +77,15 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
     private isConstructorFunction(o: any): o is IResolvableConstructor {
         return !!(o && typeof o === "function" && o["prototype"]);
     }
-    
+
     private isObjectInstance(o: any): o is object {
         return typeof o !== "function" && Object(o) === o; //&& Object.getPrototypeOf(o) === Object.prototype;
     }
-    
+
     private isLazyInjection(o: any): o is Lazy<any> {
         return this.isObjectInstance(o) && o.constructor && o.constructor[isLazyInjectionPropName];
     }
-    
+
     private getClassName(classType: IResolvableConstructor): string {
         let result: string;
         result = classType.prototype.constructor["name"];
@@ -105,7 +105,7 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
     private hasInjectionInstructions(classType: IResolvableConstructor): boolean {
         return !!(classType.inject && typeof classType.inject === "function");
     }
-    
+
     private getInjectees(classType: IInjectable): IInjectable[] {
         if (this.isConstructorFunction(classType)) {
             if (this.hasInjectionInstructions(classType) && classType.inject) {
@@ -118,7 +118,7 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
     private isSingleton(classType: IResolvableConstructor): boolean {
         return !!(classType.__lifetime__ && classType.__lifetime__ === "singleton");
     }
-    
+
     private getDependencyPath(node: IDependencyTreeNode | null): string {
         const parts: string[] = [];
         while (node) {
@@ -138,10 +138,10 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
                 children: <IDependencyTreeNode[]>[]
             };
             return depNode;
-        } 
+        }
         else if (this.isConstructorFunction(injectable)) {
             const classType = injectable;
-            
+
             const injectees: IInjectable[] = this.getInjectees(classType);
             const ctorArgsCount: number = classType.length;
             const depNode: IDependencyTreeNode = {
@@ -155,9 +155,9 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
             if (injectees.length !== ctorArgsCount) {
                 const msg = `Durelia DependencyResolver: ${dependencyPath} FAILED. Injection argument vs constructor parameters count mismatch.`;
                 this.logger.error(msg);
-                throw new Error(msg);            
+                throw new Error(msg);
             }
-                        
+
             if (this.isSingleton(classType)) {
                 const idx = this.singletonTypeRegistry.indexOf(classType);
                 const lifeTimeSpec = "singleton";
@@ -184,7 +184,7 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
                     }
                     this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} (${lifeTimeSpec}) resolved: Created new instance.`);
                 }
-            } 
+            }
             else {
                 for (const injectee of injectees) {
                     const childDep = this.resolveRecursive(injectee, depNode);
@@ -197,17 +197,17 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
                     const msg = "Durelia DependencyResolver: Unable to create new instance of class.";
                     this.logger.error(msg, classType, error);
                     throw error;
-                }       
+                }
                 const lifeTimeSpec = this.hasInjectionInstructions(classType) ? "transient" : "unspecified -> transient";
                 this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} (${lifeTimeSpec}) resolved: Created new instance.`);
             }
-            
+
             return depNode;
-            
-        } 
+
+        }
         else if (this.isObjectInstance(injectable)) {
             const object = injectable;
-            
+
             const depNode: IDependencyTreeNode = {
                 classType: object.constructor ? object.constructor as IResolvableConstructor : Object,
                 instance: object,
@@ -217,13 +217,13 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
 
             const dependencyPath = this.getDependencyPath(depNode);
             this.logger.debug(`Durelia DependencyResolver: ${dependencyPath} resolved. Object instance injected (not a class). Returning instance.`, object);
-            
+
             return depNode;
-        } 
+        }
         else {
             // This last else code path may happen at run time even if the TypeScript types indicates that it never can.
-            const neitnerClassNorObject: any = injectable;  
-            
+            const neitnerClassNorObject: any = injectable;
+
             const depNode: IDependencyTreeNode = {
                 classType: neitnerClassNorObject.constructor ? neitnerClassNorObject.constructor as IResolvableConstructor : Object,
                 instance: neitnerClassNorObject,
@@ -242,16 +242,16 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
  * Decorates a class to specify constructor injection arguments
  * @export
  * @param {...Array<IInjectable>} args The types to inject
- * @returns {Function} The internal decorator function 
+ * @returns {Function} The internal decorator function
  */
-export function inject(...args: Array<IInjectable>): (classType: Function) => void {
+export function inject(...args: IInjectable[]): (classType: Function) => void {
     return (classType: Function): void => {
         classType["inject"] = () => args;
     };
 }
 
 /**
- * Decorates a class to specify singleton IoC container lifetime 
+ * Decorates a class to specify singleton IoC container lifetime
  * @export
  * @param {class} classType The class
  * @returns {void}
@@ -261,7 +261,7 @@ export function singleton(classType: Function): void {
 }
 
 /**
- * Decorates a class to specify singleton IoC container lifetime 
+ * Decorates a class to specify singleton IoC container lifetime
  * @export
  * @param {class} classType The class
  * @returns {void}
@@ -296,6 +296,7 @@ export class Lazy<T extends IInjectable> {
      * @returns {Lazy<T>} The lazy instances
      * @memberOf Lazy
      */
+    // tslint:disable-next-line:no-shadowed-variable
     static of<T extends IInjectable>(injectable: T): Lazy<T> {
         return new Lazy<T>(injectable);
     }
@@ -304,4 +305,3 @@ export class Lazy<T extends IInjectable> {
         return durelia.container.resolve(this._injectable);
     }
 }
-

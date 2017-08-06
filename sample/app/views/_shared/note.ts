@@ -1,6 +1,6 @@
-import {Note} from "services/noterepository";
-import {useView} from "durelia-framework";
-import {IViewModel} from "durelia-viewmodel";
+import { Note } from "services/noterepository";
+import { useView } from "durelia-framework";
+import { IViewModel } from "durelia-viewmodel";
 
 export interface INoteViewModel extends IViewModel<INoteViewModelActivationOptions> {
     note: Note;
@@ -13,10 +13,10 @@ export interface INoteViewModelActivationOptions {
 }
 
 interface INoteViewModelEventHandlers {
-    edit?: (note: Note) => Promise<any>;
-    save?: (note: Note) => Promise<any>;
-    remove?: (note: Note) => Promise<any>;
-    cancel?: (note: Note) => Promise<any>;
+    edit?(note: Note): Promise<any>;
+    save?(note: Note): Promise<any>;
+    remove?(note: Note): Promise<any>;
+    cancel?(note: Note): Promise<any>;
 }
 
 @useView("views/_shared/note")
@@ -52,7 +52,7 @@ export default class NoteViewModel implements INoteViewModel {
         return this.invokeEvent(this.handlers ? this.handlers.cancel : undefined);
     }
 
-    private invokeEvent(handler: ((note: Note) => Promise<any>) | undefined) {
+    private invokeEvent(handler: ((note: Note) => Promise<any>) | undefined): Promise<any> {
         return handler
             ? handler(this.note)
             : Promise.resolve();

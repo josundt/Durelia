@@ -1,12 +1,19 @@
 {
     "compileOnSave": true,
     "compilerOptions": {
+        "plugins": [{
+            "name": "tslint-language-service",
+            "alwaysShowRuleFailuresAsWarnings": false,
+            "ignoreDefinitionFiles": true,
+            "configFile": "./tslint.json",
+            "disableNoUnusedVariableRule": false
+        }],
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
         "declaration": true,
         "experimentalDecorators": true,
         "forceConsistentCasingInFileNames": true,
-        "lib": ["dom", "es5", "es2015.promise"],
+        "lib": ["dom", "es5", "es2015.promise", "es2015.iterable"],
         "listFiles": false,
         "module": "amd",
         "moduleResolution": "classic",

@@ -22,6 +22,7 @@ declare module "durelia-framework" {
          * Configures Durandal to use ES2015 Promise instead of JQueryDeferred/JQueryPromise.
          * Make Durandal use native Promise instead of JQuery Promise/Deferred, and optionally register Promise polyfill
          * @param {PromiseConstructorLike} promisePolyfill Optional promise implementation to register as global Promise variable
+         * @param {boolean} force Optional. If true, the polyfill library will be used even when the browser supports Promise natively.
          * @returns {this} Returns this (FrameworkConfiguration) to enable chaining.
          * @memberOf IFrameworkConfiguration
          */
@@ -48,7 +49,7 @@ declare module "durelia-framework" {
         routerModelActivation(): this;
     }
     export class FrameworkConfiguration implements IFrameworkConfiguration {
-        nativePromise(promisePolyfill?: PromiseConstructorLike): this;
+        nativePromise(promisePolyfill?: PromiseConstructorLike, force?: boolean): this;
         viewModelDefaultExports(): this;
         observeDecorator(): this;
         routerModelActivation(): this;

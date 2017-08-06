@@ -1,11 +1,11 @@
-import {inject, useView} from "durelia-framework";
-import {IDialogController, DialogController} from "durelia-dialog";
-import {IDialogViewModel} from "durelia-viewmodel";
+import { inject, useView } from "durelia-framework";
+import { IDialogController, DialogController } from "durelia-dialog";
+import { IDialogViewModel } from "durelia-viewmodel";
 
 export interface IMessageBoxModel {
     message: string;
     title?: string; //= title || MessageBox.defaultTitle;
-    options?:  string[]; //= options || MessageBox.defaultOptions;
+    options?: string[]; //= options || MessageBox.defaultOptions;
     cancelOptionIndex?: number;
 }
 
@@ -29,7 +29,7 @@ export class MessageBox implements IDialogViewModel<IMessageBoxModel, string> {
         return Promise.resolve();
     }
 
-    selectOption(option: string) {
+    selectOption(option: string): void {
         if (this.options.indexOf(option) === this.cancelOptionIndex) {
             this.controller.cancel(option, this);
         } else {

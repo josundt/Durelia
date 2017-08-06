@@ -17,19 +17,19 @@
   "homepage": "https://github.com/josundt/Durelia",
   "moduleType": ["amd"],
   "devDependencies": {
-    "bluebird": "^3.4.0",
-    "Durandal": "durandal#^2.1.0",
-    "font-awesome": "^4.6.3",
-    "jquery": "^2.2.3",
-    "knockout": "^3.4.0",
+    "bluebird": "3.5.0",
+    "durandal": "2.2.0",
+    "font-awesome": "4.7.0",
+    "jquery": "2.2.3",
+    "knockout": "3.4.2",
     "q": "1.4.1",
-    "requirejs": "^2.2.0",
-    "text": "requirejs-text#^2.0.15"
+    "requirejs": "2.3.4",
+    "requirejs-text": "2.0.15"
   },
   "resolutions": {
-    "jquery": "^2.2.3",
-    "requirejs": "^2.2.0",
-    "requirejs-text": "^2.0.15"
+    "jquery": "2.2.3",
+    "requirejs": "2.3.2",
+    "requirejs-text": "2.0.15"
   },
   "ignore": [
     "**/.*",

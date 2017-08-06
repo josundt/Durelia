@@ -2,7 +2,7 @@ declare module "durelia-dialog" {
     import { IDialogViewModel } from "durelia-viewmodel";
     import { IDependencyInjectionContainer } from "durelia-dependency-injection";
     export interface IDialogOptions<TActivationModel> {
-        viewModel: Function | Object;
+        viewModel: Function | object;
         model: TActivationModel;
     }
     export interface IDialogService {

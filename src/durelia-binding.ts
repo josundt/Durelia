@@ -1,3 +1,4 @@
+// tslint:disable:no-empty
 export const observeDecoratorKeyName: string = "__observeDecorated__";
 
 export function computedFrom(...dependentProps: string[]): (viewmodel: any, key: string, descriptor: PropertyDescriptor) => void {

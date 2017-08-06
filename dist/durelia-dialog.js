@@ -15,12 +15,12 @@ define(["require", "exports", "plugins/dialog", "durelia-dependency-injection"],
             var vm = this.container.resolve(options.viewModel);
             return durandalDialog.show(vm, options.model);
         };
+        DialogService = __decorate([
+            durelia_dependency_injection_1.singleton,
+            durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer)
+        ], DialogService);
         return DialogService;
     }());
-    DialogService = __decorate([
-        durelia_dependency_injection_1.singleton,
-        durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer)
-    ], DialogService);
     exports.DialogService = DialogService;
     var DialogController = (function () {
         function DialogController() {

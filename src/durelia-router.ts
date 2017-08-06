@@ -2,7 +2,7 @@ import * as durandalRouter from "plugins/router";
 import * as durandalHistory from "plugins/history";
 import * as ko from "knockout";
 
-import {singleton} from "durelia-dependency-injection";
+import { singleton } from "durelia-dependency-injection";
 
 export interface IRouteActivationModel {
     [name: string]: string | number;
@@ -49,13 +49,13 @@ export class NavigationController {
         const fragment = NavigationController.getFragment(route, routeArgs);
         durandalRouter.navigate(fragment, { replace: !!(options && options.replace), trigger: true });
     }
-    
+
     navigateBack(): void {
         window.history.back();
     }
 
     /**
-     * Enables router model activation 
+     * Enables router model activation
      * @internal
      * @static
      * @returns {void}
@@ -70,7 +70,7 @@ export class NavigationController {
         }
 
         this.registerRouteHrefBindingHandler();
-        
+
         durandalRouter.on("router:route:activating").then((viewmodel: any, instruction: DurandalRouteInstruction, router: DurandalRouter) => {
             //const routeParamProperties = instruction.config.routePattern.exec(<string>instruction.config.route).splice(1);
             const routeParamProperties: string[] = [];
@@ -80,10 +80,10 @@ export class NavigationController {
                 routeParamProperties.push(match[1]);
             }
             /* tslint:enable:no-conditional-assignment */
-            
+
             const routeParamMatches = instruction.config.routePattern ? instruction.config.routePattern.exec(instruction.fragment) : null;
             const routeParamValues = routeParamMatches ? routeParamMatches.splice(1) : [];
-            let routeParams: { [routeParam: string]: string | number } | undefined = undefined;
+            let routeParams: { [routeParam: string]: string | number } | undefined;
             if (routeParamProperties.length && routeParamValues.length) {
                 if (routeParamProperties.length === routeParamValues.length) {
                     routeParams = routeParams || {};
@@ -102,7 +102,7 @@ export class NavigationController {
             }
             instruction.params.splice(0);
             instruction.params.push(routeParams);
-            
+
         });
 
         NavigationController.routerModelActivationEnabled = true;
@@ -136,7 +136,7 @@ export class NavigationController {
         });
         return bestMatchInfo.route;
     }
- 
+
     /**
      * Gets a route by name and route activation model
      * @internal
@@ -173,13 +173,13 @@ export class NavigationController {
         }
 
         const route: string | undefined = this.getBestMatchedRoute(args, ...routes);
-            
+
         return route;
     }
-    
+
     /**
      * Gets route parameters from route
-     * @internal 
+     * @internal
      * @private
      * @static
      * @param {string} route The route
@@ -196,9 +196,9 @@ export class NavigationController {
             routeParams.push(match[1]);
         }
         /* tslint:enable:no-conditional-assignment */
-        
+
         if (sort) {
-           routeParams.sort(); 
+           routeParams.sort();
         }
         return routeParams;
     }
@@ -212,12 +212,12 @@ export class NavigationController {
      * @returns {Array<IOptionalRouteParamInfo[]>} The optional route parameter info
      * @memberOf NavigationController
      */
-    private static getOptionalRouteParamSegments(route: string): Array<IOptionalRouteParamInfo[]> {
-        const optionalParamSegments: Array<IOptionalRouteParamInfo[]> = [];
+    private static getOptionalRouteParamSegments(route: string): IOptionalRouteParamInfo[][] {
+        const optionalParamSegments: IOptionalRouteParamInfo[][] = [];
 
         let optionalParamFragmentMatch: RegExpExecArray | null;
         const optionalParamFragments: string[] = [];
-        
+
         /* tslint:disable:no-conditional-assignment */
         while (optionalParamFragmentMatch = this.optionalParamFragmentRegExp.exec(route)) {
             optionalParamFragments.push(optionalParamFragmentMatch[1]);
@@ -226,7 +226,7 @@ export class NavigationController {
 
         for (const optionalParamFragment of optionalParamFragments) {
             let optionalParamMatch: RegExpExecArray | null;
-            const optionalParams: { name: string; hasValue: boolean; }[] = [];
+            const optionalParams: Array<{ name: string; hasValue: boolean; }> = [];
 
             /* tslint:disable:no-conditional-assignment */
             while (optionalParamMatch = NavigationController.routeExpandRegex.exec(optionalParamFragment)) {
@@ -252,17 +252,17 @@ export class NavigationController {
      */
     private static getFragment(route: string, args: IRouteActivationModel): string {
         const queryStringParams: IRouteActivationModel = {};
-        
-        // Adding all args into queryString map 
+
+        // Adding all args into queryString map
         Object.keys(args).forEach(k => queryStringParams[k] = args[k]);
 
         // Getting descriptor of optional route param segments
-        const optionalParamSegments: Array<IOptionalRouteParamInfo[]> = this.getOptionalRouteParamSegments(route);
+        const optionalParamSegments: IOptionalRouteParamInfo[][] = this.getOptionalRouteParamSegments(route);
 
         // Merging param values with param placeholders
         let url = route.replace(NavigationController.routeExpandRegex, (substring, group1) => {
             let replacement;
-            // If route param was matched 
+            // If route param was matched
             if (Object.keys(args).indexOf(group1) >= 0) {
                 // Remove from queryString map
                 delete queryStringParams[group1];
@@ -281,10 +281,10 @@ export class NavigationController {
             return replacement;
         });
 
-        // Removing optional segment indicator parenthesises from route  
+        // Removing optional segment indicator parenthesises from route
         url = url.replace(/\(|\)/g, "");
 
-        // Putting arg props not matched with route param placeholders into queryString 
+        // Putting arg props not matched with route param placeholders into queryString
         if (Object.keys(queryStringParams).length) {
             const queryStringParts = Object.keys(queryStringParams).map(k => {
                 const key = NavigationController.urlSerialize(k);
@@ -293,10 +293,10 @@ export class NavigationController {
             });
             url = `${url}?${queryStringParts.join("&")}`;
         }
-        
+
         return url;
     }
-    
+
     /**
      * Serializes simple values for URLs
      * @internal
@@ -315,7 +315,7 @@ export class NavigationController {
         }
         return encodeURIComponent(result);
     }
-    
+
     /**
      * Deerializes simple values from URLs
      * @internal
@@ -328,9 +328,9 @@ export class NavigationController {
     private static urlDeserialize(text: string): any {
         let intValue: number;
         let floatValue: number;
-        
+
         text = decodeURIComponent(text);
-        
+
         if (text === "undefined") {
             return undefined;
         }
@@ -341,8 +341,10 @@ export class NavigationController {
             return false;
         } else if (text === "true") {
             return true;
+        // tslint:disable-next-line:no-conditional-assignment
         } else if (!isNaN(intValue = parseInt(text, 10))) {
             return intValue;
+        // tslint:disable-next-line:no-conditional-assignment
         } else if (!isNaN(floatValue = parseFloat(text))) {
             return floatValue;
         } else if (NavigationController.isoDateStringRegex.test(text)) {
@@ -357,20 +359,20 @@ export class NavigationController {
      * @internal
      * @private
      * @static
-     * @returns void
+     * @returns {void} Nothing
      * @memberOf NavigationController
      */
     private static registerRouteHrefBindingHandler(): void {
-        
-        function onRouteHrefLinkClick(evt: MouseEvent) {
-            const elem = evt.currentTarget as HTMLAnchorElement; 
+
+        function onRouteHrefLinkClick(evt: MouseEvent): void {
+            const elem = evt.currentTarget as HTMLAnchorElement;
             const fragment = elem.getAttribute("data-route-href-fragment")!;
-            const strReplace = elem.getAttribute("data-route-href-replace"); 
+            const strReplace = elem.getAttribute("data-route-href-replace");
             const replace = strReplace === "true";
             evt.preventDefault();
             durandalRouter.navigate(fragment, { replace: replace, trigger: true });
         }
-        
+
         ko.bindingHandlers["route-href"] = ko.bindingHandlers["route-href"] || {
             init(
                 element: HTMLAnchorElement,
@@ -378,7 +380,7 @@ export class NavigationController {
                 allBindingsAccessor: KnockoutAllBindingsAccessor,
                 viewModel: any,
                 bindingContext: KnockoutBindingContext
-            ) {
+            ): void {
                 element.addEventListener("click", onRouteHrefLinkClick);
                 ko.utils.domNodeDisposal.addDisposeCallback(element, () => {
                     element.removeEventListener("click", onRouteHrefLinkClick);
@@ -390,7 +392,7 @@ export class NavigationController {
                 allBindingsAccessor: KnockoutAllBindingsAccessor,
                 viewModel: any,
                 bindingContext: KnockoutBindingContext
-            ) {
+            ): void {
                 if (element.tagName.toUpperCase() !== "A") {
                     throw new Error("knockout binding error: 'routeHref' can only be used with anchor (A) HTML elements.");
                 }

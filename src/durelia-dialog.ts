@@ -1,9 +1,9 @@
 import * as durandalDialog from "plugins/dialog";
-import {IDialogViewModel} from "durelia-viewmodel";
-import {IDependencyInjectionContainer, DependencyInjectionContainer, inject, singleton} from "durelia-dependency-injection";
+import { IDialogViewModel } from "durelia-viewmodel";
+import { IDependencyInjectionContainer, DependencyInjectionContainer, inject, singleton } from "durelia-dependency-injection";
 
 export interface IDialogOptions<TActivationModel> {
-    viewModel: Function | Object;
+    viewModel: Function | object;
     model: TActivationModel;
 }
 
@@ -24,14 +24,14 @@ export interface IDialogController<TResultOutput> {
 @singleton
 @inject(DependencyInjectionContainer)
 export class DialogService implements IDialogService {
-    
+
     constructor(container: IDependencyInjectionContainer) {
         this.container = container;
     }
 
     /** @internal */
     private readonly container: IDependencyInjectionContainer;
-    
+
     open<TActivationModel, TResult>(options: IDialogOptions<TActivationModel>): Promise<IDialogResult<TResult>> {
         const vm = this.container.resolve<IDialogViewModel<TActivationModel, TResult>>(options.viewModel);
         return durandalDialog.show(vm, options.model) as any;
@@ -40,17 +40,17 @@ export class DialogService implements IDialogService {
 
 export class DialogController<TResultOutput> implements IDialogController<TResultOutput> {
     ok(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>): void {
-        const dialogResult: IDialogResult<TResultOutput> = { 
+        const dialogResult: IDialogResult<TResultOutput> = {
             wasCancelled: false,
-            output: result 
+            output: result
         };
         return durandalDialog.close(viewModel, dialogResult);
     }
 
     cancel(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>): void {
-        const dialogResult: IDialogResult<TResultOutput> = { 
+        const dialogResult: IDialogResult<TResultOutput> = {
             wasCancelled: true,
-            output: result 
+            output: result
         };
         return durandalDialog.close(viewModel, dialogResult);
     }

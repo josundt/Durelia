@@ -8,7 +8,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var originalBinderBindingMethod = durandalBinder.binding;
-    var FrameworkConfiguration = FrameworkConfiguration_1 = (function () {
+    var FrameworkConfiguration = (function () {
         /**
          * Creates an instance of FrameworkConfiguration.
          * @internal
@@ -28,7 +28,8 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             };
             this.enableDependencyInjection();
         }
-        FrameworkConfiguration.prototype.nativePromise = function (promisePolyfill) {
+        FrameworkConfiguration_1 = FrameworkConfiguration;
+        FrameworkConfiguration.prototype.nativePromise = function (promisePolyfill, force) {
             if (this.config.usesES2015Promise) {
                 return this;
             }
@@ -42,7 +43,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             }
             this.logger.debug(logMsg);
             if (promisePolyfill) {
-                window["Promise"] = promisePolyfill;
+                window["Promise"] = force ? (promisePolyfill) : (Promise || promisePolyfill);
             }
             if (!Promise.prototype["fail"]) {
                 Promise.prototype["fail"] = Promise.prototype.catch;
@@ -94,6 +95,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             }
             else {
                 this.logger.debug("Durelia: Enabling observe decorator to use the Durandal observable plugin on a per-viewmodel basis.");
+                // tslint:disable-next-line:only-arrow-functions
                 durandalBinder.binding = function (obj, view, instruction) {
                     var hasObserveDecorator = !!(obj && obj.constructor && obj.constructor[durelia_binding_1.observeDecoratorKeyName]);
                     if (instruction.applyBindings && !instruction["skipConversion"] && hasObserveDecorator) {
@@ -127,7 +129,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
          * Enables dependency injection
          * @internal
          * @private
-         * @returns void
+         * @returns {void}
          * @memberOf FrameworkConfiguration
          */
         FrameworkConfiguration.prototype.enableDependencyInjection = function () {
@@ -150,10 +152,11 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
          * @private
          * @static
          * @template T
-         * @returns {Deferred<T>}
+         * @returns {Deferred<T>} Deferred of T
          */
         FrameworkConfiguration.defer = function () {
             var result = {};
+            // tslint:disable-next-line:promise-must-complete
             result.promise = new Promise(function (resolve, reject) {
                 result.resolve = resolve;
                 result.reject = reject;
@@ -172,12 +175,13 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             enumerable: true,
             configurable: true
         });
+        FrameworkConfiguration = FrameworkConfiguration_1 = __decorate([
+            durelia_dependency_injection_1.singleton,
+            durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer, durelia_logger_1.Logger)
+        ], FrameworkConfiguration);
         return FrameworkConfiguration;
+        var FrameworkConfiguration_1;
     }());
-    FrameworkConfiguration = FrameworkConfiguration_1 = __decorate([
-        durelia_dependency_injection_1.singleton,
-        durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer, durelia_logger_1.Logger)
-    ], FrameworkConfiguration);
     exports.FrameworkConfiguration = FrameworkConfiguration;
     /**
      * The main Durelia module
@@ -186,21 +190,28 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
      * @implements {IDurelia}
      */
     var Durelia = (function () {
-        /** @internal */
+        /**
+         * Creates an instance of Durelia.
+         * @internal
+         * @param {IDependencyInjectionContainer} container The container
+         * @param {IFrameworkConfiguration} frameworkConfig The framework configuration
+         * @returns {Duralia} An instance of Duralia
+         * @memberof Durelia
+         */
         function Durelia(container, frameworkConfig) {
             this.container = container;
             this.use = frameworkConfig;
         }
+        Durelia = __decorate([
+            durelia_dependency_injection_1.singleton,
+            durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer, FrameworkConfiguration)
+        ], Durelia);
         return Durelia;
     }());
-    Durelia = __decorate([
-        durelia_dependency_injection_1.singleton,
-        durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer, FrameworkConfiguration)
-    ], Durelia);
     exports.Durelia = Durelia;
-    var container = new durelia_dependency_injection_1.DependencyInjectionContainer();
-    container.registerInstance(durelia_dependency_injection_1.DependencyInjectionContainer, container);
-    exports.durelia = container.resolve(Durelia);
+    var cont = new durelia_dependency_injection_1.DependencyInjectionContainer();
+    cont.registerInstance(durelia_dependency_injection_1.DependencyInjectionContainer, cont);
+    exports.durelia = cont.resolve(Durelia);
     exports.inject = durelia_dependency_injection_2.inject;
     exports.singleton = durelia_dependency_injection_2.singleton;
     exports.transient = durelia_dependency_injection_2.transient;
@@ -208,6 +219,5 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
     exports.observe = durelia_binding_2.observe;
     exports.computedFrom = durelia_binding_2.computedFrom;
     exports.useView = durelia_templating_1.useView;
-    var FrameworkConfiguration_1;
 });
 //# sourceMappingURL=durelia-framework.js.map

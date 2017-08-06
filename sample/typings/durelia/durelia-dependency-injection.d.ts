@@ -5,7 +5,7 @@ declare module "durelia-dependency-injection" {
     export interface IResolvableConstructor {
         new (...injectables: IInjectable[]): IResolvedInstance;
         prototype: IResolvedInstance;
-        inject?(): Array<IInjectable>;
+        inject?(): IInjectable[];
     }
     export interface IDependencyInjectionContainer {
         resolve<T>(injectable: IInjectable): T;
@@ -17,7 +17,7 @@ declare module "durelia-dependency-injection" {
      * @param {...Array<IInjectable>} args The types to inject
      * @returns {Function} The internal decorator function
      */
-    export function inject(...args: Array<IInjectable>): (classType: Function) => void;
+    export function inject(...args: IInjectable[]): (classType: Function) => void;
     /**
      * Decorates a class to specify singleton IoC container lifetime
      * @export

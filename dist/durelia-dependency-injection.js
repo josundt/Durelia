@@ -203,12 +203,12 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
                 throw new Error(msg);
             }
         };
+        DependencyInjectionContainer = __decorate([
+            inject(durelia_logger_1.Logger),
+            singleton
+        ], DependencyInjectionContainer);
         return DependencyInjectionContainer;
     }());
-    DependencyInjectionContainer = __decorate([
-        inject(durelia_logger_1.Logger),
-        singleton
-    ], DependencyInjectionContainer);
     exports.DependencyInjectionContainer = DependencyInjectionContainer;
     /**
      * Decorates a class to specify constructor injection arguments
@@ -249,7 +249,7 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
     function isLazyInjection(classType) {
         classType[isLazyInjectionPropName] = true;
     }
-    var Lazy = Lazy_1 = (function () {
+    var Lazy = (function () {
         /**
          * Creates an instance of Lazy.
          * @internal
@@ -261,6 +261,7 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
         function Lazy(_injectable) {
             this._injectable = _injectable;
         }
+        Lazy_1 = Lazy;
         /**
          * Use with the inject decorator to inject lazy factory function instead of instance.
          * @static
@@ -269,6 +270,7 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
          * @returns {Lazy<T>} The lazy instances
          * @memberOf Lazy
          */
+        // tslint:disable-next-line:no-shadowed-variable
         Lazy.of = function (injectable) {
             return new Lazy_1(injectable);
         };
@@ -279,12 +281,12 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
             enumerable: true,
             configurable: true
         });
+        Lazy = Lazy_1 = __decorate([
+            isLazyInjection
+        ], Lazy);
         return Lazy;
+        var Lazy_1;
     }());
-    Lazy = Lazy_1 = __decorate([
-        isLazyInjection
-    ], Lazy);
     exports.Lazy = Lazy;
-    var Lazy_1;
 });
 //# sourceMappingURL=durelia-dependency-injection.js.map

@@ -36,7 +36,7 @@ durelia.use
     .nativePromise(Q.Promise);
 ```
 
-*Example (when you want to install **Bluebird** as ES2015 Promise a polyfill as you enable ES2015 Promise for Durandal):*
+*Example (when you want to install **Bluebird** as ES2015 Promise even in browsers with native Promise support):*
 ```javascript
 import {durelia} from "durelia-framework";
 import * as Bluebird from "bluebird";
@@ -46,7 +46,7 @@ Bluebird.config({
 });
 
 durelia.use
-    .nativePromise(Bluebird);
+    .nativePromise(Bluebird, true); // true: use even in browsers with Promise support
 ```
 *Durandal will cause Bluebird to show some unwanted warnings in the console, you 
 should therefore configure Bluebird as described above.*

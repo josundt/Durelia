@@ -1,9 +1,9 @@
-import {inject, Lazy, observe, useView} from "durelia-framework";
-import {IViewModel} from "durelia-viewmodel";
-import {INoteRepository, NoteRepository, Note} from "services/noterepository";
-import {INoteViewModelActivationOptions} from "views/_shared/note";
-import {ICommonDialogs, CommonDialogs} from "services/common-dialogs";
-import {INavigationController, NavigationController} from "durelia-router";
+import { inject, Lazy, observe, useView } from "durelia-framework";
+import { IViewModel } from "durelia-viewmodel";
+import { INoteRepository, NoteRepository, Note } from "services/noterepository";
+import { INoteViewModelActivationOptions } from "views/_shared/note";
+import { ICommonDialogs, CommonDialogs } from "services/common-dialogs";
+import { INavigationController, NavigationController } from "durelia-router";
 
 export interface INoteDetailActivationModel {
     id: number;
@@ -18,7 +18,7 @@ export default class NoteDetail implements IViewModel<INoteDetailActivationModel
         private commonDialogs: ICommonDialogs,
         private navigator: INavigationController
     ) {
-        
+
         this.noteRepository = getNoteRepository();
     }
 
@@ -40,10 +40,10 @@ export default class NoteDetail implements IViewModel<INoteDetailActivationModel
             });
         }
     }
-    
+
     canDeactivate(): Promise<boolean> {
         if (this.hasUnsavedChanges) {
-            let buttonTexts = ["Save", "Abandon changes", "Stay on page"];
+            const buttonTexts = ["Save", "Abandon changes", "Stay on page"];
             return this.commonDialogs.messageBox("Do you want to save the note before leaving?", "Save changes", buttonTexts, 2)
                 .then(result => {
                     if (result.wasCancelled) {
@@ -51,7 +51,7 @@ export default class NoteDetail implements IViewModel<INoteDetailActivationModel
                     } else if (result.output === buttonTexts[1]) {
                         return true;
                     } else {
-                        return this.save(this.note, true).then(() => true); 
+                        return this.save(this.note, true).then(() => true);
                     }
                 });
         } else {
@@ -62,15 +62,15 @@ export default class NoteDetail implements IViewModel<INoteDetailActivationModel
     deactivate(): Promise<any> {
         return Promise.resolve();
     }
-    
+
     save(note: Note, skipGoBack?: boolean): Promise<any> {
-        let promise = note.id >= 0
+        const promise = note.id >= 0
             ? this.noteRepository.update(note)
             : this.noteRepository.add(note);
 
         return promise.then(() => {
             this.hasUnsavedChanges = false;
-            
+
             return this.commonDialogs.messageBox("The note was saved", "Saved!", ["OK"]);
 
         }).then(() => skipGoBack ? Promise.resolve() : this.back());
@@ -81,12 +81,12 @@ export default class NoteDetail implements IViewModel<INoteDetailActivationModel
             .then(confirmed => {
                 if (confirmed) {
                     return this.noteRepository.deleteById(note.id)
-                        .then((result) => {
+                        .then(result => {
                             this.hasUnsavedChanges = false;
                             this.back();
                             return result;
                         });
-                    
+
                 } else {
                     return Promise.resolve(false);
                 }
@@ -116,5 +116,5 @@ export default class NoteDetail implements IViewModel<INoteDetailActivationModel
                 cancel: n => this.cancel()
             }
         };
-    }    
+    }
 }

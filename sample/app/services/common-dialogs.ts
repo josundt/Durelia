@@ -1,6 +1,6 @@
-import {inject, singleton} from "durelia-framework";
-import {IDialogService, DialogService, IDialogResult} from "durelia-dialog";
-import {MessageBox, IMessageBoxModel} from "views/_shared/messagebox";
+import { inject, singleton } from "durelia-framework";
+import { IDialogService, DialogService, IDialogResult } from "durelia-dialog";
+import { MessageBox, IMessageBoxModel } from "views/_shared/messagebox";
 
 export interface ICommonDialogs {
     messageBox(message: string, title?: string, options?: string[], cancelOptionIndex?: number): Promise<IDialogResult<string>>;
@@ -13,10 +13,10 @@ export class CommonDialogs {
     constructor(
         private dialog: IDialogService
     ) {}
-    
+
     messageBox(message: string, title?: string, options?: string[], cancelOptionIndex?: number): Promise<IDialogResult<string>> {
         return this.dialog.open<IMessageBoxModel, string>({
-            viewModel: MessageBox, 
+            viewModel: MessageBox,
             model: {
                 message: message,
                 title: title,
@@ -25,10 +25,10 @@ export class CommonDialogs {
             }
         });
     }
-    
+
     confirm(message: string, title?: string): Promise<boolean> {
         return this.dialog.open<IMessageBoxModel, string>({
-            viewModel: MessageBox, 
+            viewModel: MessageBox,
             model: {
                 message: message,
                 title: title,
@@ -37,4 +37,4 @@ export class CommonDialogs {
             }
         }).then(result => !result.wasCancelled);
     }
-} 
+}

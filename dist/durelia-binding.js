@@ -1,6 +1,7 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    // tslint:disable:no-empty
     exports.observeDecoratorKeyName = "__observeDecorated__";
     function computedFrom() {
         var dependentProps = [];
