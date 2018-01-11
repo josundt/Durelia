@@ -44,7 +44,7 @@ export class DialogController<TResultOutput> implements IDialogController<TResul
             wasCancelled: false,
             output: result
         };
-        return durandalDialog.close(viewModel, dialogResult);
+        durandalDialog.close(viewModel, dialogResult);
     }
 
     cancel(result: TResultOutput, viewModel: IDialogViewModel<any, TResultOutput>): void {
@@ -52,6 +52,6 @@ export class DialogController<TResultOutput> implements IDialogController<TResul
             wasCancelled: true,
             output: result
         };
-        return durandalDialog.close(viewModel, dialogResult);
+        durandalDialog.close(viewModel, dialogResult);
     }
 }

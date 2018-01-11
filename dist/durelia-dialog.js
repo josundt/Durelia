@@ -30,14 +30,14 @@ define(["require", "exports", "plugins/dialog", "durelia-dependency-injection"],
                 wasCancelled: false,
                 output: result
             };
-            return durandalDialog.close(viewModel, dialogResult);
+            durandalDialog.close(viewModel, dialogResult);
         };
         DialogController.prototype.cancel = function (result, viewModel) {
             var dialogResult = {
                 wasCancelled: true,
                 output: result
             };
-            return durandalDialog.close(viewModel, dialogResult);
+            durandalDialog.close(viewModel, dialogResult);
         };
         return DialogController;
     }());

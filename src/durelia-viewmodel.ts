@@ -5,5 +5,6 @@ export interface IViewModel<TActivationModel> {
     deactivate?(): Promise<any> | any | void;
 }
 
+// tslint:disable-next-line:no-unused-variable
 export interface IDialogViewModel<TActivationModel, TResultOutput> extends IViewModel<TActivationModel> {
 }

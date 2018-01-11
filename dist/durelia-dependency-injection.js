@@ -17,7 +17,6 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
             this.logger = logger;
             this.singletonTypeRegistry = [];
             this.singletonInstances = [];
-            this.debug = true;
         }
         DependencyInjectionContainer.prototype.resolve = function (injectable) {
             return this.resolveRecursive(injectable).instance;

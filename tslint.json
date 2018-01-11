@@ -7,13 +7,6 @@
   ],
   "rules": {
 
-    // Project rules:
-    "import-whitespace": {
-      "severity": "error",
-      "options": ["spaces"]
-    },
-
-
     // Standard TSLint rules:
     "adjacent-overload-signatures": true,
     "align": {
@@ -136,6 +129,7 @@
     "no-eval": true,
     "no-floating-promises": false,
     "no-for-in-array": true,
+    "no-implicit-dependencies": false,
     "no-import-side-effect": true,
     "no-inferrable-types": [false, "ignore-params", "ignore-properties"],
     "no-inferred-empty-object-type": true,
@@ -157,6 +151,7 @@
     "no-sparse-arrays": true,
     "no-string-literal": false,
     "no-string-throw": true,
+    "no-submodule-imports": false,
     "no-switch-case-fall-through": false,
     "no-trailing-whitespace": {
       "severity": "warning",

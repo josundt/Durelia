@@ -8,7 +8,7 @@ declare module "durelia-dependency-injection" {
         inject?(): IInjectable[];
     }
     export interface IDependencyInjectionContainer {
-        resolve<T>(injectable: IInjectable): T;
+        resolve<T = any>(injectable: IInjectable): T;
         registerInstance(classType: IResolvableConstructor, instance: IResolvedInstance): void;
     }
     /**

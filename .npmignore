@@ -1,0 +1,10 @@
+/node_modules
+/.vscode
+/build
+/sample
+.bowerrc
+.gitignore
+bower.json
+build.js
+index.html
+prestart

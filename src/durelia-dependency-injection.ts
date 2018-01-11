@@ -21,7 +21,7 @@ interface IDependencyTreeNode {
 }
 
 export interface IDependencyInjectionContainer {
-    resolve<T>(injectable: IInjectable): T;
+    resolve<T = any>(injectable: IInjectable): T;
     registerInstance(classType: IResolvableConstructor, instance: IResolvedInstance): void;
 }
 
@@ -39,8 +39,6 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
 
     private readonly singletonTypeRegistry: IResolvableConstructor[] = [];
     private readonly singletonInstances: IResolvedInstance[] = [];
-
-    private debug: boolean = true;
 
     resolve<T>(injectable: IInjectable): T {
         return this.resolveRecursive(injectable).instance as T;
