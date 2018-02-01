@@ -173,7 +173,7 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
         this.logger.debug(logMsg);
 
         if (promisePolyfill) {
-            window["Promise"] = force ? (promisePolyfill) : (Promise || promisePolyfill);
+            (<any>window).Promise = force ? (promisePolyfill) : ((<any>window).Promise || promisePolyfill);
         }
 
         if (!Promise.prototype["fail"]) {

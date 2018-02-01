@@ -43,7 +43,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             }
             this.logger.debug(logMsg);
             if (promisePolyfill) {
-                window["Promise"] = force ? (promisePolyfill) : (Promise || promisePolyfill);
+                window.Promise = force ? (promisePolyfill) : (window.Promise || promisePolyfill);
             }
             if (!Promise.prototype["fail"]) {
                 Promise.prototype["fail"] = Promise.prototype.catch;
