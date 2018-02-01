@@ -35,7 +35,7 @@ export interface IFrameworkConfiguration {
      * @returns {this} Returns this (FrameworkConfiguration) to enable chaining.
      * @memberOf IFrameworkConfiguration
      */
-    nativePromise(promisePolyfill?: PromiseConstructorLike): this;
+    nativePromise(promisePolyfill?: PromiseConstructorLike, force?: boolean): this;
 
     /**
      * Configures Durandal to use the observable plugin, but only for viewmodel classes decorated with the @observe decorator.
