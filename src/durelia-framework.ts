@@ -209,16 +209,7 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
 
         this.logger.debug("Durelia: Enabling default export for viewmodel modules.");
 
-        (<any>durandalSystem)["resolveObject"] = module => {
-            if (module && module.default && durandalSystem.isFunction(module.default)) {
-                const vm = this.container.resolve(module.default);
-                return vm;
-            } else if (durandalSystem.isFunction(module)) {
-                return this.container.resolve(module.default);
-            } else {
-                return module;
-            }
-        };
+        this.overrideDurandalResolveObject();
 
         return this;
     }
@@ -276,6 +267,28 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
         return this;
     }
 
+    
+    /**
+     * Generic resolve object override
+     * @internal
+     * @private
+     * @returns {void}
+     * @memberOf FrameworkConfiguration
+     */
+    private overrideDurandalResolveObject(): void {        
+        (<any>durandalSystem)["resolveObject"] = module => {
+            if (module && module.default && durandalSystem.isFunction(module.default)) {
+                let vm = this.container.resolve(module.default);
+                durandalSystem.setModuleId(vm, module.__moduleId__);
+                return vm;
+            } else if (durandalSystem.isFunction(module)) {
+                return this.container.resolve(module);
+            } else {
+                return module;
+            }
+        };
+    }
+
     /**
      * Enables dependency injection
      * @internal
@@ -284,15 +297,7 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
      * @memberOf FrameworkConfiguration
      */
     private enableDependencyInjection(): void {
-        (<any>durandalSystem)["resolveObject"] = module => {
-            if (durandalSystem.isFunction(module)) {
-                return this.container.resolve(module);
-            } else if (module && durandalSystem.isFunction(module.default)) {
-                return this.container.resolve(module.default);
-            } else {
-                return module;
-            }
-        };
+        this.overrideDurandalResolveObject();
     }
 
     /**

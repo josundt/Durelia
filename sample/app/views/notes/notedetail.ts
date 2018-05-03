@@ -1,4 +1,4 @@
-import { inject, Lazy, observe, useView } from "durelia-framework";
+import { inject, Lazy, observe } from "durelia-framework";
 import { IViewModel } from "durelia-viewmodel";
 import { INoteRepository, NoteRepository, Note } from "services/noterepository";
 import { INoteViewModelActivationOptions } from "views/_shared/note";
@@ -9,7 +9,6 @@ export interface INoteDetailActivationModel {
     id: number;
 }
 
-@useView("views/notes/notedetail.html")
 @observe(true)
 @inject(Lazy.of(NoteRepository), CommonDialogs, NavigationController)
 export default class NoteDetail implements IViewModel<INoteDetailActivationModel> {

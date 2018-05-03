@@ -1,10 +1,9 @@
-import { singleton, inject, observe, useView, computedFrom } from "durelia-framework";
+import { singleton, inject, observe, computedFrom } from "durelia-framework";
 import * as durandalRouter from "plugins/router";
 import * as durandalApp from "durandal/app";
 import { IViewModel } from "durelia-viewmodel";
 
 @observe(true)
-@useView("views/shell.html")
 @singleton
 @inject(durandalRouter)
 export default class Shell implements IViewModel<void> {
