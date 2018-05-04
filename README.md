@@ -143,23 +143,6 @@ export default class MyPage { // Notice the "default" keyword; this class will b
 }
 ```
 
-#### Limitations
-When using classes as ViewModels, Durandal has no way to figure out from where it
-should load the HTML View for the ViewModel.
-Durelia provides a decorator (with the exact same signature as the one in Aurelia).
-When using this, the ViewModel instructs Durandal where to load the HTML View from.
-
-```javascript
-import {useView} from "durelia-framework";
-
-@useView("views/mypage.html")
-export default class MyPage {
-    [...]
-}
-```
-***Editors remark**: I know you MVVM purists out there are not to happy with this; but concider
-this a temporary necessary evil. If you still follow the conventional view/viewmodel naming
-convention these attributes can be removed once migration to Aurelia is complete.*
 
 ### 4. Disconnecting from KnockoutJS: Enabling the Durandal Observable plugin on a per-viewmodel basis
 KnockoutJS is the Durandal dependency causing the biggest footprints in Durandal applications.
@@ -246,6 +229,7 @@ import {inject} from "durelia-framework";
 import {DialogController} from "durelia-dialog";
 
 @inject(DialogController)
+@useView("views/html/my-dialog")
 export class MyDialogViewModel {
     constructor(controller) {
         this.controller = controller;
@@ -259,11 +243,27 @@ export class MyDialogViewModel {
         this.controller.cancel({ agreed: false }, this);
     }
 }
-
 ```
-*PS! Notice that the ok and cancel methods of DialogController is calld with "this" as the
+#### Remarks
+
+
+*PS! Notice that the ok and cancel methods of DialogController is called with "this" as the
 seconde argument. This is exactly the same as in Aurelia, but was needed to make it work
 with Durandal.*
+
+#### Limitations
+When opening (default export) classes as Dialog ViewModels, Durandal has no way to figure out the module path of the class, and thereby can not infer from where to load the HTML View for the ViewModel.
+Durelia provides a decorator (with the exact same signature as the one in Aurelia).
+When using this, the ViewModel instructs Durandal where to load the HTML View from.
+
+```javascript
+import {useView} from "durelia-framework";
+
+@useView("views/mydialog.html")
+export default class MyDialogViewmodel {
+    [...]
+}
+```
 
 ### 6. Aligning router viewmodel activation and navigation with Aurelia
 The router in Aurelia is a somewhat different from the Durandal implementation on:
