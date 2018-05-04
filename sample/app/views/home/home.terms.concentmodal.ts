@@ -1,4 +1,4 @@
-import { inject, observe, useView } from "durelia-framework";
+import { inject, observe } from "durelia-framework";
 import { IDialogViewModel } from "durelia-viewmodel";
 import { IDialogController, DialogController } from "durelia-dialog";
 
@@ -9,7 +9,6 @@ export interface ITermsPartialModalOutput { agreed: boolean; }
 export interface ITermsPartialModal extends IDialogViewModel<ITermsPartialModalActivationModel, ITermsPartialModalOutput> {}
 
 @observe(true)
-@useView("views/home/home.terms.concentmodal.html")
 @inject(DialogController)
 export class TermsPartialModal implements IDialogViewModel<ITermsPartialModalActivationModel, ITermsPartialModalOutput> {
 
