@@ -2,8 +2,8 @@
   "extends": "tslint:latest",
   "defaultSeverity": "error",
   "rulesDirectory": [
-    "node_modules/tslint-eslint-rules/dist/rules",
-    "node_modules/tslint-microsoft-contrib"
+    "./node_modules/tslint-eslint-rules/dist/rules",
+    "./node_modules/tslint-microsoft-contrib"
   ],
   "rules": {
 
@@ -151,7 +151,6 @@
     "no-sparse-arrays": true,
     "no-string-literal": false,
     "no-string-throw": true,
-    "no-submodule-imports": false,
     "no-switch-case-fall-through": false,
     "no-trailing-whitespace": {
       "severity": "warning",
@@ -265,7 +264,6 @@
         }
       ]
     },
-    "typeof-compare": true,
     "unified-signatures": true,
     "use-isnan": true,
     //"use-strict": [ true, "check-module", "check-function" ],
@@ -289,10 +287,6 @@
       ]
     },
 
-
-
-
-
     /* TSLINT-ESLINT-RULES rules */
     "no-constant-condition": true,
     "no-control-regex": true,
@@ -305,14 +299,11 @@
     "no-invalid-regexp": true,
     //"no-null-keyword": true,
     "no-regex-spaces": true,
+    "no-submodule-imports": false,
     //"no-unexpected-multiline": true,
     "valid-jsdoc": true,
     "valid-typeof": true,
     "handle-callback-err": true,
-
-
-
-
 
     /* TSLINT-MICROSOFT-CONTRIB rules */
     "chai-prefer-contains-to-index-of": false, // N/A
@@ -358,21 +349,21 @@
     "no-relative-imports": false, // Disabled; we use relative imports
     "no-reserved-keywords": false,
     "no-single-line-block-comment": false,
-    "no-stateless-class": true,
     "no-string-based-set-immediate": true,
     "no-string-based-set-interval": true,
     "no-string-based-set-timeout": true,
     "no-suspicious-comment": {
       "severity": "off"
     }, // Temporarily switched off
+    "no-this-assignment": true,
     "no-typeof-undefined": true,
     "no-unnecessary-bind": true,
+    "no-unnecessary-class": true,
     "no-unnecessary-field-initialization": false, // Disabled, already governed by TSLint STD rule "no-unnecessary-initializer"
     "no-unnecessary-local-variable": false, // Disabled: We prefer to sometimes assign the result of a function to a variable before returning it for debugging
     "no-unnecessary-override": false, /* DISABLED: Sometimes the overridden method has more specific param types or return types than the base method */
     "no-unnecessary-semicolons": true,
     "no-unsupported-browser-code": true,
-    "no-var-self": true,
     "no-with-statement": true,
     "non-literal-require": false,
     "possible-timing-attack": true,

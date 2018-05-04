@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define(["require", "exports", "plugins/router", "plugins/history", "knockout", "durelia-dependency-injection"], function (require, exports, durandalRouter, durandalHistory, ko, durelia_dependency_injection_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var NavigationController = (function () {
+    var NavigationController = /** @class */ (function () {
         function NavigationController() {
         }
         NavigationController_1 = NavigationController;

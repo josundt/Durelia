@@ -8,7 +8,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var originalBinderBindingMethod = durandalBinder.binding;
-    var FrameworkConfiguration = (function () {
+    var FrameworkConfiguration = /** @class */ (function () {
         /**
          * Creates an instance of FrameworkConfiguration.
          * @internal
@@ -65,24 +65,12 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             return this;
         };
         FrameworkConfiguration.prototype.viewModelDefaultExports = function () {
-            var _this = this;
             if (this.config.usesViewModelDefaultExports) {
                 return this;
             }
             this.config.usesViewModelDefaultExports = true;
             this.logger.debug("Durelia: Enabling default export for viewmodel modules.");
-            durandalSystem["resolveObject"] = function (module) {
-                if (module && module.default && durandalSystem.isFunction(module.default)) {
-                    var vm = _this.container.resolve(module.default);
-                    return vm;
-                }
-                else if (durandalSystem.isFunction(module)) {
-                    return _this.container.resolve(module.default);
-                }
-                else {
-                    return module;
-                }
-            };
+            this.overrideDurandalResolveObject();
             return this;
         };
         FrameworkConfiguration.prototype.observeDecorator = function () {
@@ -126,6 +114,29 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             return this;
         };
         /**
+         * Generic resolve object override
+         * @internal
+         * @private
+         * @returns {void}
+         * @memberOf FrameworkConfiguration
+         */
+        FrameworkConfiguration.prototype.overrideDurandalResolveObject = function () {
+            var _this = this;
+            durandalSystem["resolveObject"] = function (module) {
+                if (module && module.default && durandalSystem.isFunction(module.default)) {
+                    var vm = _this.container.resolve(module.default);
+                    durandalSystem.setModuleId(vm, module.__moduleId__);
+                    return vm;
+                }
+                else if (durandalSystem.isFunction(module)) {
+                    return _this.container.resolve(module);
+                }
+                else {
+                    return module;
+                }
+            };
+        };
+        /**
          * Enables dependency injection
          * @internal
          * @private
@@ -133,18 +144,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
          * @memberOf FrameworkConfiguration
          */
         FrameworkConfiguration.prototype.enableDependencyInjection = function () {
-            var _this = this;
-            durandalSystem["resolveObject"] = function (module) {
-                if (durandalSystem.isFunction(module)) {
-                    return _this.container.resolve(module);
-                }
-                else if (module && durandalSystem.isFunction(module.default)) {
-                    return _this.container.resolve(module.default);
-                }
-                else {
-                    return module;
-                }
-            };
+            this.overrideDurandalResolveObject();
         };
         /**
          * Creates a deferred
@@ -189,7 +189,7 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
      * @class Durelia
      * @implements {IDurelia}
      */
-    var Durelia = (function () {
+    var Durelia = /** @class */ (function () {
         /**
          * Creates an instance of Durelia.
          * @internal

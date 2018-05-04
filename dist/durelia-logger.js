@@ -15,7 +15,7 @@ define(["require", "exports", "durandal/system", "durelia-dependency-injection"]
         SeverityLevel[SeverityLevel["warn"] = 3] = "warn";
         SeverityLevel[SeverityLevel["error"] = 4] = "error";
     })(SeverityLevel || (SeverityLevel = {}));
-    var Logger = (function () {
+    var Logger = /** @class */ (function () {
         function Logger() {
         }
         Object.defineProperty(Logger.prototype, "severityThreshold", {

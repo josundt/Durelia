@@ -9,10 +9,10 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
     Object.defineProperty(exports, "__esModule", { value: true });
     var isLazyInjectionPropName = "__isLazyInjection__";
     /** @internal */
-    var DependencyInjectionContainer = (function () {
+    var DependencyInjectionContainer = /** @class */ (function () {
         function DependencyInjectionContainer(
-            /** @internal */
-            logger) {
+        /** @internal */
+        logger) {
             if (logger === void 0) { logger = new durelia_logger_1.Logger(); }
             this.logger = logger;
             this.singletonTypeRegistry = [];
@@ -248,7 +248,7 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
     function isLazyInjection(classType) {
         classType[isLazyInjectionPropName] = true;
     }
-    var Lazy = (function () {
+    var Lazy = /** @class */ (function () {
         /**
          * Creates an instance of Lazy.
          * @internal

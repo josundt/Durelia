@@ -267,7 +267,6 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
         return this;
     }
 
-    
     /**
      * Generic resolve object override
      * @internal
@@ -275,10 +274,10 @@ export class FrameworkConfiguration implements IFrameworkConfiguration {
      * @returns {void}
      * @memberOf FrameworkConfiguration
      */
-    private overrideDurandalResolveObject(): void {        
+    private overrideDurandalResolveObject(): void {
         (<any>durandalSystem)["resolveObject"] = module => {
             if (module && module.default && durandalSystem.isFunction(module.default)) {
-                let vm = this.container.resolve(module.default);
+                const vm = this.container.resolve(module.default);
                 durandalSystem.setModuleId(vm, module.__moduleId__);
                 return vm;
             } else if (durandalSystem.isFunction(module)) {
