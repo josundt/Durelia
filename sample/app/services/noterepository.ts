@@ -1,5 +1,5 @@
 import { singleton, inject } from "durelia-framework";
-import { ISerializer, JsonSerializer } from "services/serializer";
+import { JsonSerializer, ISerializer } from "./serializer";
 
 export interface Note {
     id: number;

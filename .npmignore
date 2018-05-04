@@ -2,7 +2,6 @@
 /.vscode
 /build
 /sample
-.bowerrc
 .gitignore
 bower.json
 build.js

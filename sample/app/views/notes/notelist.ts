@@ -1,10 +1,10 @@
 import { inject, Lazy, observe, computedFrom } from "durelia-framework";
 import { IViewModel } from "durelia-viewmodel";
-import { INoteDetailActivationModel } from "views/notes/notedetail";
-import { INoteRepository, NoteRepository, Note } from "services/noterepository";
-import { INoteViewModelActivationOptions } from "views/_shared/note";
-import { ICommonDialogs, CommonDialogs } from "services/common-dialogs";
 import { INavigationController, NavigationController } from "durelia-router";
+import { NoteRepository, INoteRepository, Note } from "../../services/noterepository";
+import { CommonDialogs, ICommonDialogs } from "../../services/common-dialogs";
+import { INoteDetailActivationModel } from "./notedetail";
+import { INoteViewModelActivationOptions } from "../_shared/note";
 
 interface LabeledItem<T> {
     text: string;
@@ -78,20 +78,14 @@ export default class NoteList implements IViewModel<INoteListActivationModel> {
         return Promise.resolve();
     }
 
-    remove(note: Note): Promise<boolean> {
-        return this.commonDialogs.confirm("Are you sure you want to delete this note?", "Delete?")
-            .then(confirmed => {
-                if (confirmed) {
-                    return this.noteRepository.deleteById(note.id)
-                        .then(result => {
-                            this.notes.splice(this.notes.indexOf(note), 1);
-                            return result;
-                        });
-
-                } else {
-                    return Promise.resolve(false);
-                }
-            });
+    async remove(note: Note): Promise<boolean> {
+        let wasDeleted = false;
+        const confirmed = await this.commonDialogs.confirm("Are you sure you want to delete this note?", "Delete?");
+        if (confirmed) {
+            wasDeleted = await this.noteRepository.deleteById(note.id);
+            this.notes.splice(this.notes.indexOf(note), 1);
+        }
+        return wasDeleted;
     }
 
     add(): Promise<any> {
@@ -103,16 +97,17 @@ export default class NoteList implements IViewModel<INoteListActivationModel> {
         return Promise.resolve();
     }
 
-    save(note: Note): Promise<any> {
-        const promise = note.id >= 0
-            ? this.noteRepository.update(note)
-            : this.noteRepository.add(note);
+    async save(note: Note): Promise<any> {
+        if (note.id >= 0) {
+            await this.noteRepository.update(note);
+        } else {
+            await this.noteRepository.add(note);
+        }
 
-        return promise.then(() => {
-            this.hasUnsavedChanges = false;
-            this.sort();
-            return this.commonDialogs.messageBox("The note was saved", "Saved!", ["OK"]);
-        });
+        this.hasUnsavedChanges = false;
+        this.sort();
+
+        await this.commonDialogs.messageBox("The note was saved", "Saved!", ["OK"]);
     }
 
     getNoteViewModelActivationData(note: Note): INoteViewModelActivationOptions {
@@ -127,14 +122,12 @@ export default class NoteList implements IViewModel<INoteListActivationModel> {
         };
     }
 
-    private loadData(): Promise<any> {
-        return this.noteRepository.get({
+    private async loadData(): Promise<any> {
+        this.notes = await this.noteRepository.get({
             orderBy: {
                 prop: this.sortProp.value,
                 desc: this.sortDesc
             }
-        }).then(notes => {
-            this.notes = notes;
         });
     }
 

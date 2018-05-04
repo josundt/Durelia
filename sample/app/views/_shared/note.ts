@@ -1,4 +1,4 @@
-import { Note } from "services/noterepository";
+import { Note } from "../../services/noterepository";
 import { useView } from "durelia-framework";
 import { IViewModel } from "durelia-viewmodel";
 

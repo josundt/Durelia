@@ -171,7 +171,7 @@
     "no-void-expression": [true, "ignore-arrow-function-shorthand"],
     "number-literal-format": true,
     "object-literal-sort-keys": [false, "ignore-case"],
-    "object-literal-key-quotes": [true, "as-needed"],
+    "object-literal-key-quotes": [false, "as-needed"],
     "object-literal-shorthand": false,
     "only-arrow-functions": [true, "allow-declarations", "allow-named-functions"],
     "one-line": {

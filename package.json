@@ -4,23 +4,34 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "dev-install": "bower install && node build",
-    "dev-start": "node prestart && node server"
+    "build": "node build/build",
+    "prestart": "node prestart.js",
+    "start": "node server.js",
+    "test": "echo \"No tests available\"",
+    "lint": "tslint -p ./src/tsconfig.json && tslint -p ./sample/tsconfig.json"
   },
   "author": "Jørn Andre Sundt",
   "license": "ISC",
   "devDependencies": {
     "@types/bluebird": "3.5.20",
     "@types/durandal": "2.1.36",
-    "bower": "1.8.4",
+    "bluebird": "3.5.1",
+    "durandal": "2.2.0",
     "express": "4.16.3",
+    "font-awesome": "4.7.0",
+    "jquery": "3.3.1",
+    "knockout": "3.4.2",
     "openurl": "1.1.1",
+    "requirejs": "2.3.5",
+    "requirejs-text": "2.0.15",
     "rimraf": "2.6.2",
+    "tslib": "1.9.0",
     "tslint": "5.10.0",
     "tslint-eslint-rules": "5.1.0",
     "tslint-microsoft-contrib": "5.0.3",
     "typescript": "2.8.3"
   },
+  "dependencies": {},
   "engines": {
     "node": ">=6.0.0"
   }

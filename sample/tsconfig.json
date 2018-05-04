@@ -12,10 +12,11 @@
         "allowUnusedLabels": false,
         "experimentalDecorators": true,
         "forceConsistentCasingInFileNames": true,
+        "importHelpers": true,
         "lib": ["dom", "es5", "es2015.promise", "es2015.iterable"],
         "listFiles": false,
         "module": "amd",
-        "moduleResolution": "classic",
+        "moduleResolution": "node",
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": false,
         "noImplicitReturns": true,
@@ -37,10 +38,5 @@
         "types": [
             "durandal"
         ]
-    },
-    "exclude": [
-        "bower_components/adra-jsutils/dist/typings/index.d.ts",
-        "bower_components/adra-jsutils/sample",
-        "bower_components/adra-jsutils/src"
-    ]
+    }
 }

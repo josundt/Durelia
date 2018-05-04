@@ -1,9 +1,9 @@
 import { inject, Lazy, observe } from "durelia-framework";
 import { IViewModel } from "durelia-viewmodel";
-import { INoteRepository, NoteRepository, Note } from "services/noterepository";
-import { INoteViewModelActivationOptions } from "views/_shared/note";
-import { ICommonDialogs, CommonDialogs } from "services/common-dialogs";
 import { INavigationController, NavigationController } from "durelia-router";
+import { NoteRepository, INoteRepository, Note } from "../../services/noterepository";
+import { CommonDialogs, ICommonDialogs } from "../../services/common-dialogs";
+import { INoteViewModelActivationOptions } from "../_shared/note";
 
 export interface INoteDetailActivationModel {
     id: number;
@@ -26,7 +26,7 @@ export default class NoteDetail implements IViewModel<INoteDetailActivationModel
     hasUnsavedChanges: boolean = false;
     note: Note;
 
-    activate(model: INoteDetailActivationModel): Promise<any> {
+    async activate(model: INoteDetailActivationModel): Promise<any> {
         if (model.id < 0) {
             this.heading = "New note";
             this.hasUnsavedChanges = true;
@@ -34,62 +34,55 @@ export default class NoteDetail implements IViewModel<INoteDetailActivationModel
             return Promise.resolve();
         } else {
             this.heading = "Edit note";
-            return this.noteRepository.getById(model.id).then(note => {
-                this.note = note;
-            });
+            this.note = await this.noteRepository.getById(model.id);
         }
     }
 
-    canDeactivate(): Promise<boolean> {
+    async canDeactivate(): Promise<boolean> {
+        let result = true;
         if (this.hasUnsavedChanges) {
             const buttonTexts = ["Save", "Abandon changes", "Stay on page"];
-            return this.commonDialogs.messageBox("Do you want to save the note before leaving?", "Save changes", buttonTexts, 2)
-                .then(result => {
-                    if (result.wasCancelled) {
-                        return false;
-                    } else if (result.output === buttonTexts[1]) {
-                        return true;
-                    } else {
-                        return this.save(this.note, true).then(() => true);
-                    }
-                });
-        } else {
-            return Promise.resolve(true);
+            const dialogResult = await this.commonDialogs.messageBox("Do you want to save the note before leaving?", "Save changes", buttonTexts, 2);
+            if (dialogResult.wasCancelled) {
+                result = false;
+            }
+            if (dialogResult.output === buttonTexts[0]) {
+                await this.save(this.note, true);
+            }
         }
+        return result;
     }
 
     deactivate(): Promise<any> {
         return Promise.resolve();
     }
 
-    save(note: Note, skipGoBack?: boolean): Promise<any> {
-        const promise = note.id >= 0
-            ? this.noteRepository.update(note)
-            : this.noteRepository.add(note);
+    async save(note: Note, skipGoBack?: boolean): Promise<any> {
 
-        return promise.then(() => {
-            this.hasUnsavedChanges = false;
+        if (note.id >= 0) {
+            await this.noteRepository.update(note);
+        } else {
+            await this.noteRepository.add(note);
+        }
 
-            return this.commonDialogs.messageBox("The note was saved", "Saved!", ["OK"]);
+        this.hasUnsavedChanges = false;
 
-        }).then(() => skipGoBack ? Promise.resolve() : this.back());
+        await this.commonDialogs.messageBox("The note was saved", "Saved!", ["OK"]);
+
+        if (!skipGoBack) {
+            this.back();
+        }
     }
 
-    remove(note: Note): Promise<boolean> {
-        return this.commonDialogs.confirm("Are you sure you want to delete this note?", "Delete?")
-            .then(confirmed => {
-                if (confirmed) {
-                    return this.noteRepository.deleteById(note.id)
-                        .then(result => {
-                            this.hasUnsavedChanges = false;
-                            this.back();
-                            return result;
-                        });
-
-                } else {
-                    return Promise.resolve(false);
-                }
-            });
+    async remove(note: Note): Promise<boolean> {
+        let wasDeleted = false;
+        const confirmed = await this.commonDialogs.confirm("Are you sure you want to delete this note?", "Delete?");
+        if (confirmed) {
+            wasDeleted = await this.noteRepository.deleteById(note.id);
+            this.hasUnsavedChanges = false;
+            this.back();
+        }
+        return wasDeleted;
     }
 
     add(): void {
