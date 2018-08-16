@@ -351,6 +351,7 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
                 }
             };
         };
+        var NavigationController_1;
         /** @internal */
         NavigationController.routeExpandRegex = /\:([^\:\/\(\)\?\=\&]+)/g;
         /** @internal */
@@ -363,7 +364,6 @@ define(["require", "exports", "plugins/router", "plugins/history", "knockout", "
             durelia_dependency_injection_1.singleton
         ], NavigationController);
         return NavigationController;
-        var NavigationController_1;
     }());
     exports.NavigationController = NavigationController;
 });

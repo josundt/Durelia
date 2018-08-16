@@ -1,6 +1,6 @@
 {
   "name": "durelia",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "",
   "main": "server.js",
   "scripts": {
@@ -13,8 +13,9 @@
   "author": "Jørn Andre Sundt",
   "license": "ISC",
   "devDependencies": {
-    "@types/bluebird": "3.5.20",
+    "@types/bluebird": "3.5.23",
     "@types/durandal": "2.1.36",
+    "@types/jquery": "3.3.6",
     "bluebird": "3.5.1",
     "durandal": "2.2.0",
     "express": "4.16.3",
@@ -25,11 +26,11 @@
     "requirejs": "2.3.5",
     "requirejs-text": "2.0.15",
     "rimraf": "2.6.2",
-    "tslib": "1.9.0",
-    "tslint": "5.10.0",
-    "tslint-eslint-rules": "5.1.0",
-    "tslint-microsoft-contrib": "5.0.3",
-    "typescript": "2.8.3"
+    "tslib": "1.9.3",
+    "tslint": "5.11.0",
+    "tslint-eslint-rules": "5.4.0",
+    "tslint-microsoft-contrib": "5.2.0",
+    "typescript": "3.0.1"
   },
   "dependencies": {},
   "engines": {

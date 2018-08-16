@@ -175,12 +175,12 @@ define(["require", "exports", "durandal/system", "durandal/binder", "plugins/obs
             enumerable: true,
             configurable: true
         });
+        var FrameworkConfiguration_1;
         FrameworkConfiguration = FrameworkConfiguration_1 = __decorate([
             durelia_dependency_injection_1.singleton,
             durelia_dependency_injection_1.inject(durelia_dependency_injection_1.DependencyInjectionContainer, durelia_logger_1.Logger)
         ], FrameworkConfiguration);
         return FrameworkConfiguration;
-        var FrameworkConfiguration_1;
     }());
     exports.FrameworkConfiguration = FrameworkConfiguration;
     /**

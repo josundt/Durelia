@@ -15,6 +15,7 @@ define(["require", "exports", "durandal/system", "durelia-dependency-injection"]
         SeverityLevel[SeverityLevel["warn"] = 3] = "warn";
         SeverityLevel[SeverityLevel["error"] = 4] = "error";
     })(SeverityLevel || (SeverityLevel = {}));
+    /* tslint:disable:no-console */
     var Logger = /** @class */ (function () {
         function Logger() {
         }
@@ -45,9 +46,7 @@ define(["require", "exports", "durandal/system", "durelia-dependency-injection"]
                 properties[_i - 4] = arguments[_i];
             }
             if (severityLevel >= this.severityThreshold) {
-                /* tslint:disable:no-console */
                 appenderFn.call.apply(appenderFn, [appender, message].concat(properties));
-                /* tslint:enable:no-console */
             }
         };
         Logger.prototype.debug = function (message) {
@@ -85,4 +84,5 @@ define(["require", "exports", "durandal/system", "durelia-dependency-injection"]
     }());
     exports.Logger = Logger;
 });
+/* tslint:enable:no-console */
 //# sourceMappingURL=durelia-logger.js.map

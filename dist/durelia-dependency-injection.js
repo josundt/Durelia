@@ -4,7 +4,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-define(["require", "exports", "durelia-logger", "durelia-framework"], function (require, exports, durelia_logger_1, durelia_framework_1) {
+define(["require", "exports", "durelia-framework", "durelia-logger"], function (require, exports, durelia_framework_1, durelia_logger_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var isLazyInjectionPropName = "__isLazyInjection__";
@@ -49,6 +49,7 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
             else if (this.singletonTypeRegistry.indexOf(classType) >= 0) {
                 throw new Error("The type " + classType + " is already a registered singleton.");
             }
+            classType.__lifetime__ = "singleton";
             this.singletonTypeRegistry.push(classType);
             this.singletonInstances.push(instance);
         };
@@ -280,11 +281,11 @@ define(["require", "exports", "durelia-logger", "durelia-framework"], function (
             enumerable: true,
             configurable: true
         });
+        var Lazy_1;
         Lazy = Lazy_1 = __decorate([
             isLazyInjection
         ], Lazy);
         return Lazy;
-        var Lazy_1;
     }());
     exports.Lazy = Lazy;
 });

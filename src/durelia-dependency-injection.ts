@@ -1,5 +1,5 @@
-import { ILogger, Logger } from "durelia-logger";
 import { durelia } from "durelia-framework";
+import { ILogger, Logger } from "durelia-logger";
 
 export type IInjectable = IResolvableConstructor | {};
 
@@ -68,6 +68,7 @@ export class DependencyInjectionContainer implements IDependencyInjectionContain
             throw new Error(`The type ${classType} is already a registered singleton.`);
         }
 
+        classType.__lifetime__ = "singleton";
         this.singletonTypeRegistry.push(classType);
         this.singletonInstances.push(instance);
     }

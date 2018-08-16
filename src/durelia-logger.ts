@@ -18,6 +18,7 @@ enum SeverityLevel {
     error
 }
 
+/* tslint:disable:no-console */
 @singleton
 export class Logger implements ILogger {
     /** @internal */
@@ -39,9 +40,7 @@ export class Logger implements ILogger {
      */
     private log(severityLevel: SeverityLevel = SeverityLevel.debug, appender: ILogger, appenderFn: LogAppender, message: string,  ...properties: any[]): void {
         if (severityLevel >= this.severityThreshold) {
-            /* tslint:disable:no-console */
             appenderFn.call(appender, message, ...properties);
-            /* tslint:enable:no-console */
         }
     }
 
@@ -50,3 +49,4 @@ export class Logger implements ILogger {
     warn(message: string, ...properties: any[]): void  { this.log(SeverityLevel.warn,  console, console.warn, message, ...properties); }
     error(message: string, ...properties: any[]): void { this.log(SeverityLevel.error, console, console.error, message, ...properties); }
 }
+/* tslint:enable:no-console */

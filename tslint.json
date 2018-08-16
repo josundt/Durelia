@@ -164,7 +164,6 @@
     "no-unsafe-any": false,
     "no-unsafe-finally": true,
     "no-unused-expression": [true /*,"allow-fast-null-checks", "allow-new", "allow-tagged-template"*/],
-    "no-unused-variable": true,
     "no-use-before-declare": false,
     "no-var-keyword": true,
     "no-var-requires": true,

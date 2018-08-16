@@ -10,7 +10,6 @@ import * as viewLocator from "durandal/viewLocator";
 import { durelia } from "durelia-framework";
 import * as $ from "jquery";
 
-
 // Fix to support jQuery >= 3.x due bug in Durandal 2.2 dialog plugin
 // Will be fixed in next Durandal release - including the already merged PR https://github.com/BlueSpire/Durandal/pull/696
 function ensureJqueryCompatibility(): void {
