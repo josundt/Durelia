@@ -24,7 +24,7 @@ Promise instead (which is enabled in all current browsers and can also be polyfi
 import {durelia} from "durelia-framework";
 
 durelia.use
-    .navivePromise();
+    .nativePromise();
 ```
 
 *Example (when you want to install **Q** as ES2015 Promise a polyfill as you enable ES2015 Promise for Durandal):*
