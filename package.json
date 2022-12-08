@@ -1,6 +1,6 @@
 {
   "name": "durelia",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "description": "",
   "main": "server.js",
   "scripts": {
@@ -18,10 +18,10 @@
     "@types/jquery": "3.3.6",
     "bluebird": "3.5.1",
     "durandal": "2.2.0",
-    "express": "4.16.3",
+    "express": "4.18.2",
     "font-awesome": "4.7.0",
-    "jquery": "3.3.1",
-    "knockout": "3.4.2",
+    "jquery": "3.6.1",
+    "knockout": "3.5.1",
     "openurl": "1.1.1",
     "requirejs": "2.3.5",
     "requirejs-text": "2.0.15",
